@@ -1,5 +1,6 @@
 import { reactive, computed, ref } from 'vue';
 import { initialPrograms } from '../data/mockData';
+import { saveDocumentBlob, getDocumentBlob, deleteDocumentBlob } from '../utils/documentDb';
 
 // Load from localStorage if available, or fall back to initial 18 programs
 const STORAGE_KEY = 'scm_taxvault_programs_v1';
@@ -122,7 +123,15 @@ function saveUsersToStorage() {
 
 function saveToStorage() {
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.programs));
+        // Strip heavy base64 dataUrl before saving to localStorage to prevent quota limit issues
+        const sanitized = state.programs.map(p => ({
+            ...p,
+            documents: (p.documents || []).map(d => {
+                const { file_data, ...rest } = d;
+                return rest;
+            })
+        }));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitized));
     } catch (e) {
         console.error("Failed to save to storage", e);
     }
@@ -350,19 +359,51 @@ export const useTaxStore = () => {
         }
     }
 
-    function uploadDocument(programId, docType, fileInfo) {
+    async function uploadDocument(programId, docType, fileInfo) {
         const prog = getProgramById(programId);
         if (!prog) return false;
         if (!prog.documents) prog.documents = [];
 
+        const docId = 'doc-' + Date.now();
+        const uploader = state.currentUser?.name || 'Staff';
+
         // Check if docType already exists (replace if exists)
         const existingIndex = prog.documents.findIndex(d => d.document_type === docType);
+        
+        let serverFileUrl = fileInfo.file_url || null;
+
+        // Upload to server if real file is present
+        if (fileInfo.file) {
+            try {
+                const formData = new FormData();
+                formData.append('file', fileInfo.file);
+                formData.append('document_type', docType);
+                formData.append('file_name', fileInfo.name);
+                formData.append('uploaded_by', uploader);
+
+                const res = await fetch(`/api/programs/${programId}/documents`, {
+                    method: 'POST',
+                    body: formData
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.document?.file_url) {
+                        serverFileUrl = data.document.file_url;
+                    }
+                }
+            } catch (err) {
+                console.warn('Backend file upload fallback to local storage', err);
+            }
+        }
+
         const newDoc = {
-            id: 'doc-' + Date.now(),
+            id: docId,
             document_type: docType,
             file_name: fileInfo.name || `${docType}-${prog.id}.pdf`,
             mime_type: fileInfo.type || 'application/pdf',
             file_size: fileInfo.sizeFormatted || '1.2 MB',
+            file_url: serverFileUrl,
+            file_data: fileInfo.dataUrl || null,
             uploaded_at: new Intl.DateTimeFormat('id-ID', {
                 day: 'numeric',
                 month: 'short',
@@ -370,8 +411,13 @@ export const useTaxStore = () => {
                 hour: '2-digit',
                 minute: '2-digit'
             }).format(new Date()),
-            uploaded_by: 'Budi Santoso'
+            uploaded_by: uploader
         };
+
+        // Persist file in IndexedDB for reliable offline and instant preview
+        if (fileInfo.dataUrl) {
+            saveDocumentBlob(docId, fileInfo.dataUrl, newDoc.file_name, newDoc.mime_type);
+        }
 
         if (existingIndex !== -1) {
             prog.documents[existingIndex] = newDoc;
@@ -389,12 +435,34 @@ export const useTaxStore = () => {
         if (!prog || !prog.documents) return false;
         const index = prog.documents.findIndex(d => d.document_type === docType);
         if (index !== -1) {
+            const removed = prog.documents[index];
+            if (removed?.id) {
+                deleteDocumentBlob(removed.id);
+            }
             prog.documents.splice(index, 1);
             saveToStorage();
             notify(`Dokumen ${getDocTypeLabel(docType)} berhasil dihapus.`, 'warning');
             return true;
         }
         return false;
+    }
+
+    async function loadDocumentContent(docId) {
+        if (!docId) return null;
+        for (const p of state.programs) {
+            const d = (p.documents || []).find(doc => doc.id === docId);
+            if (d && d.file_data) return d.file_data;
+            if (d && d.file_url) return d.file_url;
+        }
+        const blob = await getDocumentBlob(docId);
+        if (blob?.dataUrl) {
+            for (const p of state.programs) {
+                const d = (p.documents || []).find(doc => doc.id === docId);
+                if (d) d.file_data = blob.dataUrl;
+            }
+            return blob.dataUrl;
+        }
+        return null;
     }
 
     function importPrograms(rows) {
@@ -1064,6 +1132,7 @@ export const useTaxStore = () => {
         deleteProgram,
         uploadDocument,
         deleteDocument,
+        loadDocumentContent,
         importPrograms,
         exportToCsv,
         resetToDefault,

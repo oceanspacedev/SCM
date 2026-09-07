@@ -130,36 +130,72 @@ class ProgramController extends Controller
      */
     public function uploadDocument(Request $request, $id)
     {
-        $program = Program::with('documents')->findOrFail($id);
+        $program = Program::with('documents')->find($id);
 
-        $request->validate([
-            'type' => 'required|string|in:invoice,faktur,memo',
-            'file_name' => 'required|string',
-        ]);
+        $docType = $request->input('document_type') ?: $request->input('type', 'faktur_pajak');
+        $fileName = $request->input('file_name');
+        $fileSize = $request->input('file_size');
+        $filePath = null;
+        $fileUrl = null;
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = $fileName ?: $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension() ?: 'pdf';
+            $safeName = 'doc_' . time() . '_' . Str::random(8) . '.' . $extension;
+
+            $destination = public_path('uploads/documents');
+            if (!file_exists($destination)) {
+                mkdir($destination, 0777, true);
+            }
+
+            $file->move($destination, $safeName);
+            $filePath = 'uploads/documents/' . $safeName;
+            $fileUrl = url('uploads/documents/' . $safeName);
+
+            $bytes = filesize($destination . '/' . $safeName);
+            $fileSize = $bytes >= 1048576 
+                ? round($bytes / 1048576, 1) . ' MB' 
+                : round($bytes / 1024, 1) . ' KB';
+        }
 
         $docId = 'doc-' . time() . '-' . rand(10, 99);
 
-        $doc = ProgramDocument::create([
+        $docData = [
             'id' => $docId,
-            'program_id' => $program->id,
-            'type' => $request->type,
-            'file_name' => $request->file_name,
-            'file_size' => $request->file_size ?: '1.4 MB',
-            'file_path' => $request->file_path ?: null,
-            'uploaded_at' => Carbon::now()
-        ]);
+            'document_type' => $docType,
+            'type' => $docType,
+            'file_name' => $fileName ?: ($docType . '-' . $id . '.pdf'),
+            'file_size' => $fileSize ?: '1.2 MB',
+            'file_path' => $filePath,
+            'file_url' => $fileUrl,
+            'uploaded_by' => $request->input('uploaded_by', 'Staff'),
+            'uploaded_at' => Carbon::now()->isoFormat('D MMM Y, HH.mm')
+        ];
 
-        // Refresh documents and check if all 3 exist
-        $types = $program->documents()->pluck('type')->toArray();
-        if (in_array('invoice', $types) && in_array('faktur', $types) && in_array('memo', $types)) {
-            $program->update(['status' => 'Lengkap']);
+        if ($program) {
+            ProgramDocument::updateOrCreate(
+                ['program_id' => $program->id, 'type' => $docType],
+                [
+                    'id' => $docId,
+                    'file_name' => $docData['file_name'],
+                    'file_size' => $docData['file_size'],
+                    'file_path' => $filePath,
+                    'uploaded_at' => Carbon::now()
+                ]
+            );
+
+            // Check completeness
+            $types = $program->documents()->pluck('type')->toArray();
+            if (count(array_unique($types)) >= 3) {
+                $program->update(['status' => 'Lengkap']);
+            }
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Dokumen berhasil diunggah.',
-            'document' => $doc,
-            'program' => $program->fresh()->load('documents')
+            'document' => $docData
         ]);
     }
 

@@ -31,8 +31,80 @@
         </div>
       </div>
 
-      <!-- Realistic Document Paper Canvas -->
-      <div class="bg-white border border-[#DDE4E1] shadow-xs rounded-sm p-6 text-[#17201E] font-sans text-xs">
+      <!-- Tab switch if real file exists -->
+      <div v-if="actualFileUrl" class="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs">
+        <button
+          type="button"
+          :class="[
+            'px-3 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer',
+            activeTab === 'actual' ? 'bg-[#135A46] text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+          ]"
+          @click="activeTab = 'actual'"
+        >
+          Berkas Asli ({{ document?.file_name }})
+        </button>
+        <button
+          type="button"
+          :class="[
+            'px-3 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer',
+            activeTab === 'template' ? 'bg-[#135A46] text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+          ]"
+          @click="activeTab = 'template'"
+        >
+          Template Data Perpajakan
+        </button>
+      </div>
+
+      <!-- VIEW 1: ACTUAL UPLOADED FILE -->
+      <div v-if="actualFileUrl && activeTab === 'actual'" class="space-y-2">
+        <div class="flex items-center justify-between text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+          <span class="text-slate-600 font-mono truncate max-w-sm">{{ document?.file_name }}</span>
+          <a
+            :href="actualFileUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1 font-semibold text-[#135A46] hover:underline"
+          >
+            <ExternalLink class="w-3.5 h-3.5" />
+            Buka di Tab Baru
+          </a>
+        </div>
+
+        <!-- PDF viewer -->
+        <div v-if="isPdf" class="w-full bg-slate-100 rounded-xl overflow-hidden border border-slate-200">
+          <iframe
+            :src="actualFileUrl"
+            class="w-full h-[620px] border-none rounded-xl"
+          ></iframe>
+        </div>
+
+        <!-- Image viewer -->
+        <div v-else-if="isImage" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-center min-h-[400px]">
+          <img
+            :src="actualFileUrl"
+            :alt="document?.file_name"
+            class="max-h-[620px] w-auto max-w-full rounded-lg shadow-sm border border-slate-200 object-contain"
+          />
+        </div>
+
+        <!-- Generic file fallback -->
+        <div v-else class="p-8 text-center bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+          <FileText class="w-12 h-12 text-slate-400 mx-auto" />
+          <p class="font-bold text-slate-900 text-sm">{{ document?.file_name }}</p>
+          <p class="text-xs text-slate-500">Berkas ini dapat Anda unduh langsung ke komputer.</p>
+          <button
+            type="button"
+            class="px-4 py-2 bg-[#135A46] text-white rounded-lg text-xs font-semibold hover:bg-[#0E4636] transition-colors inline-flex items-center gap-1.5"
+            @click="handleDownload"
+          >
+            <Download class="w-3.5 h-3.5" />
+            Unduh Berkas Ini
+          </button>
+        </div>
+      </div>
+
+      <!-- VIEW 2: TEMPLATE CANVAS (For template tab or when no real file) -->
+      <div v-else class="bg-white border border-[#DDE4E1] shadow-xs rounded-sm p-6 text-[#17201E] font-sans text-xs">
         <!-- RENDER FAKTUR PAJAK (DJP e-Faktur Style) -->
         <div v-if="document?.document_type === 'faktur_pajak'" class="space-y-4">
           <div class="text-center border-b-2 border-[#17201E] pb-3">
@@ -261,8 +333,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { Download, FileText } from 'lucide-vue-next';
+import { ref, computed, watch } from 'vue';
+import { Download, FileText, ExternalLink } from 'lucide-vue-next';
 import Sheet from '../ui/Sheet.vue';
 import Button from '../ui/Button.vue';
 import { formatRupiah, formatDate, useTaxStore } from '../../store/taxStore';
@@ -286,6 +358,40 @@ defineEmits(['update:open']);
 
 const store = useTaxStore();
 
+const actualFileUrl = ref(null);
+const activeTab = ref('actual'); // 'actual' | 'template'
+
+watch(
+  () => [props.open, props.document],
+  async ([isOpen, doc]) => {
+    if (isOpen && doc) {
+      let url = doc.file_data || doc.file_url || null;
+      if (!url && doc.id) {
+        url = await store.loadDocumentContent(doc.id);
+      }
+      actualFileUrl.value = url;
+      activeTab.value = url ? 'actual' : 'template';
+    } else {
+      actualFileUrl.value = null;
+    }
+  },
+  { immediate: true }
+);
+
+const isPdf = computed(() => {
+  const mime = props.document?.mime_type || '';
+  const name = props.document?.file_name || '';
+  const url = actualFileUrl.value || '';
+  return mime.includes('pdf') || name.toLowerCase().endsWith('.pdf') || url.startsWith('data:application/pdf');
+});
+
+const isImage = computed(() => {
+  const mime = props.document?.mime_type || '';
+  const name = props.document?.file_name || '';
+  const url = actualFileUrl.value || '';
+  return mime.includes('image') || /\.(png|jpe?g|webp|gif|svg)$/i.test(name) || url.startsWith('data:image/');
+});
+
 const documentTitle = computed(() => {
   if (!props.document) return 'Preview Dokumen';
   return store.getDocTypeLabel(props.document.document_type);
@@ -293,16 +399,29 @@ const documentTitle = computed(() => {
 
 function handleDownload() {
   if (!props.document) return;
-  // Trigger simulated document download
-  const blob = new Blob([`SCM TaxVault Document Archive: ${props.document.file_name}\nProgram: ${props.program?.program_name}\nSupplier: ${props.program?.supplier}\nInvoice: ${props.program?.invoice_number}`], { type: 'application/pdf' });
+  const fileName = props.document.file_name || `${props.document.document_type}-${props.program?.id}.pdf`;
+
+  if (actualFileUrl.value) {
+    const a = document.createElement('a');
+    a.href = actualFileUrl.value;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    store.notify(`Dokumen ${fileName} berhasil diunduh.`);
+    return;
+  }
+
+  // Simulated download fallback for demo records
+  const blob = new Blob([`SCM TaxVault Document Archive: ${fileName}\nProgram: ${props.program?.program_name}\nSupplier: ${props.program?.supplier}\nInvoice: ${props.program?.invoice_number}`], { type: 'application/pdf' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = props.document.file_name;
+  a.download = fileName;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  store.notify(`Dokumen ${props.document.file_name} telah diunduh.`);
+  store.notify(`Dokumen ${fileName} telah diunduh.`);
 }
 </script>

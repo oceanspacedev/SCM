@@ -159,24 +159,44 @@ function startUpload() {
   if (!selectedFile.value) return;
 
   isUploading.value = true;
-  uploadProgress.value = 45;
+  uploadProgress.value = 35;
 
-  setTimeout(() => {
-    uploadProgress.value = 85;
+  const file = selectedFile.value;
+  const reader = new FileReader();
+
+  reader.onprogress = (e) => {
+    if (e.lengthComputable) {
+      uploadProgress.value = Math.min(85, Math.round((e.loaded / e.total) * 80) + 10);
+    }
+  };
+
+  reader.onload = (e) => {
+    uploadProgress.value = 100;
     setTimeout(() => {
-      uploadProgress.value = 100;
-      setTimeout(() => {
-        emit('uploaded', {
-          docType: props.docType,
-          file: selectedFile.value,
-          name: selectedFile.value.name,
-          sizeFormatted: `${(selectedFile.value.size / (1024 * 1024)).toFixed(1)} MB`,
-          type: selectedFile.value.type || 'application/pdf'
-        });
-        isUploading.value = false;
-        emit('update:open', false);
-      }, 300);
-    }, 400);
-  }, 350);
+      const dataUrl = e.target.result;
+      const sizeFormatted = file.size >= 1048576 
+        ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` 
+        : `${(file.size / 1024).toFixed(1)} KB`;
+
+      emit('uploaded', {
+        docType: props.docType,
+        file: file,
+        name: file.name,
+        sizeFormatted: sizeFormatted,
+        type: file.type || 'application/pdf',
+        dataUrl: dataUrl
+      });
+      isUploading.value = false;
+      emit('update:open', false);
+    }, 250);
+  };
+
+  reader.onerror = () => {
+    uploadProgress.value = 100;
+    isUploading.value = false;
+    alert('Gagal membaca berkas.');
+  };
+
+  reader.readAsDataURL(file);
 }
 </script>

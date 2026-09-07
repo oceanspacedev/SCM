@@ -684,9 +684,27 @@ function openPreview(docType) {
   isPreviewSheetOpen.value = true;
 }
 
-function downloadDoc(docType) {
+async function downloadDoc(docType) {
   const doc = getDoc(docType);
-  const fileName = doc?.file_name || `${docType}-${program.value.id}.pdf`;
+  if (!doc) return;
+  const fileName = doc.file_name || `${docType}-${program.value.id}.pdf`;
+
+  let downloadUrl = doc.file_data || doc.file_url;
+  if (!downloadUrl && doc.id) {
+    downloadUrl = await store.loadDocumentContent(doc.id);
+  }
+
+  if (downloadUrl) {
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    store.notify(`Dokumen ${fileName} berhasil diunduh.`);
+    return;
+  }
+
   const blob = new Blob([
     `SCM TaxVault Document Archive\nProgram: ${program.value.program_name}\nSupplier: ${program.value.supplier}\nNo Invoice: ${program.value.invoice_number}\nTotal: ${formatRupiah(program.value.total_invoice)}`
   ], { type: 'application/pdf' });
