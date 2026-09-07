@@ -13,6 +13,7 @@ class Program extends Model
         'id',
         'title',
         'supplier',
+        'npwp',
         'category',
         'invoice_no',
         'dpp_amount',

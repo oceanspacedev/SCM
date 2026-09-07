@@ -193,12 +193,13 @@
           </button>
           <button
             type="button"
-            :disabled="parsedRows.length === 0 || isLoading"
+            :disabled="parsedRows.length === 0 || isLoading || isImporting"
             class="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#135A46] text-white text-xs font-bold hover:bg-[#0e4334] disabled:opacity-50 disabled:cursor-not-allowed shadow-2xs transition-all cursor-pointer"
             @click="executeImport"
           >
-            <UploadCloud class="w-4 h-4" />
-            <span>Konfirmasi & Import {{ parsedRows.length > 0 ? `${parsedRows.length} Data` : '' }}</span>
+            <UploadCloud v-if="!isImporting" class="w-4 h-4" />
+            <span v-else class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            <span>{{ isImporting ? 'Menyimpan ke Server...' : `Konfirmasi & Import ${parsedRows.length > 0 ? `${parsedRows.length} Data` : ''}` }}</span>
           </button>
         </div>
       </div>
@@ -227,6 +228,7 @@ const store = useTaxStore();
 const isOpen = computed(() => store.isImportModalOpen.value);
 const isDragging = ref(false);
 const isLoading = ref(false);
+const isImporting = ref(false);
 const errorMessage = ref('');
 const parsedRows = ref([]);
 const fileInputRef = ref(null);
@@ -525,10 +527,18 @@ function downloadTemplate(format = 'xlsx') {
   }
 }
 
-function executeImport() {
-  if (parsedRows.value.length === 0) return;
-  const count = store.importPrograms(parsedRows.value);
-  closeModal();
-  router.push('/programs');
+async function executeImport() {
+  if (parsedRows.value.length === 0 || isImporting.value) return;
+  isImporting.value = true;
+  errorMessage.value = '';
+  try {
+    await store.importPrograms(parsedRows.value);
+    closeModal();
+    router.push('/programs');
+  } catch (err) {
+    errorMessage.value = err.message || 'Gagal menyimpan data import ke server.';
+  } finally {
+    isImporting.value = false;
+  }
 }
 </script>

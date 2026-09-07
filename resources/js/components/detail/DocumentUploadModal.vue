@@ -96,6 +96,9 @@ import { ref, computed, watch } from 'vue';
 import { Upload, FileText } from 'lucide-vue-next';
 import Dialog from '../ui/Dialog.vue';
 import Button from '../ui/Button.vue';
+import { useTaxStore } from '../../store/taxStore';
+
+const store = useTaxStore();
 
 const props = defineProps({
   open: {
@@ -148,7 +151,7 @@ function handleFileDrop(e) {
 
 function processFile(file) {
   if (file.size > 10 * 1024 * 1024) {
-    alert("Ukuran file melebihi batas maksimum 10 MB.");
+    store.notify("Ukuran file melebihi batas maksimum 10 MB.", 'warning');
     return;
   }
   selectedFile.value = file;
@@ -194,7 +197,7 @@ function startUpload() {
   reader.onerror = () => {
     uploadProgress.value = 100;
     isUploading.value = false;
-    alert('Gagal membaca berkas.');
+    store.notify('Gagal membaca berkas.', 'warning');
   };
 
   reader.readAsDataURL(file);

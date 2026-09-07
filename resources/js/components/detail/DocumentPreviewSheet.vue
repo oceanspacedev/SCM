@@ -27,7 +27,7 @@
         <div class="flex items-center gap-3 text-[#66736F]">
           <span>Ukuran: <strong class="text-[#17201E]">{{ document?.file_size || '1.2 MB' }}</strong></span>
           <span>•</span>
-          <span>Diunggah: <strong class="text-[#17201E]">{{ document?.uploaded_at || 'Baru saja' }}</strong></span>
+          <span>Diunggah: <strong class="text-[#17201E]">{{ formatUploadDate(document?.uploaded_at) || 'Baru saja' }}</strong></span>
         </div>
       </div>
 
@@ -337,7 +337,7 @@ import { ref, computed, watch } from 'vue';
 import { Download, FileText, ExternalLink } from 'lucide-vue-next';
 import Sheet from '../ui/Sheet.vue';
 import Button from '../ui/Button.vue';
-import { formatRupiah, formatDate, useTaxStore } from '../../store/taxStore';
+import { formatRupiah, formatDate, formatUploadDate, useTaxStore } from '../../store/taxStore';
 
 const props = defineProps({
   open: {

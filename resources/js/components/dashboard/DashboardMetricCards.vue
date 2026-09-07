@@ -10,14 +10,14 @@
       </div>
 
       <div class="my-2.5">
-        <span class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 font-sans">
-          Rp 10.570.000.000
+        <span class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 font-sans truncate block">
+          {{ formatRupiah(metrics.totalInvoice) }}
         </span>
       </div>
 
       <div>
         <span class="text-xs text-slate-400 font-normal">
-          18 program terarsip
+          {{ metrics.totalPrograms }} program terarsip
         </span>
       </div>
     </div>
@@ -32,8 +32,8 @@
       </div>
 
       <div class="my-2.5">
-        <span class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 font-sans">
-          Rp 9.493.886.744
+        <span class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 font-sans truncate block">
+          {{ formatRupiah(metrics.totalDpp) }}
         </span>
       </div>
 
@@ -48,20 +48,20 @@
     <div class="bg-white rounded-xl border border-slate-200/90 p-4 flex flex-col justify-between shadow-2xs hover:border-slate-300 transition-all">
       <div class="flex items-center justify-between">
         <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase font-sans">
-          TOTAL PPN
+          TOTAL PPN (11%)
         </span>
         <Percent class="w-4 h-4 text-[#135A46] stroke-[1.75]" />
       </div>
 
       <div class="my-2.5">
-        <span class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 font-sans">
-          Rp 1.076.113.256
+        <span class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 font-sans truncate block">
+          {{ formatRupiah(metrics.totalPpn) }}
         </span>
       </div>
 
       <div>
         <span class="text-xs text-slate-400 font-normal">
-          PPh dipotong Rp 388 Jt
+          Pajak Pertambahan Nilai
         </span>
       </div>
     </div>
@@ -77,13 +77,13 @@
 
       <div class="my-2.5">
         <span class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 font-sans">
-          6 / 18
+          {{ metrics.lengkapCount }} / {{ metrics.totalPrograms }}
         </span>
       </div>
 
       <div>
         <span class="text-xs text-slate-400 font-normal">
-          2 terverifikasi tim pajak
+          {{ metrics.lengkapCount }} program berkas lengkap
         </span>
       </div>
     </div>
@@ -91,5 +91,10 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { Wallet, FileSpreadsheet, Percent, CheckCircle2 } from 'lucide-vue-next';
+import { useTaxStore, formatRupiah } from '../../store/taxStore';
+
+const store = useTaxStore();
+const metrics = computed(() => store.summaryMetrics.value);
 </script>

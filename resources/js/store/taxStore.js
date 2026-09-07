@@ -1,9 +1,8 @@
 import { reactive, computed, ref } from 'vue';
-import { initialPrograms } from '../data/mockData';
 import { saveDocumentBlob, getDocumentBlob, deleteDocumentBlob } from '../utils/documentDb';
 
-// Load from localStorage if available, or fall back to initial 18 programs
-const STORAGE_KEY = 'scm_taxvault_programs_v1';
+// Storage key synced with backend
+const STORAGE_KEY = 'scm_taxvault_programs_v2';
 
 function loadStoredPrograms() {
     try {
@@ -14,7 +13,7 @@ function loadStoredPrograms() {
     } catch (e) {
         console.error("Failed to load from storage", e);
     }
-    return JSON.parse(JSON.stringify(initialPrograms));
+    return [];
 }
 
 export const defaultUsers = [
@@ -160,6 +159,27 @@ export function formatDate(dateString) {
     }
 }
 
+export function formatUploadDate(dateString) {
+    if (!dateString) return '-';
+    // Return immediately if already cleanly formatted with comma
+    if (!dateString.includes('T') && !dateString.includes('Z') && !dateString.includes('.000')) {
+        return dateString;
+    }
+    try {
+        const d = new Date(dateString);
+        if (isNaN(d.getTime())) return dateString;
+        return new Intl.DateTimeFormat('id-ID', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(d).replace(':', '.');
+    } catch (e) {
+        return dateString;
+    }
+}
+
 export function getCompleteness(program) {
     if (!program || !program.documents) {
         return { count: 0, total: 3, status: 'Belum Lengkap', badgeType: 'danger' };
@@ -182,6 +202,33 @@ export function getMissingDocuments(program) {
     if (!docTypes.includes('faktur_pajak')) missing.push('Faktur Pajak');
     if (!docTypes.includes('mou')) missing.push('Memo / MOU');
     return missing;
+}
+
+export function mapBackendProgram(p) {
+    if (!p) return null;
+    return {
+        id: String(p.id),
+        program_name: p.title || p.program_name || '',
+        supplier: p.supplier || '',
+        category: p.category || 'Logistik',
+        npwp: p.npwp || '01.000.000.0-000.000',
+        invoice_number: p.invoice_no || p.invoice_number || '',
+        dpp: Number(p.dpp_amount ?? p.dpp) || 0,
+        ppn: Number(p.ppn_amount ?? p.ppn) || 0,
+        total_invoice: Number(p.total_amount ?? p.total_invoice) || 0,
+        program_date: p.due_date ? String(p.due_date).slice(0, 10) : (p.program_date || ''),
+        status: p.status || 'Perlu Tindakan',
+        documents: (p.documents || []).map(d => ({
+            id: String(d.id),
+            document_type: d.type === 'faktur' ? 'faktur_pajak' : (d.type === 'memo' ? 'mou' : (d.document_type || d.type)),
+            file_name: d.file_name,
+            file_size: d.file_size,
+            file_url: d.file_url || (d.file_path ? '/' + d.file_path : null),
+            file_data: d.file_data || null,
+            uploaded_at: formatUploadDate(d.uploaded_at) || 'Baru diunggah',
+            uploaded_by: d.uploaded_by || 'Admin SCM'
+        }))
+    };
 }
 
 export const useTaxStore = () => {
@@ -248,6 +295,14 @@ export const useTaxStore = () => {
         return Array.from(set).sort();
     });
 
+    const categoriesList = computed(() => {
+        const set = new Set();
+        state.programs.forEach(p => {
+            if (p.category) set.add(p.category);
+        });
+        return ['Semua Kategori', ...Array.from(set).sort()];
+    });
+
     const filteredPrograms = computed(() => {
         const query = (state.searchQuery || '').toLowerCase().trim();
         const category = state.selectedCategory;
@@ -279,9 +334,23 @@ export const useTaxStore = () => {
             // Status filter
             if (status && status !== 'all') {
                 const comp = getCompleteness(p);
-                if (status === 'lengkap' && comp.count !== 3) return false;
-                if (status === 'sebagian' && (comp.count === 0 || comp.count === 3)) return false;
-                if (status === 'belum' && comp.count !== 0) return false;
+                const docTypes = (p.documents || []).map(d => d.document_type);
+
+                if (status === 'lengkap' || status === 'Dokumen Lengkap') {
+                    if (comp.count !== 3) return false;
+                } else if (status === 'terverifikasi' || status === 'Terverifikasi Pajak') {
+                    if (!docTypes.includes('faktur_pajak')) return false;
+                } else if (status === 'kurang_faktur' || status === 'Kurang Faktur Pajak') {
+                    if (docTypes.includes('faktur_pajak')) return false;
+                } else if (status === 'kurang_mou' || status === 'Kurang Memo/MOU') {
+                    if (docTypes.includes('mou')) return false;
+                } else if (status === 'kurang_invoice' || status === 'Kurang Invoice') {
+                    if (docTypes.includes('invoice')) return false;
+                } else if (status === 'belum_ada' || status === 'Belum Ada Dokumen' || status === 'belum') {
+                    if (comp.count !== 0) return false;
+                } else if (status === 'sebagian') {
+                    if (comp.count === 0 || comp.count === 3) return false;
+                }
             }
 
             return true;
@@ -306,23 +375,48 @@ export const useTaxStore = () => {
         return state.programs.find(p => String(p.id) === String(id));
     }
 
-    function addProgram(newProg) {
+    async function addProgram(newProg) {
         const dppVal = Number(newProg.dpp) || 0;
         const ppnVal = Number(newProg.ppn) || 0;
-        const totalVal = dppVal + ppnVal;
+        const totalVal = Number(newProg.total_invoice) || (dppVal + ppnVal);
 
-        const maxId = state.programs.reduce((max, p) => Math.max(max, Number(p.id) || 0), 0);
-        const item = {
-            id: maxId + 1,
+        const payload = {
             program_name: newProg.program_name.trim(),
             category: newProg.category || 'Logistik',
             program_date: newProg.program_date || new Date().toISOString().split('T')[0],
             supplier: newProg.supplier.trim(),
-            npwp: newProg.npwp.trim(),
-            invoice_number: newProg.invoice_number.trim(),
+            npwp: (newProg.npwp || '').trim(),
+            invoice_number: (newProg.invoice_number || '').trim(),
             dpp: dppVal,
             ppn: ppnVal,
             total_invoice: totalVal,
+        };
+
+        try {
+            const res = await fetch('/api/programs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok && data.success && data.program) {
+                const mapped = mapBackendProgram(data.program);
+                state.programs.unshift(mapped);
+                saveToStorage();
+                notify(`Program "${mapped.program_name}" berhasil ditambahkan.`);
+                return mapped;
+            }
+        } catch (e) {
+            console.warn('Backend addProgram failed, local fallback:', e);
+        }
+
+        const maxId = state.programs.reduce((max, p) => Math.max(max, Number(p.id) || 0), 0);
+        const item = {
+            id: String(maxId + 1),
+            ...payload,
             documents: []
         };
         state.programs.unshift(item);
@@ -331,31 +425,63 @@ export const useTaxStore = () => {
         return item;
     }
 
-    function updateProgram(id, updatedData) {
+    async function updateProgram(id, updatedData) {
         const index = state.programs.findIndex(p => String(p.id) === String(id));
         if (index !== -1) {
             const dppVal = Number(updatedData.dpp) || 0;
             const ppnVal = Number(updatedData.ppn) || 0;
-            const totalVal = dppVal + ppnVal;
+            const totalVal = Number(updatedData.total_invoice) || (dppVal + ppnVal);
 
-            state.programs[index] = {
-                ...state.programs[index],
+            const payload = {
                 ...updatedData,
                 dpp: dppVal,
                 ppn: ppnVal,
                 total_invoice: totalVal
             };
+
+            state.programs[index] = {
+                ...state.programs[index],
+                ...payload
+            };
             saveToStorage();
+
+            try {
+                const res = await fetch(`/api/programs/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok && data.success && data.program) {
+                    state.programs[index] = mapBackendProgram(data.program);
+                    saveToStorage();
+                }
+            } catch (e) {
+                console.warn('Backend updateProgram failed:', e);
+            }
+
             notify(`Data program "${state.programs[index].program_name}" berhasil diperbarui.`);
         }
     }
 
-    function deleteProgram(id) {
+    async function deleteProgram(id) {
         const index = state.programs.findIndex(p => String(p.id) === String(id));
         if (index !== -1) {
             const removed = state.programs.splice(index, 1)[0];
             saveToStorage();
             notify(`Program "${removed.program_name}" telah dihapus.`, 'warning');
+
+            try {
+                await fetch(`/api/programs/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Accept': 'application/json' }
+                });
+            } catch (e) {
+                console.warn('Backend deleteProgram failed:', e);
+            }
         }
     }
 
@@ -430,7 +556,7 @@ export const useTaxStore = () => {
         return true;
     }
 
-    function deleteDocument(programId, docType) {
+    async function deleteDocument(programId, docType) {
         const prog = getProgramById(programId);
         if (!prog || !prog.documents) return false;
         const index = prog.documents.findIndex(d => d.document_type === docType);
@@ -442,6 +568,15 @@ export const useTaxStore = () => {
             prog.documents.splice(index, 1);
             saveToStorage();
             notify(`Dokumen ${getDocTypeLabel(docType)} berhasil dihapus.`, 'warning');
+
+            try {
+                await fetch(`/api/programs/${programId}/documents/${docType}`, {
+                    method: 'DELETE',
+                    headers: { 'Accept': 'application/json' }
+                });
+            } catch (e) {
+                console.warn('Backend deleteDocument failed:', e);
+            }
             return true;
         }
         return false;
@@ -465,35 +600,38 @@ export const useTaxStore = () => {
         return null;
     }
 
-    function importPrograms(rows) {
-        let count = 0;
-        let maxId = state.programs.reduce((max, p) => Math.max(max, Number(p.id) || 0), 0);
+    async function importPrograms(rows) {
+        if (!rows || rows.length === 0) return 0;
 
-        rows.forEach(r => {
-            maxId++;
-            const dpp = Number(r.dpp) || 0;
-            const ppn = Number(r.ppn) || Math.round(dpp * 0.11);
-            const total = Number(r.total_invoice) || (dpp + ppn);
-
-            state.programs.unshift({
-                id: maxId,
-                program_name: r.program_name,
-                category: r.category || 'Logistik',
-                program_date: r.program_date || new Date().toISOString().split('T')[0],
-                supplier: r.supplier,
-                npwp: r.npwp || '01.000.000.0-000.000',
-                invoice_number: r.invoice_number,
-                dpp: dpp,
-                ppn: ppn,
-                total_invoice: total,
-                documents: []
+        try {
+            const res = await fetch('/api/programs/import', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ programs: rows })
             });
-            count++;
-        });
 
-        saveToStorage();
-        notify(`${count} program berhasil diimport ke dalam sistem.`);
-        return count;
+            const data = await res.json();
+            if (res.ok && data.success) {
+                if (Array.isArray(data.programs)) {
+                    state.programs = data.programs.map(mapBackendProgram);
+                    saveToStorage();
+                } else {
+                    await fetchPrograms();
+                }
+                const count = data.imported_count || rows.length;
+                notify(`${count} program berhasil diimport dan disimpan.`);
+                return count;
+            } else {
+                throw new Error(data.message || 'Gagal mengimpor program ke server.');
+            }
+        } catch (err) {
+            console.error('Import error:', err);
+            notify(err.message || 'Gagal mengimpor data ke server.', 'danger');
+            throw err;
+        }
     }
 
     function exportToCsv() {
@@ -622,10 +760,9 @@ export const useTaxStore = () => {
         notify("Data program berhasil diexport ke file CSV.");
     }
 
-    function resetToDefault() {
-        state.programs = JSON.parse(JSON.stringify(initialPrograms));
-        saveToStorage();
-        notify("Data telah direset kembali ke 18 data awal.", "info");
+    async function resetToDefault() {
+        await fetchPrograms();
+        notify("Data telah disinkronkan kembali dengan database backend.", "info");
     }
 
     function notify(message, type = 'success') {
@@ -690,27 +827,8 @@ export const useTaxStore = () => {
             const res = await fetch('/api/programs');
             if (res.ok) {
                 const data = await res.json();
-                if (data.success && Array.isArray(data.programs) && data.programs.length > 0) {
-                    state.programs = data.programs.map(p => ({
-                        id: p.id,
-                        program_name: p.title,
-                        supplier: p.supplier,
-                        category: p.category,
-                        invoice_number: p.invoice_no,
-                        dpp: p.dpp_amount,
-                        ppn: p.ppn_amount,
-                        total_invoice: p.total_amount,
-                        program_date: p.due_date,
-                        status: p.status,
-                        documents: (p.documents || []).map(d => ({
-                            id: d.id,
-                            document_type: d.type === 'faktur' ? 'faktur_pajak' : (d.type === 'memo' ? 'mou' : d.type),
-                            file_name: d.file_name,
-                            file_size: d.file_size,
-                            uploaded_at: d.uploaded_at || 'Baru diunggah',
-                            uploaded_by: 'Admin SCM'
-                        }))
-                    }));
+                if (data.success && Array.isArray(data.programs)) {
+                    state.programs = data.programs.map(mapBackendProgram);
                     saveToStorage();
                 }
             }
@@ -1136,6 +1254,10 @@ export const useTaxStore = () => {
         importPrograms,
         exportToCsv,
         resetToDefault,
+        suppliersList,
+        categoriesList,
+        fetchPrograms,
+        fetchUsers,
         notify,
         getDocTypeLabel,
     };

@@ -98,11 +98,11 @@
 
           <!-- Card Body: Uploaded State -->
           <div v-if="getDoc('invoice')" class="mt-4 space-y-1">
-            <p class="text-xs font-mono text-slate-700 truncate" :title="getDoc('invoice').file_name">
+            <p class="text-xs font-mono font-medium text-slate-800 truncate" :title="getDoc('invoice').file_name">
               {{ getDoc('invoice').file_name }}
             </p>
             <p class="text-[11px] text-slate-400">
-              Diunggah {{ getDoc('invoice').uploaded_at || formatDate(program.program_date) }} oleh {{ getDoc('invoice').uploaded_by || uploaderName }}
+              Diunggah {{ formatUploadDate(getDoc('invoice').uploaded_at || program.program_date) }} · oleh {{ getDoc('invoice').uploaded_by || uploaderName }}
             </p>
           </div>
 
@@ -182,11 +182,11 @@
 
           <!-- Card Body: Uploaded State -->
           <div v-if="getDoc('faktur_pajak')" class="mt-4 space-y-1">
-            <p class="text-xs font-mono text-slate-700 truncate" :title="getDoc('faktur_pajak').file_name">
+            <p class="text-xs font-mono font-medium text-slate-800 truncate" :title="getDoc('faktur_pajak').file_name">
               {{ getDoc('faktur_pajak').file_name }}
             </p>
             <p class="text-[11px] text-slate-400">
-              Diunggah {{ getDoc('faktur_pajak').uploaded_at || formatDate(program.program_date) }} oleh {{ getDoc('faktur_pajak').uploaded_by || uploaderName }}
+              Diunggah {{ formatUploadDate(getDoc('faktur_pajak').uploaded_at || program.program_date) }} · oleh {{ getDoc('faktur_pajak').uploaded_by || uploaderName }}
             </p>
           </div>
 
@@ -266,11 +266,11 @@
 
           <!-- Card Body: Uploaded State -->
           <div v-if="getDoc('mou')" class="mt-4 space-y-1">
-            <p class="text-xs font-mono text-slate-700 truncate" :title="getDoc('mou').file_name">
+            <p class="text-xs font-mono font-medium text-slate-800 truncate" :title="getDoc('mou').file_name">
               {{ getDoc('mou').file_name }}
             </p>
             <p class="text-[11px] text-slate-400">
-              Diunggah {{ getDoc('mou').uploaded_at || formatDate(program.program_date) }} oleh {{ getDoc('mou').uploaded_by || uploaderName }}
+              Diunggah {{ formatUploadDate(getDoc('mou').uploaded_at || program.program_date) }} · oleh {{ getDoc('mou').uploaded_by || uploaderName }}
             </p>
           </div>
 
@@ -576,6 +576,95 @@
       :document="selectedPreviewDoc"
       :program="program"
     />
+
+    <!-- Modal Konfirmasi Hapus Berkas Dokumen -->
+    <Teleport to="body">
+      <div
+        v-if="docToDelete"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs"
+      >
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
+          <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4 border border-rose-100">
+            <Trash2 class="w-6 h-6" />
+          </div>
+
+          <h3 class="text-base font-bold text-slate-900 text-center mb-1">
+            Hapus Berkas Dokumen?
+          </h3>
+          <p class="text-xs text-slate-500 text-center leading-relaxed mb-4">
+            Apakah Anda yakin ingin menghapus berkas <strong class="text-slate-800">{{ docToDelete.label }}</strong>? Tindakan ini tidak dapat dibatalkan.
+          </p>
+
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 mb-5 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-500">Tipe Dokumen:</span>
+              <span class="font-semibold text-slate-800">{{ docToDelete.label }}</span>
+            </div>
+            <div v-if="docToDelete.fileName" class="flex items-center justify-between mt-1 pt-1 border-t border-slate-200/60">
+              <span class="text-slate-500">Nama File:</span>
+              <span class="font-mono text-slate-700 truncate max-w-[160px]">{{ docToDelete.fileName }}</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              class="w-full py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
+              @click="docToDelete = null"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              class="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-1.5"
+              @click="confirmDeleteDoc"
+            >
+              <Trash2 class="w-3.5 h-3.5" />
+              <span>Ya, Hapus</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Modal Konfirmasi Hapus Program -->
+    <Teleport to="body">
+      <div
+        v-if="isDeleteProgramModalOpen"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs"
+      >
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
+          <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4 border border-rose-100">
+            <Trash2 class="w-6 h-6" />
+          </div>
+
+          <h3 class="text-base font-bold text-slate-900 text-center mb-1">
+            Hapus Program Ini?
+          </h3>
+          <p class="text-xs text-slate-500 text-center leading-relaxed mb-5">
+            Apakah Anda yakin ingin menghapus program <strong class="text-slate-800">{{ program?.program_name }}</strong>? Seluruh dokumen perpajakan terkait akan dihapus.
+          </p>
+
+          <div class="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              class="w-full py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
+              @click="isDeleteProgramModalOpen = false"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              class="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-1.5"
+              @click="executeDeleteProgram"
+            >
+              <Trash2 class="w-3.5 h-3.5" />
+              <span>Ya, Hapus</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 
   <!-- Not Found State -->
@@ -608,7 +697,7 @@ import {
 } from 'lucide-vue-next';
 import DocumentUploadModal from '../components/detail/DocumentUploadModal.vue';
 import DocumentPreviewSheet from '../components/detail/DocumentPreviewSheet.vue';
-import { useTaxStore, formatRupiah, formatDate, getCompleteness } from '../store/taxStore';
+import { useTaxStore, formatRupiah, formatDate, formatUploadDate, getCompleteness } from '../store/taxStore';
 
 const route = useRoute();
 const router = useRouter();
@@ -665,8 +754,8 @@ function openUpload(docType, label) {
   isUploadModalOpen.value = true;
 }
 
-function handleDocumentUploaded(fileData) {
-  store.uploadDocument(program.value.id, fileData.docType, fileData);
+async function handleDocumentUploaded(fileData) {
+  await store.uploadDocument(program.value.id, fileData.docType, fileData);
 }
 
 // Preview Sheet State
@@ -719,11 +808,23 @@ async function downloadDoc(docType) {
   store.notify(`Dokumen ${fileName} telah diunduh.`);
 }
 
+const docToDelete = ref(null);
+const isDeleteProgramModalOpen = ref(false);
+
 function deleteDoc(docType) {
   const label = store.getDocTypeLabel(docType);
-  if (confirm(`Apakah Anda yakin ingin menghapus berkas ${label}?`)) {
-    store.deleteDocument(program.value.id, docType);
-  }
+  const existing = getDoc(docType);
+  docToDelete.value = {
+    type: docType,
+    label: label,
+    fileName: existing?.file_name || ''
+  };
+}
+
+async function confirmDeleteDoc() {
+  if (!docToDelete.value) return;
+  await store.deleteDocument(program.value.id, docToDelete.value.type);
+  docToDelete.value = null;
 }
 
 // Edit Modal State & Handling
@@ -754,8 +855,8 @@ function calculateTaxes() {
   editForm.ppn = Math.round((Number(editForm.dpp) || 0) * 0.11);
 }
 
-function saveEditProgram() {
-  store.updateProgram(program.value.id, {
+async function saveEditProgram() {
+  await store.updateProgram(program.value.id, {
     program_name: editForm.program_name,
     supplier: editForm.supplier,
     npwp: editForm.npwp,
@@ -769,9 +870,12 @@ function saveEditProgram() {
 }
 
 function confirmDeleteProgram() {
-  if (confirm(`Apakah Anda yakin ingin menghapus program "${program.value.program_name}"?`)) {
-    store.deleteProgram(program.value.id);
-    router.push('/programs');
-  }
+  isDeleteProgramModalOpen.value = true;
+}
+
+async function executeDeleteProgram() {
+  isDeleteProgramModalOpen.value = false;
+  await store.deleteProgram(program.value.id);
+  router.push('/programs');
 }
 </script>

@@ -36,6 +36,11 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
+          <tr v-if="alertList.length === 0">
+            <td colspan="4" class="py-8 text-center text-slate-400 text-xs">
+              Semua program telah lengkap dokumennya. Tidak ada dokumen tertunda.
+            </td>
+          </tr>
           <tr
             v-for="item in alertList"
             :key="item.id"
@@ -80,15 +85,41 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed } from 'vue';
 import { AlertTriangle } from 'lucide-vue-next';
+import { useTaxStore, formatDate, getMissingDocuments, getCompleteness } from '../../store/taxStore';
 
-// 5 rows matching the screenshot
-const alertList = ref([
-  { id: 7, name: 'Program Restock Otomatis Minimarket', missingDoc: 'Faktur Pajak', date: '17 Jul 2025', dotColor: 'red' },
-  { id: 8, name: 'Program Branding In-Store', missingDoc: 'MOU', date: '12 Feb 2025', dotColor: 'orange' },
-  { id: 9, name: 'Program Kemitraan Warung Digital', missingDoc: 'Invoice', date: '18 Agu 2025', dotColor: 'red' },
-  { id: 10, name: 'Program Loyalty Member Retail', missingDoc: 'Faktur Pajak', date: '03 Jun 2025', dotColor: 'orange' },
-  { id: 11, name: 'Program Event Nasional', missingDoc: 'MOU', date: '15 Mei 2025', dotColor: 'red' },
-]);
+const store = useTaxStore();
+
+const alertList = computed(() => {
+  const all = store.programs.value || [];
+  return all
+    .filter(p => {
+      const docs = p.documents || [];
+      return docs.length < 3;
+    })
+    .sort((a, b) => {
+      // Show programs with 0 docs or 1-2 docs
+      const countA = a.documents?.length || 0;
+      const countB = b.documents?.length || 0;
+      if (countA !== countB) return countA - countB;
+      const dateA = new Date(a.program_date || 0);
+      const dateB = new Date(b.program_date || 0);
+      return dateB - dateA;
+    })
+    .slice(0, 10)
+    .map(p => {
+      const missing = getMissingDocuments(p);
+      const completeness = getCompleteness(p);
+      const dotColor = completeness.count === 0 ? 'red' : 'orange';
+
+      return {
+        id: p.id,
+        name: p.program_name,
+        missingDoc: missing.join(', ') || 'Belum Ada Dokumen',
+        date: formatDate(p.program_date),
+        dotColor: dotColor
+      };
+    });
+});
 </script>

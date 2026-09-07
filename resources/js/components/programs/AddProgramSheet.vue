@@ -414,13 +414,13 @@ const calculatedPph = computed(() => {
   }
 });
 
-function handleSubmit() {
+async function handleSubmit() {
   if (!form.program_name || !form.supplier || !form.invoice_number) {
-    alert('Mohon lengkapi data yang bertanda bintang (*)');
+    store.notify('Mohon lengkapi data yang bertanda bintang (*)', 'warning');
     return;
   }
 
-  const created = store.addProgram({
+  const created = await store.addProgram({
     program_name: form.program_name,
     category: form.category,
     supplier: form.supplier,

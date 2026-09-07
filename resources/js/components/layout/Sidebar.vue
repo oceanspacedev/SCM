@@ -90,36 +90,6 @@
           </div>
         </router-link>
       </nav>
-
-      <!-- Section: TOOLS -->
-      <div>
-        <p class="px-3.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-          Tools
-        </p>
-        <nav class="space-y-1.5">
-          <button
-            type="button"
-            class="w-full h-10 px-3.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-200/60 hover:text-slate-900 transition-all cursor-pointer flex items-center justify-between"
-            @click="openImportExcel"
-          >
-            <div class="flex items-center gap-3">
-              <ExcelIcon class="w-4 h-4 shrink-0" />
-              <span>Import Excel</span>
-            </div>
-          </button>
-
-          <button
-            type="button"
-            class="w-full h-10 px-3.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-200/60 hover:text-slate-900 transition-all cursor-pointer flex items-center justify-between"
-            @click="exportCsv"
-          >
-            <div class="flex items-center gap-3">
-              <ExcelIcon class="w-4 h-4 shrink-0" />
-              <span>Ekspor Excel</span>
-            </div>
-          </button>
-        </nav>
-      </div>
     </div>
   </aside>
 </template>
@@ -128,7 +98,6 @@
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { LayoutDashboard, FolderArchive, ChevronRight, Users } from 'lucide-vue-next';
-import ExcelIcon from '../ui/ExcelIcon.vue';
 import { useTaxStore } from '../../store/taxStore';
 
 const router = useRouter();
@@ -139,12 +108,4 @@ const isAdmin = computed(() => {
   return role === 'Admin SCM' || (role && role.toLowerCase().includes('admin'));
 });
 const pendingCount = computed(() => store.pendingUsersCount.value);
-
-function openImportExcel() {
-  store.openImportModal();
-}
-
-function exportCsv() {
-  store.exportToCsv();
-}
 </script>

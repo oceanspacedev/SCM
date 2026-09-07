@@ -13,6 +13,10 @@
 
       <!-- Action Buttons matching screenshot -->
       <div class="flex items-center gap-2.5 self-start sm:self-auto">
+        <span class="text-xs text-slate-500 font-medium mr-1 hidden md:inline">
+          {{ store.filteredPrograms.value.length }} Program terdaftar
+        </span>
+
         <!-- Import Excel (Neutral white style with authentic Excel icon) -->
         <button
           type="button"

@@ -49,20 +49,20 @@
     <!-- Bottom X-axis Ticks -->
     <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400 pl-28 sm:pl-32">
       <span>Rp 0</span>
-      <span>Rp 350 Jt</span>
-      <span>Rp 700 Jt</span>
-      <span>Rp 1.1 M</span>
-      <span>Rp 1.4 M</span>
+      <span>{{ formatShort(maxVal * 0.25) }}</span>
+      <span>{{ formatShort(maxVal * 0.5) }}</span>
+      <span>{{ formatShort(maxVal * 0.75) }}</span>
+      <span>{{ formatShort(maxVal) }}</span>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useTaxStore } from '../../store/taxStore';
 
+const store = useTaxStore();
 const hoveredSupplier = ref(null);
-
-const maxVal = 1400000000;
 
 // Color gradient from primary deep emerald to soft tints
 const supplierColors = [
@@ -74,19 +74,29 @@ const supplierColors = [
   '#B2E4D6', // Top 6
 ];
 
-const suppliers = [
-  { name: 'PT Unilever Ind...', value: 1380000000 },
-  { name: 'PT Djarum Distr...', value: 1180000000 },
-  { name: 'PT Coca-Cola Eu...', value: 1090000000 },
-  { name: 'PT Wings Surya', value: 1040000000 },
-  { name: 'PT Sumber Alfar...', value: 1010000000 },
-  { name: 'PT Kalbe Farma...', value: 960000000 },
-];
+const suppliers = computed(() => {
+  const map = new Map();
+  (store.programs.value || []).forEach(p => {
+    const name = p.supplier || 'Lainnya';
+    const current = map.get(name) || 0;
+    map.set(name, current + (Number(p.total_invoice) || 0));
+  });
+
+  return Array.from(map.entries())
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 6);
+});
+
+const maxVal = computed(() => {
+  if (suppliers.value.length === 0) return 1000000000;
+  return Math.max(...suppliers.value.map(s => s.value), 1000000);
+});
 
 function formatShort(val) {
-  if (val >= 1000000000) return 'Rp ' + (val / 1000000000).toFixed(2) + ' M';
+  if (val >= 1000000000) return 'Rp ' + (val / 1000000000).toFixed(1) + ' M';
   if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(0) + ' Jt';
-  return 'Rp ' + val.toLocaleString('id-ID');
+  return 'Rp ' + Math.round(val).toLocaleString('id-ID');
 }
 </script>
 
