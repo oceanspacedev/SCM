@@ -12,17 +12,17 @@
     <!-- Modal Dialog -->
     <div class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-4xl overflow-hidden z-10 flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-150">
       <!-- Header -->
-      <div class="px-6 py-4.5 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
+      <div class="px-6 py-4 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200/80 flex items-center justify-center shrink-0">
             <ExcelIcon class="w-5 h-5" />
           </div>
           <div>
             <h3 class="text-base font-bold text-slate-900 leading-tight">
-              Import Data Program & Invoice
+              Import Program & Penyimpanan Berkas Mentahan
             </h3>
             <p class="text-xs text-slate-500 mt-0.5">
-              Unggah file Excel (.xlsx, .xls) atau CSV untuk memasukkan data program sekaligus
+              Unggah file Excel mentah ke SeaweedFS SCM dan ekstrak data program ke sistem
             </p>
           </div>
         </div>
@@ -35,28 +35,52 @@
         </button>
       </div>
 
-      <!-- Body -->
-      <div class="p-6 overflow-y-auto space-y-5 flex-1 text-xs">
-        <!-- Format Column Reference Note matching User Screenshot -->
-        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-3 text-slate-700">
-          <Info class="w-4 h-4 text-slate-500 mt-0.5 shrink-0" />
-          <div class="flex-1 text-[11px] leading-relaxed">
-            <p class="font-bold text-slate-900">Format Kolom yang Didukung:</p>
-            <div class="mt-1.5 flex flex-wrap gap-1.5">
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">PROGRAM</span>
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">SUPPLIER</span>
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">NO. INVOICE</span>
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">DPP</span>
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">PPN</span>
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">TOTAL INVOICE</span>
+      <!-- Tab Navigation -->
+      <div class="px-6 pt-3 border-b border-slate-200 bg-white flex items-center gap-4">
+        <button
+          type="button"
+          class="pb-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer flex items-center gap-2"
+          :class="activeTab === 'upload' 
+            ? 'border-[#135A46] text-[#135A46]' 
+            : 'border-transparent text-slate-500 hover:text-slate-800'"
+          @click="activeTab = 'upload'"
+        >
+          <UploadCloud class="w-4 h-4" />
+          <span>Unggah & Import Data</span>
+        </button>
+
+        <button
+          type="button"
+          class="pb-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer flex items-center gap-2"
+          :class="activeTab === 'raw_archive' 
+            ? 'border-[#135A46] text-[#135A46]' 
+            : 'border-transparent text-slate-500 hover:text-slate-800'"
+          @click="switchToRawArchive"
+        >
+          <Cloud class="w-4 h-4" />
+          <span>Berkas Mentahan di SeaweedFS</span>
+          <span 
+            v-if="rawImports.length > 0" 
+            class="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-emerald-100 text-emerald-800"
+          >
+            {{ rawImports.length }}
+          </span>
+        </button>
+      </div>
+
+      <!-- TAB 1: UPLOAD & IMPORT -->
+      <div v-if="activeTab === 'upload'" class="p-6 overflow-y-auto space-y-5 flex-1 text-xs">
+        <!-- SeaweedFS Storage Notice -->
+        <div class="p-3.5 rounded-xl bg-emerald-50/60 border border-emerald-200/80 flex items-start justify-between gap-3 text-emerald-900">
+          <div class="flex items-start gap-2.5">
+            <Cloud class="w-4 h-4 text-emerald-700 mt-0.5 shrink-0" />
+            <div class="text-[11px] leading-relaxed">
+              <span class="font-bold">Penyimpanan Terintegrasi:</span> File fisik mentahan (.xlsx / .csv) yang Anda unggah akan otomatis disimpan ke bucket <strong class="font-mono text-emerald-800">SCM</strong> di <strong class="font-mono text-emerald-800">storage.completeselular.com</strong> (SeaweedFS). Anda dapat mengunduh dan memeriksa file mentahan kapan saja.
             </div>
-            <p class="text-slate-500 mt-1.5 text-[10px]">
-              * PPN (11%) dan Total Invoice akan dihitung otomatis jika nilainya dikosongkan.
-            </p>
           </div>
           <button
             type="button"
-            class="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+            class="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-emerald-300 text-[11px] font-bold text-emerald-800 hover:bg-emerald-50 transition-colors shadow-2xs cursor-pointer"
             @click="downloadTemplate('xlsx')"
           >
             <ExcelIcon class="w-3.5 h-3.5" />
@@ -66,7 +90,8 @@
 
         <!-- Dropzone -->
         <div
-          class="border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors"
+          v-if="parsedRows.length === 0"
+          class="border-2 border-dashed rounded-xl p-7 text-center cursor-pointer transition-colors"
           :class="isDragging ? 'border-emerald-500 bg-emerald-50/40' : 'border-slate-300 hover:border-emerald-400 bg-slate-50/40'"
           @dragover.prevent="isDragging = true"
           @dragleave.prevent="isDragging = false"
@@ -89,7 +114,7 @@
               Tarik file Excel / CSV ke sini, atau <span class="text-[#135A46] underline">pilih dari perangkat</span>
             </p>
             <p class="text-slate-400 text-[11px]">
-              Mendukung format .xlsx, .xls, atau .csv (Maksimal 10 MB)
+              Mendukung format .xlsx, .xls, atau .csv (File mentah asli disimpan ke SeaweedFS)
             </p>
           </div>
         </div>
@@ -100,40 +125,61 @@
           <p class="font-medium text-xs">Membaca dan memvalidasi file data...</p>
         </div>
 
-        <!-- Error Message -->
-        <div v-if="errorMessage" class="p-3.5 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-2.5 text-rose-700">
-          <AlertCircle class="w-4 h-4 mt-0.5 shrink-0" />
-          <div>
-            <p class="font-bold text-xs">Gagal Memproses File</p>
-            <p class="text-[11px] mt-0.5">{{ errorMessage }}</p>
+        <!-- Error Banner -->
+        <div
+          v-if="errorMessage"
+          class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-3"
+        >
+          <AlertCircle class="w-4 h-4 text-rose-600 mt-0.5 shrink-0" />
+          <div class="flex-1">
+            <p class="font-bold">Gagal Memproses File</p>
+            <p class="mt-0.5 text-rose-700 leading-relaxed">{{ errorMessage }}</p>
           </div>
+          <button
+            type="button"
+            class="text-rose-500 hover:text-rose-700 p-1 cursor-pointer"
+            @click="errorMessage = ''"
+          >
+            <X class="w-4 h-4" />
+          </button>
         </div>
 
         <!-- Parsed Data Preview -->
-        <div v-if="parsedRows.length > 0 && !isLoading" class="space-y-3">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <CheckCircle2 class="w-4 h-4 text-emerald-600" />
-              <span class="font-bold text-slate-900 text-xs">
-                Preview Data ({{ parsedRows.length }} Baris Terdeteksi)
-              </span>
+        <div v-if="parsedRows.length > 0 && !isLoading" class="space-y-3 animate-in fade-in duration-150">
+          <!-- File Selected Info Banner -->
+          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center">
+                <ExcelIcon class="w-4 h-4" />
+              </div>
+              <div>
+                <p class="font-bold text-slate-900 text-xs flex items-center gap-2">
+                  <span>{{ selectedRawFile?.name || 'Berkas Mentahan Excel' }}</span>
+                  <span class="text-[10px] font-normal px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                    Siap upload ke SeaweedFS
+                  </span>
+                </p>
+                <p class="text-[11px] text-slate-500">
+                  {{ parsedRows.length }} baris data siap dimasukkan ke database Arsip Program
+                </p>
+              </div>
             </div>
             <button
               type="button"
-              class="text-slate-400 hover:text-rose-600 text-[11px] font-semibold cursor-pointer"
+              class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
               @click="resetFile"
             >
               Ganti File
             </button>
           </div>
 
-          <!-- Preview Table matching User Table Headers -->
-          <div class="border border-slate-200 rounded-xl overflow-hidden">
-            <div class="max-h-56 overflow-y-auto overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 sticky top-0 border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider text-slate-400 font-sans">
+          <!-- Preview Table -->
+          <div class="border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+            <div class="overflow-x-auto max-h-72">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead class="sticky top-0 bg-slate-100 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px]">
                   <tr>
-                    <th class="py-2.5 px-3">#</th>
+                    <th class="py-2.5 px-3">NO</th>
                     <th class="py-2.5 px-3">PROGRAM</th>
                     <th class="py-2.5 px-3">SUPPLIER</th>
                     <th class="py-2.5 px-3">NO. INVOICE</th>
@@ -142,11 +188,11 @@
                     <th class="py-2.5 px-3 text-right">TOTAL INVOICE</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-slate-100 bg-white">
                   <tr
                     v-for="(row, idx) in parsedRows.slice(0, 15)"
                     :key="idx"
-                    class="hover:bg-slate-50/70"
+                    class="hover:bg-slate-50/70 transition-colors"
                   >
                     <td class="py-2 px-3 text-slate-400 font-mono text-[10px]">{{ idx + 1 }}</td>
                     <td class="py-2 px-3 font-semibold text-slate-900 max-w-[160px] truncate" :title="row.program_name">
@@ -178,10 +224,128 @@
         </div>
       </div>
 
+      <!-- TAB 2: DAFTAR BERKAS MENTAHAN DI SEAWEEDFS -->
+      <div v-else-if="activeTab === 'raw_archive'" class="p-6 overflow-y-auto space-y-4 flex-1 text-xs">
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-slate-700">
+          <div>
+            <p class="font-bold text-slate-900 text-xs">Daftar File Mentahan di SeaweedFS SCM</p>
+            <p class="text-[11px] text-slate-500 mt-0.5">
+              Setiap kali file Excel diimpor, berkas mentahan aslinya tersimpan di sini sehingga Anda bisa memeriksa kembali isinya kapan saja.
+            </p>
+          </div>
+          <button
+            type="button"
+            class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+            @click="store.fetchRawImports()"
+          >
+            Segarkan Data
+          </button>
+        </div>
+
+        <!-- List of Raw Imports -->
+        <div v-if="rawImports.length > 0" class="border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+          <div class="overflow-x-auto max-h-96">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="sticky top-0 bg-slate-100 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px]">
+                <tr>
+                  <th class="py-2.5 px-4">NAMA FILE MENTAHAN</th>
+                  <th class="py-2.5 px-3">UKURAN</th>
+                  <th class="py-2.5 px-3">HASIL IMPORT</th>
+                  <th class="py-2.5 px-3">TANGGAL UNGGAH</th>
+                  <th class="py-2.5 px-3">STORAGE</th>
+                  <th class="py-2.5 px-4 text-center">AKSI</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 bg-white">
+                <tr
+                  v-for="item in rawImports"
+                  :key="item.id"
+                  class="hover:bg-slate-50/70 transition-colors"
+                >
+                  <td class="py-3 px-4">
+                    <div class="flex items-center gap-2.5">
+                      <ExcelIcon class="w-4 h-4 shrink-0" />
+                      <div>
+                        <p class="font-bold text-slate-900 line-clamp-1" :title="item.file_name">
+                          {{ item.file_name }}
+                        </p>
+                        <p class="text-[10px] font-mono text-slate-400 mt-0.5">
+                          {{ item.file_key || 'mentahan_excel/' + item.file_name }}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3 px-3 font-mono text-slate-600 whitespace-nowrap">
+                    {{ item.file_size || '-' }}
+                  </td>
+                  <td class="py-3 px-3 whitespace-nowrap">
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      {{ item.imported_rows_count || 0 }} Program
+                    </span>
+                  </td>
+                  <td class="py-3 px-3 text-slate-500 whitespace-nowrap text-[11px]">
+                    {{ formatDate(item.created_at) }}
+                  </td>
+                  <td class="py-3 px-3 whitespace-nowrap">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-100 text-slate-700 font-semibold border border-slate-200">
+                      SeaweedFS SCM
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-center whitespace-nowrap">
+                    <div class="inline-flex items-center gap-2">
+                      <a
+                        :href="'/api/programs/raw-imports/' + item.id + '/download'"
+                        target="_blank"
+                        :download="item.file_name"
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#135A46] text-white text-[11px] font-semibold hover:bg-[#0e4334] transition-colors shadow-2xs cursor-pointer"
+                        title="Unduh / Buka File Mentahan Asli"
+                      >
+                        <Download class="w-3.5 h-3.5" />
+                        <span>Unduh File</span>
+                      </a>
+                      <button
+                        type="button"
+                        class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                        title="Hapus Catatan File Mentahan"
+                        @click="store.deleteRawImport(item.id)"
+                      >
+                        <Trash2 class="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div v-else class="py-14 text-center border-2 border-dashed border-slate-200 rounded-xl">
+          <Cloud class="w-10 h-10 text-slate-300 mx-auto mb-2" />
+          <p class="font-bold text-slate-700 text-sm">Belum Ada File Mentahan yang Tersimpan</p>
+          <p class="text-xs text-slate-400 max-w-sm mx-auto mt-1">
+            File Excel mentahan akan otomatis tercatat dan tersimpan di SeaweedFS SCM setiap kali Anda melakukan import data.
+          </p>
+          <button
+            type="button"
+            class="mt-4 px-4 py-2 rounded-lg bg-[#135A46] text-white text-xs font-semibold hover:bg-[#0e4334] transition-colors cursor-pointer inline-flex items-center gap-2 shadow-2xs"
+            @click="activeTab = 'upload'"
+          >
+            <UploadCloud class="w-4 h-4" />
+            <span>Mulai Unggah File Excel</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Footer -->
       <div class="px-6 py-3.5 border-t border-slate-200 bg-slate-50/80 flex items-center justify-between">
         <span class="text-slate-500 text-xs">
-          {{ parsedRows.length > 0 ? `${parsedRows.length} data siap dimasukkan` : 'Pilih file terlebih dahulu' }}
+          <template v-if="activeTab === 'upload'">
+            {{ parsedRows.length > 0 ? `${parsedRows.length} data siap dimasukkan & disimpan ke SeaweedFS` : 'Pilih file terlebih dahulu' }}
+          </template>
+          <template v-else>
+            {{ rawImports.length }} berkas mentahan tersimpan di SeaweedFS SCM
+          </template>
         </span>
         <div class="flex items-center gap-2.5">
           <button
@@ -189,9 +353,10 @@
             class="px-4 py-2 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
             @click="closeModal"
           >
-            Batal
+            Tutup
           </button>
           <button
+            v-if="activeTab === 'upload'"
             type="button"
             :disabled="parsedRows.length === 0 || isLoading || isImporting"
             class="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#135A46] text-white text-xs font-bold hover:bg-[#0e4334] disabled:opacity-50 disabled:cursor-not-allowed shadow-2xs transition-all cursor-pointer"
@@ -199,7 +364,7 @@
           >
             <UploadCloud v-if="!isImporting" class="w-4 h-4" />
             <span v-else class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-            <span>{{ isImporting ? 'Menyimpan ke Server...' : `Konfirmasi & Import ${parsedRows.length > 0 ? `${parsedRows.length} Data` : ''}` }}</span>
+            <span>{{ isImporting ? 'Menyimpan ke SeaweedFS & Server...' : `Konfirmasi & Import ${parsedRows.length > 0 ? `${parsedRows.length} Data` : ''}` }}</span>
           </button>
         </div>
       </div>
@@ -208,30 +373,40 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import {
-  FileSpreadsheet,
   UploadCloud,
   X,
   Info,
   Download,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  Cloud,
+  Trash2
 } from 'lucide-vue-next';
 import ExcelIcon from '../ui/ExcelIcon.vue';
-import { useTaxStore, formatRupiah } from '../../store/taxStore';
+import { useTaxStore, formatRupiah, formatDate } from '../../store/taxStore';
 
 const router = useRouter();
 const store = useTaxStore();
 
 const isOpen = computed(() => store.isImportModalOpen.value);
+const rawImports = computed(() => store.rawImports.value);
+
+const activeTab = ref('upload');
 const isDragging = ref(false);
 const isLoading = ref(false);
 const isImporting = ref(false);
 const errorMessage = ref('');
 const parsedRows = ref([]);
+const selectedRawFile = ref(null);
 const fileInputRef = ref(null);
+
+function switchToRawArchive() {
+  activeTab.value = 'raw_archive';
+  store.fetchRawImports();
+}
 
 function closeModal() {
   resetFile();
@@ -240,6 +415,7 @@ function closeModal() {
 
 function resetFile() {
   parsedRows.value = [];
+  selectedRawFile.value = null;
   errorMessage.value = '';
   isLoading.value = false;
   if (fileInputRef.value) {
@@ -268,29 +444,23 @@ function handleDrop(e) {
   }
 }
 
-// Clean and parse numbers (handles "Rp 15.000.000", "15000000", "15.000.000,00", etc.)
-function cleanNumber(val) {
-  if (val === null || val === undefined) return 0;
-  if (typeof val === 'number') return val;
-  let s = String(val).trim();
-  s = s.replace(/^(Rp|IDR)\s*/i, '').trim();
-
-  // Indonesian format: 15.000.000 or 15.000.000,00
-  if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) {
-    s = s.replace(/\./g, '').replace(',', '.');
-  } else if (/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) {
-    // US format: 15,000,000.00
-    s = s.replace(/,/g, '');
-  } else {
-    s = s.replace(/[^0-9.-]/g, '');
-  }
-  const n = parseFloat(s);
-  return isNaN(n) ? 0 : Math.round(n);
+function normalizeKey(key) {
+  return String(key || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
 }
 
-// Flexible header normalizer
-function normalizeKey(str) {
-  return String(str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+function cleanNumber(val) {
+  if (val === null || val === undefined || val === '') return 0;
+  if (typeof val === 'number') return val;
+  const str = String(val)
+    .replace(/rp/gi, '')
+    .replace(/\s+/g, '')
+    .replace(/\./g, '')
+    .replace(/,/g, '.');
+  const num = parseFloat(str);
+  return isNaN(num) ? 0 : num;
 }
 
 function mapRawRow(raw) {
@@ -376,6 +546,7 @@ async function processFile(file) {
   errorMessage.value = '';
   isLoading.value = true;
   parsedRows.value = [];
+  selectedRawFile.value = file;
 
   try {
     const fileName = file.name.toLowerCase();
@@ -449,81 +620,22 @@ function downloadTemplate(format = 'xlsx') {
   if (format === 'xlsx' && window.XLSX) {
     const XLSX = window.XLSX;
     const wb = XLSX.utils.book_new();
-
-    // 1. Main Sheet
     const ws = XLSX.utils.aoa_to_sheet([sampleHeaders, ...sampleRows]);
 
-    // Set Column Widths (Auto-fitted and spacious)
     ws['!cols'] = [
-      { wch: 44 }, // PROGRAM
-      { wch: 42 }, // SUPPLIER
-      { wch: 24 }, // NO. INVOICE
-      { wch: 20 }, // DPP
-      { wch: 18 }, // PPN
-      { wch: 22 }, // TOTAL INVOICE
-      { wch: 26 }, // KATEGORI
-      { wch: 16 }  // TANGGAL
-    ];
-
-    // Format numbers with thousands separators (#,##0)
-    for (let R = 1; R <= sampleRows.length; ++R) {
-      const dppCell = XLSX.utils.encode_cell({ r: R, c: 3 });
-      const ppnCell = XLSX.utils.encode_cell({ r: R, c: 4 });
-      const totalCell = XLSX.utils.encode_cell({ r: R, c: 5 });
-
-      if (ws[dppCell]) { ws[dppCell].t = 'n'; ws[dppCell].z = '#,##0'; }
-      if (ws[ppnCell]) { ws[ppnCell].t = 'n'; ws[ppnCell].z = '#,##0'; }
-      if (ws[totalCell]) { ws[totalCell].t = 'n'; ws[totalCell].z = '#,##0'; }
-    }
-
-    // 2. Panduan Pengisian Sheet
-    const guideData = [
-      ['PANDUAN PENGISIAN TEMPLATE IMPORT PROGRAM SCM TAXVAULT'],
-      ['Gunakan template ini untuk memasukkan data program dan perpajakan secara massal ke dalam sistem.'],
-      [''],
-      ['KOLOM', 'STATUS', 'CONTOH PENGISIAN', 'KETERANGAN'],
-      ['PROGRAM', 'WAJIB', 'Pengadaan Komponen Pipa Gas Tuban', 'Nama program atau paket pengadaan SCM.'],
-      ['SUPPLIER', 'WAJIB', 'PT Steel Pipe Industry of Indonesia Tbk', 'Nama resmi perusahaan vendor / penyedia.'],
-      ['NO. INVOICE', 'WAJIB', 'INV/2026/SCM/0101', 'Nomor invoice resmi dari vendor.'],
-      ['DPP', 'WAJIB', '45000000', 'Dasar Pengenaan Pajak (masukkan angka saja, tanpa Rp/titik).'],
-      ['PPN', 'OPSIONAL', '4950000', 'Nilai PPN (11%). Jika dikosongkan, sistem menghitung otomatis dari DPP.'],
-      ['TOTAL INVOICE', 'OPSIONAL', '49950000', 'Nilai total tagihan. Jika dikosongkan, dihitung dari DPP + PPN.'],
-      ['KATEGORI', 'OPSIONAL', 'Pipa & Tubing', 'Kategori program SCM.'],
-      ['TANGGAL', 'OPSIONAL', '2026-03-01', 'Format YYYY-MM-DD atau tanggal standar Excel.'],
-      [''],
-      ['TIPS:'],
-      ['1. Anda dapat menambahkan baris baru di bawah baris contoh atau menghapus baris contoh.'],
-      ['2. Jangan mengubah atau menghapus nama header di baris pertama.'],
-      ['3. File siap diunggah langsung melalui tombol "Import Excel" di aplikasi SCM TaxVault.']
-    ];
-
-    const wsGuide = XLSX.utils.aoa_to_sheet(guideData);
-    wsGuide['!cols'] = [
+      { wch: 38 },
+      { wch: 34 },
+      { wch: 22 },
+      { wch: 16 },
+      { wch: 14 },
       { wch: 18 },
-      { wch: 12 },
-      { wch: 44 },
-      { wch: 75 }
+      { wch: 20 },
+      { wch: 14 }
     ];
 
     XLSX.utils.book_append_sheet(wb, ws, 'Template Program');
-    XLSX.utils.book_append_sheet(wb, wsGuide, 'Panduan Pengisian');
-
     XLSX.writeFile(wb, 'Template_Import_Arsip_Program_SCM.xlsx');
     store.notify('Template Excel (.xlsx) berhasil diunduh.');
-  } else {
-    // CSV fallback
-    const csvContent = [
-      sampleHeaders.join(','),
-      ...sampleRows.map(r => r.map(c => `"${c}"`).join(','))
-    ].join('\r\n');
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'Template_Import_Arsip_Program_SCM.csv';
-    link.click();
-    URL.revokeObjectURL(link);
-    store.notify('Template CSV berhasil diunduh.');
   }
 }
 
@@ -532,7 +644,7 @@ async function executeImport() {
   isImporting.value = true;
   errorMessage.value = '';
   try {
-    await store.importPrograms(parsedRows.value);
+    await store.importPrograms(parsedRows.value, selectedRawFile.value);
     closeModal();
     router.push('/programs');
   } catch (err) {
@@ -541,4 +653,8 @@ async function executeImport() {
     isImporting.value = false;
   }
 }
+
+onMounted(() => {
+  store.fetchRawImports();
+});
 </script>

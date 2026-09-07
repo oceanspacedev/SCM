@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Program;
 use App\Models\ProgramDocument;
+use App\Models\RawImport;
+use App\Services\SeaweedStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
@@ -260,17 +262,43 @@ class ProgramController extends Controller
     }
 
     /**
-     * Import multiple programs (Excel/JSON) and persist to database
+     * Import multiple programs (Excel/JSON) and persist raw file to SeaweedFS / S3 storage
      */
     public function import(Request $request)
     {
-        $items = $request->input('programs', []);
+        // 1. Upload Raw File to SeaweedFS / S3 storage if file is present
+        $rawImport = null;
+        if ($request->hasFile('file')) {
+            try {
+                $seaweed = new SeaweedStorageService();
+                $uploadedFile = $request->file('file');
+                $storageResult = $seaweed->uploadRawFile(
+                    $uploadedFile,
+                    $uploadedFile->getClientOriginalName(),
+                    'mentahan_excel'
+                );
 
-        if (!is_array($items) || empty($items)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Tidak ada data program yang diimport.'
-            ], 400);
+                $rawImport = RawImport::create([
+                    'file_name' => $storageResult['file_name'],
+                    'file_key' => $storageResult['file_key'],
+                    'file_size' => $storageResult['file_size'],
+                    'file_url' => $storageResult['file_url'],
+                    'storage_type' => $storageResult['storage'],
+                    'imported_rows_count' => 0,
+                    'uploaded_by' => $request->input('uploaded_by', 'Admin SCM'),
+                    'notes' => $storageResult['warning'] ?? 'Tersimpan di storage SeaweedFS'
+                ]);
+            } catch (\Throwable $e) {
+                \Log::error('Error uploading raw import file: ' . $e->getMessage());
+            }
+        }
+
+        // 2. Parse program rows (can be JSON string or array)
+        $programsInput = $request->input('programs', []);
+        if (is_string($programsInput)) {
+            $items = json_decode($programsInput, true) ?: [];
+        } else {
+            $items = is_array($programsInput) ? $programsInput : [];
         }
 
         $existingMax = Program::whereRaw('id REGEXP "^[0-9]+$"')->max('id');
@@ -322,13 +350,81 @@ class ProgramController extends Controller
             $imported++;
         }
 
+        if ($rawImport && $imported > 0) {
+            $rawImport->update(['imported_rows_count' => $imported]);
+        }
+
         $allPrograms = Program::with('documents')->orderBy('due_date', 'desc')->get();
+
+        $storageMessage = $rawImport ? ' Berkas mentahan tersimpan di SeaweedFS SCM.' : '';
 
         return response()->json([
             'success' => true,
-            'message' => "Berhasil mengimpor {$imported} data program ke database.",
+            'message' => "Berhasil mengimpor {$imported} data program ke database.{$storageMessage}",
             'imported_count' => $imported,
-            'programs' => $allPrograms
+            'programs' => $allPrograms,
+            'raw_import' => $rawImport
         ]);
+    }
+
+    /**
+     * Get list of raw imported Excel files
+     */
+    public function rawImports()
+    {
+        $imports = RawImport::orderBy('created_at', 'desc')->get();
+        return response()->json([
+            'success' => true,
+            'raw_imports' => $imports
+        ]);
+    }
+
+    /**
+     * Delete a raw import log entry
+     */
+    public function deleteRawImport($id)
+    {
+        $item = RawImport::find($id);
+        if ($item) {
+            $item->delete();
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Riwayat file mentahan telah dihapus.'
+        ]);
+    }
+
+    /**
+     * Download or stream raw import file
+     */
+    public function downloadRawImport($id)
+    {
+        $raw = RawImport::findOrFail($id);
+
+        // 1. Try local backup file
+        if ($raw->file_key) {
+            $localPath = public_path('uploads/mentahan_excel/' . basename($raw->file_key));
+            if (file_exists($localPath)) {
+                return response()->download($localPath, $raw->file_name);
+            }
+        }
+
+        // 2. Try fetching from SeaweedFS S3
+        if ($raw->file_key) {
+            $seaweed = new SeaweedStorageService();
+            $obj = $seaweed->getObject($raw->file_key);
+            if ($obj && !empty($obj['content'])) {
+                return response($obj['content'])
+                    ->header('Content-Type', $obj['mime'])
+                    ->header('Content-Disposition', 'attachment; filename="' . $raw->file_name . '"');
+            }
+        }
+
+        // 3. Redirect to file_url
+        if ($raw->file_url) {
+            return redirect($raw->file_url);
+        }
+
+        abort(404, 'Berkas mentahan tidak ditemukan.');
     }
 }

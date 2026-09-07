@@ -600,18 +600,31 @@ export const useTaxStore = () => {
         return null;
     }
 
-    async function importPrograms(rows) {
+    async function importPrograms(rows, rawFile = null) {
         if (!rows || rows.length === 0) return 0;
 
         try {
-            const res = await fetch('/api/programs/import', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ programs: rows })
-            });
+            let res;
+            if (rawFile) {
+                const formData = new FormData();
+                formData.append('file', rawFile);
+                formData.append('programs', JSON.stringify(rows));
+                formData.append('uploaded_by', state.currentUser?.name || 'Admin SCM');
+
+                res = await fetch('/api/programs/import', {
+                    method: 'POST',
+                    body: formData
+                });
+            } else {
+                res = await fetch('/api/programs/import', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ programs: rows })
+                });
+            }
 
             const data = await res.json();
             if (res.ok && data.success) {
@@ -621,8 +634,9 @@ export const useTaxStore = () => {
                 } else {
                     await fetchPrograms();
                 }
+                await fetchRawImports();
                 const count = data.imported_count || rows.length;
-                notify(`${count} program berhasil diimport dan disimpan.`);
+                notify(data.message || `${count} program berhasil diimport dan disimpan.`);
                 return count;
             } else {
                 throw new Error(data.message || 'Gagal mengimpor program ke server.');
@@ -631,6 +645,35 @@ export const useTaxStore = () => {
             console.error('Import error:', err);
             notify(err.message || 'Gagal mengimpor data ke server.', 'danger');
             throw err;
+        }
+    }
+
+    const rawImports = ref([]);
+
+    async function fetchRawImports() {
+        try {
+            const res = await fetch('/api/programs/raw-imports');
+            const data = await res.json();
+            if (res.ok && data.success) {
+                rawImports.value = data.raw_imports || [];
+            }
+        } catch (e) {
+            console.warn('Failed to fetch raw imports:', e);
+        }
+    }
+
+    async function deleteRawImport(id) {
+        try {
+            const res = await fetch(`/api/programs/raw-imports/${id}`, {
+                method: 'DELETE',
+                headers: { 'Accept': 'application/json' }
+            });
+            if (res.ok) {
+                rawImports.value = rawImports.value.filter(r => r.id !== id);
+                notify('Riwayat file mentahan telah dihapus.', 'warning');
+            }
+        } catch (e) {
+            console.warn('Failed to delete raw import:', e);
         }
     }
 
@@ -1254,6 +1297,9 @@ export const useTaxStore = () => {
         importPrograms,
         exportToCsv,
         resetToDefault,
+        rawImports,
+        fetchRawImports,
+        deleteRawImport,
         suppliersList,
         categoriesList,
         fetchPrograms,
