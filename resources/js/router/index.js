@@ -69,6 +69,26 @@ router.beforeEach((to, from, next) => {
     if (to.meta.title) {
         document.title = to.meta.title;
     }
+
+    // Hanya role Admin SCM yang boleh membuka halaman Manajemen User
+    if (to.name === 'users') {
+        let currentUser = null;
+        try {
+            const stored = localStorage.getItem('scm_taxvault_user_v2');
+            if (stored) {
+                currentUser = JSON.parse(stored);
+            }
+        } catch (e) {
+            console.error('Failed to read user for router guard', e);
+        }
+
+        const role = currentUser?.role || '';
+        const isAdmin = role === 'Admin SCM' || role.toLowerCase().includes('admin');
+        if (!isAdmin) {
+            return next({ path: '/dashboard' });
+        }
+    }
+
     next();
 });
 

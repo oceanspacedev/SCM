@@ -1005,7 +1005,10 @@ export const useTaxStore = () => {
     const allUsers = computed(() => state.users);
     const pendingUsers = computed(() => state.users.filter(u => u.status === 'pending'));
     const pendingUsersCount = computed(() => pendingUsers.value.length);
-    const isAdmin = computed(() => state.currentUser?.role === 'Admin SCM');
+    const isAdmin = computed(() => {
+        const role = state.currentUser?.role || '';
+        return role === 'Admin SCM' || role.toLowerCase().includes('admin');
+    });
 
     function openImportModal() {
         state.isImportModalOpen = true;

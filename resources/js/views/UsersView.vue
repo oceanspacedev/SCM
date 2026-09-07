@@ -401,11 +401,21 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue';
+import { ref, computed, reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { Plus, Search, Trash2, X, AlertCircle, Users } from 'lucide-vue-next';
 import { useTaxStore } from '../store/taxStore';
 
+const router = useRouter();
 const store = useTaxStore();
+
+onMounted(() => {
+  const role = store.currentUser.value?.role || '';
+  const isAdmin = role === 'Admin SCM' || role.toLowerCase().includes('admin');
+  if (!isAdmin) {
+    router.replace('/dashboard');
+  }
+});
 
 const activeFilter = ref('all');
 const searchQuery = ref('');

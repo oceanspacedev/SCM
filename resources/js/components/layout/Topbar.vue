@@ -154,7 +154,10 @@ const userName = computed(() => store.currentUser.value?.name || 'Siti Rahmawati
 const userRole = computed(() => store.currentUser.value?.role || 'Tim Pajak');
 const userEmail = computed(() => store.currentUser.value?.email || 'auditor@pajak.corp');
 const userInitials = computed(() => store.currentUser.value?.initials || 'SR');
-const isAdmin = computed(() => store.isAdmin.value);
+const isAdmin = computed(() => {
+  const role = store.currentUser.value?.role;
+  return role === 'Admin SCM' || (role && role.toLowerCase().includes('admin'));
+});
 const pendingCount = computed(() => store.pendingUsersCount.value);
 
 function openApprovalModal() {

@@ -59,8 +59,9 @@
           </div>
         </router-link>
 
-        <!-- Manajemen User Link -->
+        <!-- Manajemen User Link (Khusus Admin SCM) -->
         <router-link
+          v-if="isAdmin"
           to="/users"
           v-slot="{ isActive }"
         >
@@ -133,7 +134,10 @@ import { useTaxStore } from '../../store/taxStore';
 const router = useRouter();
 const store = useTaxStore();
 
-const isAdmin = computed(() => store.isAdmin.value);
+const isAdmin = computed(() => {
+  const role = store.currentUser.value?.role;
+  return role === 'Admin SCM' || (role && role.toLowerCase().includes('admin'));
+});
 const pendingCount = computed(() => store.pendingUsersCount.value);
 
 function openImportExcel() {
