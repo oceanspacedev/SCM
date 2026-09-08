@@ -13,8 +13,11 @@ class WhatsAppService
 
     public function __construct()
     {
-        $this->url = rtrim(env('WAG_URL', 'https://waghub.mekayastudio.com'), '/');
-        $this->token = env('WAG_TOKEN', 'wgh_3MrWO6Nm9YERLfzjxYkgdqe5XxUkP6Dd3gVADWCRO4FraqnqtG6Sp3mDgo9ZEj7v');
+        $url = env('WAG_URL');
+        $this->url = rtrim(!empty($url) ? $url : 'https://waghub.mekayastudio.com', '/');
+
+        $token = env('WAG_TOKEN');
+        $this->token = !empty($token) ? $token : 'wgh_3MrWO6Nm9YERLfzjxYkgdqe5XxUkP6Dd3gVADWCRO4FraqnqtG6Sp3mDgo9ZEj7v';
     }
 
     /**

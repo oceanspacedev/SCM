@@ -1,22 +1,50 @@
 <template>
-  <aside class="w-64 bg-[#F8FAFA] border-r border-slate-200 flex flex-col shrink-0 h-screen sticky top-0 z-20 select-none text-slate-700">
-    <!-- Brand Header (aligned with h-16 Topbar) -->
-    <div class="h-16 px-5 border-b border-slate-200 bg-white flex items-center">
-      <router-link to="/dashboard" class="block group w-full">
-        <div class="flex items-center gap-1.5">
-          <span class="text-xs font-black uppercase tracking-wider text-[#135A46]">SCM</span>
-          <span class="text-base font-bold tracking-tight text-slate-900">TaxVault</span>
+  <aside
+    :class="[
+      'bg-[#F8FAFA] border-r border-slate-200 flex flex-col shrink-0 h-screen sticky top-0 z-20 select-none text-slate-700 transition-all duration-200',
+      isCollapsed ? 'w-16' : 'w-56'
+    ]"
+  >
+    <!-- Brand Header -->
+    <div
+      :class="[
+        'border-b border-slate-200 bg-white flex items-center transition-all',
+        isCollapsed ? 'h-16 justify-center px-2' : 'py-3.5 justify-between px-4'
+      ]"
+    >
+      <div v-if="!isCollapsed" class="min-w-0 flex-1 pr-2">
+        <router-link
+          to="/dashboard"
+          class="block overflow-hidden"
+        >
+          <span class="text-base font-bold tracking-tight text-slate-900 block truncate leading-none">TaxVault</span>
+          <p class="text-[10px] text-slate-400 font-medium leading-tight mt-1 truncate">
+            Arsip Dokumen Pajak
+          </p>
+        </router-link>
+
+        <!-- User Role Badge under title -->
+        <div class="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200/70 text-[10px] font-semibold text-emerald-800 select-none">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse"></span>
+          <span class="truncate">{{ userRole }}</span>
         </div>
-        <p class="text-[11px] text-slate-400 font-medium leading-tight mt-0.5">
-          Arsip Dokumen Pajak
-        </p>
-      </router-link>
+      </div>
+
+      <!-- Toggle Button (Header) -->
+      <button
+        type="button"
+        class="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer shrink-0 self-start mt-0.5"
+        :title="isCollapsed ? 'Perluas Sidebar' : 'Ciutkan Sidebar'"
+        @click="toggleSidebar"
+      >
+        <component :is="isCollapsed ? PanelLeftOpen : PanelLeftClose" class="w-4 h-4" />
+      </button>
     </div>
 
     <!-- Navigation List -->
-    <div class="px-3.5 py-5 flex-1 overflow-y-auto space-y-6">
+    <div class="px-2 py-4 flex-1 overflow-y-auto space-y-6">
       <!-- Main Nav -->
-      <nav class="space-y-1.5">
+      <nav class="space-y-1">
         <!-- Dashboard Link -->
         <router-link
           to="/dashboard"
@@ -24,17 +52,19 @@
         >
           <div
             :class="[
-              'h-10 px-3.5 rounded-xl text-xs transition-all cursor-pointer font-medium flex items-center justify-between',
+              'h-10 rounded-xl text-xs transition-all cursor-pointer font-medium flex items-center',
+              isCollapsed ? 'justify-center px-0' : 'justify-between px-3',
               isActive
                 ? 'bg-[#135A46] text-white shadow-sm font-semibold'
                 : 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900'
             ]"
+            :title="isCollapsed ? 'Dashboard' : ''"
           >
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5 min-w-0">
               <LayoutDashboard class="w-4 h-4 shrink-0" :class="isActive ? 'text-white' : 'text-slate-500'" />
-              <span>Dashboard</span>
+              <span v-if="!isCollapsed" class="truncate">Dashboard</span>
             </div>
-            <ChevronRight class="w-4 h-4 shrink-0" :class="isActive ? 'text-white' : 'text-slate-400'" />
+            <ChevronRight v-if="!isCollapsed" class="w-3.5 h-3.5 shrink-0" :class="isActive ? 'text-white' : 'text-slate-400'" />
           </div>
         </router-link>
 
@@ -45,17 +75,19 @@
         >
           <div
             :class="[
-              'h-10 px-3.5 rounded-xl text-xs transition-all cursor-pointer font-medium flex items-center justify-between',
+              'h-10 rounded-xl text-xs transition-all cursor-pointer font-medium flex items-center',
+              isCollapsed ? 'justify-center px-0' : 'justify-between px-3',
               isActive
                 ? 'bg-[#135A46] text-white shadow-sm font-semibold'
                 : 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900'
             ]"
+            :title="isCollapsed ? 'Arsip Program' : ''"
           >
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5 min-w-0">
               <FolderArchive class="w-4 h-4 shrink-0" :class="isActive ? 'text-white' : 'text-slate-500'" />
-              <span>Arsip Program</span>
+              <span v-if="!isCollapsed" class="truncate">Arsip Program</span>
             </div>
-            <ChevronRight class="w-4 h-4 shrink-0" :class="isActive ? 'text-white' : 'text-slate-400'" />
+            <ChevronRight v-if="!isCollapsed" class="w-3.5 h-3.5 shrink-0" :class="isActive ? 'text-white' : 'text-slate-400'" />
           </div>
         </router-link>
 
@@ -67,17 +99,19 @@
         >
           <div
             :class="[
-              'h-10 px-3.5 rounded-xl text-xs transition-all cursor-pointer font-medium flex items-center justify-between',
+              'h-10 rounded-xl text-xs transition-all cursor-pointer font-medium flex items-center',
+              isCollapsed ? 'justify-center px-0 relative' : 'justify-between px-3',
               isActive
                 ? 'bg-[#135A46] text-white shadow-sm font-semibold'
                 : 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900'
             ]"
+            :title="isCollapsed ? 'Manajemen User' : ''"
           >
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5 min-w-0">
               <Users class="w-4 h-4 shrink-0" :class="isActive ? 'text-white' : 'text-slate-500'" />
-              <span>Manajemen User</span>
+              <span v-if="!isCollapsed" class="truncate">Manajemen User</span>
             </div>
-            <div class="flex items-center gap-1.5">
+            <div v-if="!isCollapsed" class="flex items-center gap-1.5">
               <span
                 v-if="pendingCount > 0"
                 class="px-1.5 py-0.2 rounded-full text-[10px] font-bold"
@@ -85,27 +119,85 @@
               >
                 {{ pendingCount }}
               </span>
-              <ChevronRight class="w-4 h-4 shrink-0" :class="isActive ? 'text-white' : 'text-slate-400'" />
+              <ChevronRight class="w-3.5 h-3.5 shrink-0" :class="isActive ? 'text-white' : 'text-slate-400'" />
             </div>
+            <span
+              v-else-if="pendingCount > 0"
+              class="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white"
+            ></span>
           </div>
         </router-link>
+
+        <!-- Separator -->
+        <div class="pt-2 my-1 border-t border-slate-200/70"></div>
+
+        <!-- Logout Button (Deket Arsip Program) -->
+        <button
+          type="button"
+          @click="handleLogout"
+          :class="[
+            'w-full h-10 rounded-xl text-xs transition-all cursor-pointer font-medium flex items-center text-slate-600 hover:bg-slate-200/60 hover:text-slate-900 select-none',
+            isCollapsed ? 'justify-center px-0' : 'justify-between px-3'
+          ]"
+          :title="isCollapsed ? 'Keluar' : ''"
+        >
+          <div class="flex items-center gap-2.5 min-w-0">
+            <Power class="w-4 h-4 shrink-0 text-slate-500" />
+            <span v-if="!isCollapsed" class="truncate">Keluar</span>
+          </div>
+          <ChevronRight v-if="!isCollapsed" class="w-3.5 h-3.5 shrink-0 text-slate-400" />
+        </button>
       </nav>
+    </div>
+
+    <!-- Bottom Collapse Toggle (visible when collapsed or as footer) -->
+    <div class="p-2 border-t border-slate-200/70">
+      <button
+        type="button"
+        class="w-full h-9 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-200/60 flex items-center justify-center gap-2 text-xs transition-colors cursor-pointer"
+        :title="isCollapsed ? 'Perluas Sidebar' : 'Ciutkan Sidebar'"
+        @click="toggleSidebar"
+      >
+        <component :is="isCollapsed ? PanelLeftOpen : PanelLeftClose" class="w-4 h-4" />
+        <span v-if="!isCollapsed" class="truncate">Ciutkan Menu</span>
+      </button>
     </div>
   </aside>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { LayoutDashboard, FolderArchive, ChevronRight, Users } from 'lucide-vue-next';
+import {
+  LayoutDashboard,
+  FolderArchive,
+  ChevronRight,
+  Users,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Power
+} from 'lucide-vue-next';
 import { useTaxStore } from '../../store/taxStore';
 
 const router = useRouter();
 const store = useTaxStore();
+
+const isCollapsed = ref(localStorage.getItem('scm_sidebar_collapsed') === 'true');
+
+function toggleSidebar() {
+  isCollapsed.value = !isCollapsed.value;
+  localStorage.setItem('scm_sidebar_collapsed', isCollapsed.value ? 'true' : 'false');
+}
+
+function handleLogout() {
+  store.logout();
+  router.push('/login');
+}
 
 const isAdmin = computed(() => {
   const role = store.currentUser.value?.role;
   return role === 'Admin SCM' || (role && role.toLowerCase().includes('admin'));
 });
 const pendingCount = computed(() => store.pendingUsersCount.value);
+const userRole = computed(() => store.currentUser.value?.role || 'Admin SCM');
 </script>

@@ -10,12 +10,10 @@
     <!-- Sidebar -->
     <Sidebar />
 
-    <!-- Right Column: Topbar + Main Body -->
+    <!-- Right Column: Main Body (Clean Top) -->
     <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
-      <Topbar />
-
-      <main class="flex-1 p-6 lg:p-8">
-        <div class="max-w-[1400px] mx-auto">
+      <main class="flex-1 p-5 sm:p-6 lg:p-7">
+        <div class="w-full max-w-[1600px] mx-auto">
           <router-view v-slot="{ Component }">
             <Transition
               mode="out-in"
@@ -47,7 +45,6 @@
 <script setup>
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import Topbar from './components/layout/Topbar.vue';
 import Sidebar from './components/layout/Sidebar.vue';
 import ToastNotification from './components/ui/ToastNotification.vue';
 import ImportExcelModal from './components/programs/ImportExcelModal.vue';

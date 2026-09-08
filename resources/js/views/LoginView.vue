@@ -1,80 +1,31 @@
 <template>
-  <div class="min-h-screen bg-[#F0F4F2] flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans text-slate-800">
-    <!-- Centered Card Container (Reference: IAMS style with SCM TaxVault Green Brand) -->
-    <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl border border-[#E1E8E5] overflow-hidden flex flex-col md:flex-row my-auto transition-all">
-      
-      <!-- Left Column: SCM Deep Forest Brand Section -->
-      <div class="w-full md:w-5/12 bg-gradient-to-b from-[#0D3B2E] via-[#0F4234] to-[#0A2E24] text-white p-7 lg:p-9 flex flex-col justify-between relative overflow-hidden shrink-0">
-        <!-- Background subtle glow -->
-        <div class="absolute -right-20 -bottom-20 w-64 h-64 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none"></div>
-        <div class="absolute -left-12 -top-12 w-64 h-64 rounded-full bg-teal-400/10 blur-3xl pointer-events-none"></div>
-
-        <!-- Brand Header -->
-        <div class="relative z-10">
-          <div class="flex items-center gap-1.5">
-            <span class="text-xs font-black uppercase tracking-wider text-emerald-400">SCM</span>
-            <span class="text-xl font-bold tracking-tight text-white">TaxVault</span>
-          </div>
-          <p class="text-xs text-emerald-200/70 font-medium mt-1">
-            Arsip Dokumen & Rekap Pajak
-          </p>
-        </div>
-
-        <!-- Dynamic Brand Content based on Mode -->
-        <div class="relative z-10 my-8 md:my-0 space-y-5">
-          <div>
-            <h1 class="text-xl lg:text-2xl font-bold tracking-tight text-white leading-tight">
-              {{ isRegisterMode ? 'Pendaftaran Akun Baru' : 'Portal Arsip & Perpajakan' }}
-            </h1>
-            <p class="text-xs text-emerald-100/70 mt-2 leading-relaxed">
-              {{ isRegisterMode 
-                ? 'Daftarkan akun Anda untuk mengakses portal verifikasi faktur, pelaporan arsip, dan audit kepatuhan perpajakan.' 
-                : 'Sistem terintegrasi untuk verifikasi faktur pajak, arsip MOU program SCM, dan audit kepatuhan PPN.' 
-              }}
-            </p>
-          </div>
-
-          <!-- Feature Bullet List with Emerald Checks -->
-          <div class="space-y-2.5 pt-2 text-xs text-emerald-100/90">
-            <div class="flex items-center gap-2.5">
-              <div class="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0">
-                <Check class="w-3.5 h-3.5 text-emerald-400" />
-              </div>
-              <span>Arsip Dokumen Pajak & MOU SCM</span>
-            </div>
-            <div class="flex items-center gap-2.5">
-              <div class="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0">
-                <Check class="w-3.5 h-3.5 text-emerald-400" />
-              </div>
-              <span>Rekonsiliasi DPP & PPN Otomatis</span>
-            </div>
-            <div class="flex items-center gap-2.5">
-              <div class="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0">
-                <Check class="w-3.5 h-3.5 text-emerald-400" />
-              </div>
-              <span>Notifikasi WhatsApp Terintegrasi</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Footer Copyright -->
-        <div class="relative z-10 text-[11px] text-emerald-200/50 pt-4 border-t border-emerald-800/40">
-          &copy; 2026 SCM Enterprise System.
-        </div>
+  <div class="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-3 sm:p-4 font-sans text-slate-800">
+    <!-- Centered Clean Compact White Card Container -->
+    <div
+      :class="[
+        'w-full bg-white rounded-xl shadow-lg border border-slate-200/90 p-5 sm:p-6 my-auto transition-all',
+        isRegisterMode ? 'max-w-md' : 'max-w-sm'
+      ]"
+    >
+      <!-- Brand Header -->
+      <div class="text-center mb-4">
+        <h1 class="text-xl font-bold tracking-tight text-slate-900 leading-none">
+          TaxVault
+        </h1>
+        <p class="text-[11px] text-slate-400 font-medium mt-1">
+          Arsip Dokumen & Rekap Pajak
+        </p>
       </div>
-
-      <!-- Right Column: Interactive Form Section -->
-      <div class="flex-1 p-7 sm:p-9 lg:p-10 flex flex-col justify-center bg-white">
         
         <!-- ============================================== -->
         <!-- VIEW 1: LOGIN FORM (Password or WhatsApp Tab)  -->
         <!-- ============================================== -->
-        <div v-if="!isRegisterMode && !isOtpStep" class="space-y-5">
+        <div v-if="!isRegisterMode && !isOtpStep" class="space-y-3.5">
           <div>
-            <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+            <h2 class="text-base font-bold tracking-tight text-slate-900">
               Masuk ke Akun
             </h2>
-            <p class="text-xs text-slate-500 mt-1">
+            <p class="text-[11px] text-slate-400 mt-0.5">
               Silakan masuk untuk melanjutkan ke sistem
             </p>
           </div>
@@ -83,16 +34,16 @@
           <div class="flex border-b border-slate-200 text-xs font-semibold">
             <button
               type="button"
-              class="pb-2.5 px-3 border-b-2 transition-all cursor-pointer flex-1 text-center"
-              :class="loginTab === 'password' ? 'border-[#135A46] text-[#135A46] font-bold' : 'border-transparent text-slate-500 hover:text-slate-800'"
+              class="pb-2 px-2 border-b-2 transition-all cursor-pointer flex-1 text-center text-xs"
+              :class="loginTab === 'password' ? 'border-[#135A46] text-[#135A46] font-bold' : 'border-transparent text-slate-400 hover:text-slate-700'"
               @click="loginTab = 'password'; errorMessage = ''"
             >
               Email & Kata Sandi
             </button>
             <button
               type="button"
-              class="pb-2.5 px-3 border-b-2 transition-all cursor-pointer flex-1 text-center"
-              :class="loginTab === 'whatsapp' ? 'border-[#135A46] text-[#135A46] font-bold' : 'border-transparent text-slate-500 hover:text-slate-800'"
+              class="pb-2 px-2 border-b-2 transition-all cursor-pointer flex-1 text-center text-xs"
+              :class="loginTab === 'whatsapp' ? 'border-[#135A46] text-[#135A46] font-bold' : 'border-transparent text-slate-400 hover:text-slate-700'"
               @click="loginTab = 'whatsapp'; errorMessage = ''"
             >
               WhatsApp
@@ -102,20 +53,20 @@
           <!-- Error / Pending Alert -->
           <div
             v-if="errorMessage"
-            class="p-3 rounded-lg border text-xs flex items-start gap-2.5"
+            class="p-2.5 rounded-lg border text-xs flex items-start gap-2"
             :class="isPendingAlert ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-rose-50 border-rose-200 text-rose-700'"
           >
-            <AlertCircle class="w-4 h-4 shrink-0 mt-0.5" />
-            <div class="flex-1">
+            <AlertCircle class="w-3.5 h-3.5 shrink-0 mt-0.5" />
+            <div class="flex-1 text-[11px]">
               <p class="font-semibold" v-if="isPendingAlert">Akun Menunggu ACC</p>
               <p>{{ errorMessage }}</p>
             </div>
           </div>
 
           <!-- Tab 1: Email & Password Form -->
-          <form v-if="loginTab === 'password'" @submit.prevent="handlePasswordSubmit" class="space-y-4">
-            <div class="space-y-1.5">
-              <label class="block text-xs font-semibold text-slate-700">
+          <form v-if="loginTab === 'password'" @submit.prevent="handlePasswordSubmit" class="space-y-3">
+            <div class="space-y-1">
+              <label class="block text-[11px] font-semibold text-slate-700">
                 Email
               </label>
               <input
@@ -123,12 +74,12 @@
                 type="email"
                 placeholder="reza25022003@gmail.com"
                 required
-                class="w-full h-10 px-3.5 text-xs rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-2 focus:ring-[#135A46]/20 focus:outline-hidden transition-all placeholder:text-slate-400"
+                class="w-full h-8.5 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] focus:outline-hidden transition-all placeholder:text-slate-400"
               />
             </div>
 
-            <div class="space-y-1.5">
-              <label class="block text-xs font-semibold text-slate-700">
+            <div class="space-y-1">
+              <label class="block text-[11px] font-semibold text-slate-700">
                 Kata Sandi
               </label>
               <div class="relative">
@@ -137,21 +88,21 @@
                   :type="showPassword ? 'text' : 'password'"
                   placeholder="••••••••"
                   required
-                  class="w-full h-10 px-3.5 pr-10 text-xs rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-2 focus:ring-[#135A46]/20 focus:outline-hidden transition-all placeholder:text-slate-400"
+                  class="w-full h-8.5 px-3 pr-9 text-xs rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] focus:outline-hidden transition-all placeholder:text-slate-400"
                 />
                 <button
                   type="button"
-                  class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer p-0.5"
                   @click="showPassword = !showPassword"
                 >
-                  <EyeOff v-if="showPassword" class="w-4 h-4" />
-                  <Eye v-else class="w-4 h-4" />
+                  <EyeOff v-if="showPassword" class="w-3.5 h-3.5" />
+                  <Eye v-else class="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
 
             <div class="flex items-center">
-              <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-600">
+              <label class="flex items-center gap-1.5 cursor-pointer text-[11px] text-slate-600">
                 <input
                   v-model="rememberMe"
                   type="checkbox"
@@ -163,44 +114,44 @@
 
             <button
               type="submit"
-              class="w-full h-10 rounded-lg bg-[#135A46] hover:bg-[#0F4939] active:bg-[#0C3B2E] text-white font-semibold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm shadow-[#135A46]/25"
+              class="w-full h-8.5 rounded-lg bg-[#135A46] hover:bg-[#0F4939] active:bg-[#0C3B2E] text-white font-semibold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-2xs"
               :disabled="isLoading"
             >
-              <span v-if="isLoading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              <span v-if="isLoading" class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
               <span v-else>Masuk</span>
             </button>
           </form>
 
           <!-- Tab 2: WhatsApp / Email OTP Form -->
-          <form v-else @submit.prevent="handleWhatsAppSubmit" class="space-y-4">
-            <div class="space-y-1.5">
-              <label class="block text-xs font-semibold text-slate-700">
-                Nomor WhatsApp atau Email Terdaftar
+          <form v-else @submit.prevent="handleWhatsAppSubmit" class="space-y-3">
+            <div class="space-y-1">
+              <label class="block text-[11px] font-semibold text-slate-700">
+                Nomor WhatsApp / Email Terdaftar
               </label>
               <input
                 v-model="identifier"
                 type="text"
                 placeholder="Contoh: 081224290502"
                 required
-                class="w-full h-10 px-3.5 text-xs rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-2 focus:ring-[#135A46]/20 focus:outline-hidden transition-all placeholder:text-slate-400 font-mono"
+                class="w-full h-8.5 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] focus:outline-hidden transition-all placeholder:text-slate-400 font-mono"
               />
-              <p class="text-[11px] text-slate-400 mt-1">
+              <p class="text-[10px] text-slate-400 mt-0.5">
                 Kode OTP 6-digit akan dikirimkan ke WhatsApp yang terdaftar.
               </p>
             </div>
 
             <button
               type="submit"
-              class="w-full h-10 rounded-lg bg-[#135A46] hover:bg-[#0F4939] active:bg-[#0C3B2E] text-white font-semibold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm shadow-[#135A46]/25"
+              class="w-full h-8.5 rounded-lg bg-[#135A46] hover:bg-[#0F4939] active:bg-[#0C3B2E] text-white font-semibold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-2xs"
               :disabled="isLoading"
             >
-              <span v-if="isLoading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              <span v-if="isLoading" class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
               <span v-else>Kirim Kode OTP</span>
             </button>
           </form>
 
           <!-- Register Link -->
-          <div class="text-center text-xs text-slate-500 pt-1">
+          <div class="text-center text-[11px] text-slate-500 pt-0.5">
             Belum memiliki akun?
             <button
               type="button"
@@ -212,24 +163,24 @@
           </div>
 
           <!-- Demo Accounts Box (Reference Style) -->
-          <div class="pt-4 border-t border-slate-100">
-            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2.5">
+          <div class="pt-3 border-t border-slate-100">
+            <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
               AKUN DEMO (PASSWORD: PASSWORD123)
             </div>
 
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-3 gap-1.5">
               <button
                 v-for="user in demoAccounts"
                 :key="user.email"
                 type="button"
-                class="p-2 rounded-lg border border-slate-200 bg-[#F9FBFB] hover:bg-emerald-50/60 hover:border-emerald-300 transition-all text-left cursor-pointer group"
+                class="p-1.5 rounded-md border border-slate-200 bg-[#F9FBFB] hover:bg-emerald-50/60 hover:border-emerald-300 transition-all text-left cursor-pointer group"
                 @click="fillDemoAccount(user)"
               >
-                <div class="font-bold text-[11px] text-slate-800 group-hover:text-[#135A46] leading-tight">
+                <div class="font-bold text-[10px] text-slate-800 group-hover:text-[#135A46] leading-tight truncate">
                   {{ user.label }}
                 </div>
-                <div class="text-[10px] text-slate-400 truncate mt-0.5">
-                  {{ user.email }}
+                <div class="text-[9px] text-slate-400 truncate mt-0.5 font-mono">
+                  {{ user.email.split('@')[0] }}
                 </div>
               </button>
             </div>
@@ -513,8 +464,12 @@
           </form>
         </div>
 
-      </div>
     </div>
+
+    <!-- Simple Footer -->
+    <p class="text-[11px] text-slate-400 text-center mt-5 select-none">
+      &copy; 2026 TaxVault Enterprise System.
+    </p>
   </div>
 </template>
 

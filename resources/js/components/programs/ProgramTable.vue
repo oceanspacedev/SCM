@@ -1,121 +1,122 @@
 <template>
   <div class="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden flex flex-col">
-    <!-- Table Container -->
+    <!-- Table Container with smooth horizontal scroll -->
     <div class="overflow-x-auto">
-      <table class="w-full text-left text-xs border-collapse">
+      <table class="w-full text-left text-xs border-collapse min-w-[940px]">
         <thead>
-          <tr class="bg-slate-50/70 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500 font-sans">
-            <th class="py-3 px-4 font-bold">PROGRAM</th>
-            <th class="py-3 px-4 font-bold">SUPPLIER</th>
-            <th class="py-3 px-3.5 font-bold">NO. INVOICE</th>
-            <th class="py-3 px-3.5 font-bold text-right">DPP</th>
-            <th class="py-3 px-3.5 font-bold text-right">PPN</th>
-            <th class="py-3 px-4 font-bold text-right">TOTAL INVOICE</th>
-            <th class="py-3 px-3.5 font-bold text-center">DOKUMEN</th>
-            <th class="py-3 px-3.5 font-bold text-center">STATUS</th>
-            <th class="py-3 px-3 font-bold text-center w-24">AKSI</th>
+          <tr class="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500 font-sans">
+            <th class="py-2.5 px-3 font-bold min-w-[160px]">PROGRAM</th>
+            <th class="py-2.5 px-2.5 font-bold min-w-[130px]">SUPPLIER</th>
+            <th class="py-2.5 px-2 font-bold min-w-[100px]">NO. INVOICE</th>
+            <th class="py-2.5 px-2 font-bold text-right min-w-[90px]">DPP</th>
+            <th class="py-2.5 px-2 font-bold text-right min-w-[85px]">PPN</th>
+            <th class="py-2.5 px-2.5 font-bold text-right min-w-[105px]">TOTAL INVOICE</th>
+            <th class="py-2.5 px-2 font-bold text-center min-w-[95px]">DOKUMEN</th>
+            <th class="py-2.5 px-2 font-bold text-center min-w-[100px]">STATUS</th>
+            <th class="py-2.5 px-2 font-bold text-center w-20 sticky right-0 bg-slate-50 border-l border-slate-200/70 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.03)] z-10">AKSI</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
           <tr
             v-for="program in paginatedPrograms"
             :key="program.id"
-            class="hover:bg-slate-50/60 transition-colors group cursor-pointer"
+            class="hover:bg-slate-50/70 transition-colors group cursor-pointer"
             @click="goToDetail(program.id)"
           >
             <!-- 1. PROGRAM -->
-            <td class="py-3 px-4">
+            <td class="py-2.5 px-3 max-w-[210px]">
               <router-link
                 :to="`/programs/${program.id}`"
-                class="font-bold text-slate-900 group-hover:text-[#135A46] transition-colors line-clamp-1 block text-xs"
+                class="font-bold text-slate-900 group-hover:text-[#135A46] transition-colors truncate block text-xs"
+                :title="program.program_name"
                 @click.stop
               >
                 {{ program.program_name }}
               </router-link>
-              <div class="text-[11px] text-slate-400 mt-0.5">
+              <div class="text-[10px] text-slate-400 mt-0.5 truncate">
                 {{ program.category }} · {{ formatDate(program.program_date) }}
               </div>
             </td>
 
             <!-- 2. SUPPLIER -->
-            <td class="py-3 px-4">
-              <div class="font-medium text-slate-800 line-clamp-1 text-xs">
+            <td class="py-2.5 px-2.5 max-w-[150px]">
+              <div class="font-medium text-slate-800 truncate text-xs" :title="program.supplier">
                 {{ program.supplier }}
               </div>
-              <div class="text-[11px] font-mono text-slate-400 mt-0.5 whitespace-nowrap">
+              <div class="text-[10px] font-mono text-slate-400 mt-0.5 truncate">
                 {{ program.npwp || '01.000.000.0-000.000' }}
               </div>
             </td>
 
             <!-- 3. NO. INVOICE -->
-            <td class="py-3 px-3.5 font-mono text-slate-600 whitespace-nowrap text-xs">
+            <td class="py-2.5 px-2 font-mono text-slate-600 whitespace-nowrap text-[11px]">
               {{ program.invoice_number || '-' }}
             </td>
 
             <!-- 4. DPP -->
-            <td class="py-3 px-3.5 font-mono text-slate-700 text-right whitespace-nowrap text-xs">
+            <td class="py-2.5 px-2 font-mono text-slate-600 text-right whitespace-nowrap text-[11px]">
               {{ formatRupiah(program.dpp) }}
             </td>
 
             <!-- 5. PPN -->
-            <td class="py-3 px-3.5 font-mono text-amber-700 font-medium text-right whitespace-nowrap text-xs">
+            <td class="py-2.5 px-2 font-mono text-amber-700 font-medium text-right whitespace-nowrap text-[11px]">
               {{ formatRupiah(program.ppn) }}
             </td>
 
             <!-- 6. TOTAL INVOICE -->
-            <td class="py-3 px-4 font-mono font-bold text-slate-900 text-right whitespace-nowrap text-xs">
+            <td class="py-2.5 px-2.5 font-mono font-bold text-slate-900 text-right whitespace-nowrap text-xs">
               {{ formatRupiah(program.total_invoice) }}
             </td>
 
             <!-- 7. DOKUMEN -->
-            <td class="py-3 px-3.5 text-center whitespace-nowrap" @click.stop>
+            <td class="py-2.5 px-2 text-center whitespace-nowrap" @click.stop>
               <div class="inline-flex items-center gap-1">
                 <!-- INVOICE -->
                 <button
                   type="button"
-                  class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold transition-all cursor-pointer select-none active:scale-95"
+                  class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold transition-all cursor-pointer select-none active:scale-95"
                   :class="hasDoc(program, 'invoice')
                     ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
                     : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-amber-50 hover:text-amber-700'"
                   :title="hasDoc(program, 'invoice') ? 'Invoice ada - Klik untuk melihat' : 'Invoice belum ada - Klik unggah'"
                   @click="handlePillClick(program, 'invoice', 'Invoice')"
                 >
-                  <span v-if="!hasDoc(program, 'invoice')" class="mr-0.5 text-[9px] font-normal">+</span>IN
+                  <span v-if="!hasDoc(program, 'invoice')" class="mr-0.5 text-[8px] font-normal">+</span>IN
                 </button>
 
                 <!-- FAKTUR PAJAK -->
                 <button
                   type="button"
-                  class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold transition-all cursor-pointer select-none active:scale-95"
+                  class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold transition-all cursor-pointer select-none active:scale-95"
                   :class="hasDoc(program, 'faktur_pajak')
                     ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
                     : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-amber-50 hover:text-amber-700'"
                   :title="hasDoc(program, 'faktur_pajak') ? 'Faktur Pajak ada - Klik untuk melihat' : 'Faktur Pajak belum ada - Klik unggah'"
                   @click="handlePillClick(program, 'faktur_pajak', 'Faktur Pajak')"
                 >
-                  <span v-if="!hasDoc(program, 'faktur_pajak')" class="mr-0.5 text-[9px] font-normal">+</span>FP
+                  <span v-if="!hasDoc(program, 'faktur_pajak')" class="mr-0.5 text-[8px] font-normal">+</span>FP
                 </button>
 
                 <!-- MOU -->
                 <button
                   type="button"
-                  class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold transition-all cursor-pointer select-none active:scale-95"
+                  class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold transition-all cursor-pointer select-none active:scale-95"
                   :class="hasDoc(program, 'mou')
                     ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
                     : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-amber-50 hover:text-amber-700'"
                   :title="hasDoc(program, 'mou') ? 'MOU ada - Klik untuk melihat' : 'MOU belum ada - Klik unggah'"
                   @click="handlePillClick(program, 'mou', 'Memo / MOU')"
                 >
-                  <span v-if="!hasDoc(program, 'mou')" class="mr-0.5 text-[9px] font-normal">+</span>MO
+                  <span v-if="!hasDoc(program, 'mou')" class="mr-0.5 text-[8px] font-normal">+</span>MO
                 </button>
               </div>
             </td>
 
             <!-- 8. STATUS -->
-            <td class="py-3 px-3.5 text-center whitespace-nowrap">
+            <td class="py-2.5 px-2 text-center whitespace-nowrap">
               <span
                 :class="[
-                  'inline-block px-2.5 py-0.5 rounded-full text-[11px] font-medium border',
+                  'inline-block px-2 py-0.5 rounded-full text-[10px] font-medium border',
                   getStatusBadgeClass(program)
                 ]"
               >
@@ -123,32 +124,32 @@
               </span>
             </td>
 
-            <!-- 9. AKSI (Compact Icon Buttons) -->
-            <td class="py-3 px-3 text-center whitespace-nowrap" @click.stop>
+            <!-- 9. AKSI (Compact Icon Buttons - Sticky right) -->
+            <td class="py-2.5 px-2 text-center whitespace-nowrap sticky right-0 bg-white group-hover:bg-slate-50 transition-colors border-l border-slate-100 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.03)] z-10" @click.stop>
               <div class="inline-flex items-center justify-center gap-0.5">
                 <button
                   type="button"
-                  class="p-1.5 rounded-lg text-slate-400 hover:text-[#135A46] hover:bg-emerald-50 transition-colors cursor-pointer"
+                  class="p-1 rounded-md text-slate-400 hover:text-[#135A46] hover:bg-emerald-50 transition-colors cursor-pointer"
                   title="Lihat Detail Program"
                   @click="goToDetail(program.id)"
                 >
-                  <Eye class="w-4 h-4" />
+                  <Eye class="w-3.5 h-3.5" />
                 </button>
                 <button
                   type="button"
-                  class="p-1.5 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+                  class="p-1 rounded-md text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
                   title="Edit Data Program"
                   @click="openEditModal(program)"
                 >
-                  <Pencil class="w-4 h-4" />
+                  <Pencil class="w-3.5 h-3.5" />
                 </button>
                 <button
                   type="button"
-                  class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                  class="p-1 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                   title="Hapus Program"
                   @click="openDeleteConfirm(program)"
                 >
-                  <Trash2 class="w-4 h-4" />
+                  <Trash2 class="w-3.5 h-3.5" />
                 </button>
               </div>
             </td>
