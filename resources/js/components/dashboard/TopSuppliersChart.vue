@@ -47,11 +47,11 @@
     </div>
 
     <!-- Bottom X-axis Ticks -->
-    <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400 pl-28 sm:pl-32">
+    <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400 pl-24 sm:pl-32">
       <span>Rp 0</span>
-      <span>{{ formatShort(maxVal * 0.25) }}</span>
+      <span class="hidden sm:inline">{{ formatShort(maxVal * 0.25) }}</span>
       <span>{{ formatShort(maxVal * 0.5) }}</span>
-      <span>{{ formatShort(maxVal * 0.75) }}</span>
+      <span class="hidden sm:inline">{{ formatShort(maxVal * 0.75) }}</span>
       <span>{{ formatShort(maxVal) }}</span>
     </div>
   </div>
@@ -76,7 +76,7 @@ const supplierColors = [
 
 const suppliers = computed(() => {
   const map = new Map();
-  (store.programs.value || []).forEach(p => {
+  (store.dashboardPrograms.value || []).forEach(p => {
     const name = p.supplier || 'Lainnya';
     const current = map.get(name) || 0;
     map.set(name, current + (Number(p.total_invoice) || 0));

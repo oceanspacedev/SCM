@@ -132,8 +132,8 @@
         </div>
 
         <!-- Tab 2: Semua Pengguna -->
-        <div v-else class="border border-slate-200 rounded-lg overflow-hidden">
-          <table class="w-full text-left text-xs">
+        <div v-else class="border border-slate-200 rounded-lg overflow-x-auto">
+          <table class="w-full text-left text-xs min-w-[500px]">
             <thead class="bg-slate-50 border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider text-slate-400">
               <tr>
                 <th class="py-2.5 px-3.5">Nama & Kontak</th>

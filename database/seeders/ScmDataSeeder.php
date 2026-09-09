@@ -367,6 +367,107 @@ class ScmDataSeeder extends Seeder
                 'total_amount' => 200000000,
                 'status' => 'Perlu Tindakan',
                 'docs' => []
+            ],
+            [
+                'id' => '19',
+                'title' => 'Pengadaan Armada Truk Tronton Ekspedisi',
+                'category' => 'Logistik',
+                'due_date' => '2024-03-15',
+                'supplier' => 'PT Samudera Perkasa Abadi',
+                'npwp' => '02.887.123.4-041.000',
+                'invoice_no' => 'INV/SPA/2024/0211',
+                'dpp_amount' => 720720721,
+                'ppn_amount' => 79279279,
+                'total_amount' => 800000000,
+                'status' => 'Lengkap',
+                'docs' => [
+                    ['id' => 'doc-401', 'type' => 'invoice', 'file_name' => 'inv-spa-2024-0211.pdf', 'file_size' => '1.5 MB'],
+                    ['id' => 'doc-402', 'type' => 'faktur', 'file_name' => 'fp-spa-2024.pdf', 'file_size' => '780 KB'],
+                    ['id' => 'doc-403', 'type' => 'memo', 'file_name' => 'spk-truk-2024.pdf', 'file_size' => '2.1 MB'],
+                ]
+            ],
+            [
+                'id' => '20',
+                'title' => 'Integrasi Cloud Enterprise WMS & ERP SCM',
+                'category' => 'IT & Software',
+                'due_date' => '2024-05-20',
+                'supplier' => 'PT Global Solusi Informatika',
+                'npwp' => '03.221.456.7-052.000',
+                'invoice_no' => 'INV/GSI/2024/0589',
+                'dpp_amount' => 990990991,
+                'ppn_amount' => 109009009,
+                'total_amount' => 1100000000,
+                'status' => 'Lengkap',
+                'docs' => [
+                    ['id' => 'doc-404', 'type' => 'invoice', 'file_name' => 'inv-gsi-erp-2024.pdf', 'file_size' => '1.8 MB'],
+                    ['id' => 'doc-405', 'type' => 'faktur', 'file_name' => 'faktur-gsi-2024.pdf', 'file_size' => '850 KB'],
+                    ['id' => 'doc-406', 'type' => 'memo', 'file_name' => 'mou-gsi-2024.pdf', 'file_size' => '3.0 MB'],
+                ]
+            ],
+            [
+                'id' => '21',
+                'title' => 'Pengadaan Rak Pallet Mezzanine Heavy Duty',
+                'category' => 'Pengadaan Material',
+                'due_date' => '2024-08-10',
+                'supplier' => 'PT Bahtera Niaga Sentosa',
+                'npwp' => '02.441.789.0-033.000',
+                'invoice_no' => 'INV/BNS/2024/0820',
+                'dpp_amount' => 450450450,
+                'ppn_amount' => 49549550,
+                'total_amount' => 500000000,
+                'status' => 'Lengkap',
+                'docs' => [
+                    ['id' => 'doc-407', 'type' => 'invoice', 'file_name' => 'inv-bns-mezzanine-2024.pdf', 'file_size' => '1.3 MB'],
+                    ['id' => 'doc-408', 'type' => 'faktur', 'file_name' => 'fp-bns-2024.pdf', 'file_size' => '620 KB'],
+                    ['id' => 'doc-409', 'type' => 'memo', 'file_name' => 'po-bns-2024.pdf', 'file_size' => '1.9 MB'],
+                ]
+            ],
+            [
+                'id' => '22',
+                'title' => 'Distribusi Inter-Island Jawa - Kalimantan Barat',
+                'category' => 'Distribusi',
+                'due_date' => '2024-10-12',
+                'supplier' => 'PT Mitra Distribusi Utama',
+                'npwp' => '01.992.834.1-015.000',
+                'invoice_no' => 'INV/MDU/2024/1042',
+                'dpp_amount' => 585585586,
+                'ppn_amount' => 64414414,
+                'total_amount' => 650000000,
+                'status' => 'Perlu Tindakan',
+                'docs' => [
+                    ['id' => 'doc-410', 'type' => 'invoice', 'file_name' => 'inv-mdu-kalbar-2024.pdf', 'file_size' => '1.4 MB'],
+                ]
+            ],
+            [
+                'id' => '23',
+                'title' => 'Sewa Gudang Transit Hub Semarang',
+                'category' => 'Operasional',
+                'due_date' => '2024-11-25',
+                'supplier' => 'PT Cipta Logistik Nusantara',
+                'npwp' => '01.345.678.9-012.000',
+                'invoice_no' => 'INV/CLP/2024/1190',
+                'dpp_amount' => 360360360,
+                'ppn_amount' => 39639640,
+                'total_amount' => 400000000,
+                'status' => 'Perlu Tindakan',
+                'docs' => [
+                    ['id' => 'doc-411', 'type' => 'invoice', 'file_name' => 'inv-clp-smg-2024.pdf', 'file_size' => '1.2 MB'],
+                    ['id' => 'doc-412', 'type' => 'memo', 'file_name' => 'perjanjian-sewa-2024.pdf', 'file_size' => '2.5 MB'],
+                ]
+            ],
+            [
+                'id' => '24',
+                'title' => 'Konsultasi Perencanaan Kapasitas Pergudangan 2025',
+                'category' => 'Jasa Konsultasi',
+                'due_date' => '2024-12-05',
+                'supplier' => 'PT Sentosa Solusi Berkelanjutan',
+                'npwp' => '01.773.456.2-031.000',
+                'invoice_no' => 'INV/SSB/2024/1202',
+                'dpp_amount' => 153153153,
+                'ppn_amount' => 16846847,
+                'total_amount' => 170000000,
+                'status' => 'Perlu Tindakan',
+                'docs' => []
             ]
         ];
 

@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden flex flex-col">
-    <!-- Table Container with smooth horizontal scroll -->
-    <div class="overflow-x-auto">
+    <!-- Desktop Table Container (hidden md:block) -->
+    <div class="hidden md:block overflow-x-auto">
       <table class="w-full text-left text-xs border-collapse min-w-[940px]">
         <thead>
           <tr class="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500 font-sans">
@@ -155,7 +155,7 @@
             </td>
           </tr>
 
-          <!-- Empty State -->
+          <!-- Empty State Desktop -->
           <tr v-if="filteredPrograms.length === 0">
             <td colspan="9" class="py-14 text-center">
               <div class="flex flex-col items-center justify-center space-y-2">
@@ -171,19 +171,195 @@
       </table>
     </div>
 
+    <!-- Mobile Cards List (block md:hidden) - NO horizontal scroll required! -->
+    <div class="block md:hidden divide-y divide-slate-100">
+      <div
+        v-for="program in paginatedPrograms"
+        :key="program.id"
+        class="p-4 space-y-3 hover:bg-slate-50/50 transition-colors"
+        @click="goToDetail(program.id)"
+      >
+        <!-- Top Row: Program Name & Status Badge -->
+        <div class="flex items-start justify-between gap-2.5">
+          <div class="min-w-0 flex-1">
+            <router-link
+              :to="`/programs/${program.id}`"
+              class="font-bold text-slate-900 hover:text-[#135A46] text-sm leading-snug block break-words"
+              @click.stop
+            >
+              {{ program.program_name }}
+            </router-link>
+            <div class="flex items-center gap-1.5 mt-1 text-[11px] text-slate-500">
+              <span
+                class="px-2 py-0.5 rounded text-[10px] font-medium border"
+                :class="getCategoryBadgeClass(program.category)"
+              >
+                {{ program.category }}
+              </span>
+              <span>·</span>
+              <span class="text-slate-400">{{ formatDate(program.program_date) }}</span>
+            </div>
+          </div>
+
+          <!-- Status Badge -->
+          <span
+            :class="[
+              'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border shrink-0',
+              getStatusBadgeClass(program)
+            ]"
+          >
+            <span
+              class="w-1.5 h-1.5 rounded-full"
+              :class="{
+                'bg-emerald-500': getStatusText(program) === 'Lengkap',
+                'bg-rose-500': getStatusText(program) === 'Belum Lengkap',
+                'bg-amber-500': getStatusText(program).startsWith('Sebagian')
+              }"
+            ></span>
+            <span>{{ getStatusText(program) }}</span>
+          </span>
+        </div>
+
+        <!-- Supplier & Financial Box (Clean compact card) -->
+        <div class="bg-slate-50/80 rounded-xl p-3 border border-slate-100 space-y-2 text-xs">
+          <!-- Supplier -->
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-slate-500 text-[11px] shrink-0">Supplier:</span>
+            <div class="text-right min-w-0">
+              <span class="font-semibold text-slate-800 block truncate max-w-[210px]">{{ program.supplier }}</span>
+              <span class="font-mono text-[10px] text-slate-400 block">{{ program.npwp || '-' }}</span>
+            </div>
+          </div>
+
+          <!-- No. Invoice & Total -->
+          <div class="flex items-center justify-between gap-2 pt-1.5 border-t border-slate-200/60">
+            <div>
+              <span class="text-slate-500 text-[11px] block">No. Invoice</span>
+              <span class="font-mono text-[11px] font-medium text-slate-700 block">{{ program.invoice_number || '-' }}</span>
+            </div>
+            <div class="text-right">
+              <span class="text-slate-500 text-[11px] block">Total Invoice</span>
+              <span class="font-mono font-bold text-xs sm:text-sm block text-[#135A46]">
+                {{ formatRupiah(program.total_invoice) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- DPP & PPN Breakdown -->
+          <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-200/60 text-[11px]">
+            <div>
+              <span class="text-slate-400 text-[10px]">DPP:</span>
+              <span class="font-mono text-slate-700 ml-1">{{ formatRupiah(program.dpp) }}</span>
+            </div>
+            <div class="text-right">
+              <span class="text-slate-400 text-[10px]">PPN 11%:</span>
+              <span class="font-mono text-amber-700 font-medium ml-1">{{ formatRupiah(program.ppn) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dokumen Lampiran & Action Buttons Row -->
+        <div class="flex items-center justify-between gap-2 pt-1" @click.stop>
+          <!-- Dokumen Lampiran Interactive Pills -->
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] text-slate-400 font-semibold uppercase">Dok:</span>
+            <!-- INVOICE -->
+            <button
+              type="button"
+              class="px-2 py-1 rounded text-[10px] font-mono font-bold transition-all cursor-pointer active:scale-95"
+              :class="hasDoc(program, 'invoice')
+                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
+                : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-amber-50 hover:text-amber-700'"
+              :title="hasDoc(program, 'invoice') ? 'Invoice ada - Klik untuk melihat' : 'Invoice belum ada - Klik unggah'"
+              @click="handlePillClick(program, 'invoice', 'Invoice')"
+            >
+              <span v-if="!hasDoc(program, 'invoice')" class="mr-0.5 font-normal">+</span>IN
+            </button>
+
+            <!-- FAKTUR PAJAK -->
+            <button
+              type="button"
+              class="px-2 py-1 rounded text-[10px] font-mono font-bold transition-all cursor-pointer active:scale-95"
+              :class="hasDoc(program, 'faktur_pajak')
+                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
+                : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-amber-50 hover:text-amber-700'"
+              :title="hasDoc(program, 'faktur_pajak') ? 'Faktur Pajak ada - Klik untuk melihat' : 'Faktur Pajak belum ada - Klik unggah'"
+              @click="handlePillClick(program, 'faktur_pajak', 'Faktur Pajak')"
+            >
+              <span v-if="!hasDoc(program, 'faktur_pajak')" class="mr-0.5 font-normal">+</span>FP
+            </button>
+
+            <!-- MOU -->
+            <button
+              type="button"
+              class="px-2 py-1 rounded text-[10px] font-mono font-bold transition-all cursor-pointer active:scale-95"
+              :class="hasDoc(program, 'mou')
+                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
+                : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-amber-50 hover:text-amber-700'"
+              :title="hasDoc(program, 'mou') ? 'MOU ada - Klik untuk melihat' : 'MOU belum ada - Klik unggah'"
+              @click="handlePillClick(program, 'mou', 'Memo / MOU')"
+            >
+              <span v-if="!hasDoc(program, 'mou')" class="mr-0.5 font-normal">+</span>MO
+            </button>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="flex items-center gap-1.5">
+            <button
+              type="button"
+              class="h-8 px-2.5 rounded-lg bg-emerald-50 text-[#135A46] border border-emerald-200/80 font-semibold text-xs transition-colors flex items-center gap-1 hover:bg-emerald-100 cursor-pointer"
+              @click="goToDetail(program.id)"
+              title="Lihat Detail"
+            >
+              <Eye class="w-3.5 h-3.5" />
+              <span>Detail</span>
+            </button>
+            <button
+              type="button"
+              class="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-slate-200 transition-colors cursor-pointer flex items-center justify-center"
+              title="Edit Data Program"
+              @click="openEditModal(program)"
+            >
+              <Pencil class="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              class="h-8 w-8 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 transition-colors cursor-pointer flex items-center justify-center"
+              title="Hapus Program"
+              @click="openDeleteConfirm(program)"
+            >
+              <Trash2 class="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State Mobile -->
+      <div v-if="filteredPrograms.length === 0" class="py-12 px-4 text-center">
+        <FolderArchive class="w-8 h-8 text-slate-300 mx-auto mb-2" />
+        <p class="text-sm font-semibold text-slate-800">Tidak ada program ditemukan</p>
+        <p class="text-xs text-slate-400 mt-1">Sesuaikan filter atau pencarian.</p>
+      </div>
+    </div>
+
     <!-- Table Footer / Summary & Pagination -->
-    <div class="px-5 py-3.5 border-t border-slate-100 bg-slate-50/50 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-      <div>
+    <div class="px-4 sm:px-5 py-3.5 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+      <div class="flex items-center justify-between w-full sm:w-auto">
         <span v-if="filteredPrograms.length > 0">
           Menampilkan <strong class="text-slate-800 font-semibold">{{ startIndex + 1 }} - {{ endIndex }}</strong> dari <strong class="text-slate-800 font-semibold">{{ filteredPrograms.length }}</strong> data
         </span>
         <span v-else>
           Menampilkan <strong class="text-slate-800 font-semibold">0</strong> data
         </span>
+
+        <!-- Mobile Total Nilai Badge -->
+        <span v-if="filteredPrograms.length > 0" class="sm:hidden font-mono text-slate-800 font-bold text-[11px]">
+          {{ formatRupiah(totalSum) }}
+        </span>
       </div>
 
       <!-- Pagination Controls (Sebelumnya / Next) -->
-      <div v-if="totalPages > 1" class="flex items-center gap-1.5">
+      <div v-if="totalPages > 1" class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-2">
         <button
           type="button"
           :disabled="currentPage === 1"
@@ -194,7 +370,12 @@
           <span>Sebelumnya</span>
         </button>
 
-        <div class="flex items-center gap-1">
+        <!-- Page indicators: Mobile shows 'X / Y', Desktop shows page numbers -->
+        <div class="sm:hidden text-xs font-semibold text-slate-700 px-2">
+          {{ currentPage }} / {{ totalPages }}
+        </div>
+
+        <div class="hidden sm:flex items-center gap-1">
           <button
             v-for="page in totalPages"
             :key="page"
@@ -222,7 +403,7 @@
         </button>
       </div>
 
-      <div class="flex items-center gap-4 text-xs">
+      <div class="hidden sm:flex items-center gap-4 text-xs">
         <span v-if="filteredPrograms.length > 0">
           Total Nilai: <strong class="font-mono text-slate-800 font-bold ml-1">{{ formatRupiah(totalSum) }}</strong>
         </span>
@@ -233,10 +414,11 @@
     <Teleport to="body">
       <div
         v-if="isEditModalOpen"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-150"
+        class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-150"
+        @click.self="isEditModalOpen = false"
       >
-        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-lg overflow-hidden">
-          <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-lg overflow-hidden max-h-[92vh] flex flex-col">
+          <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0">
             <h3 class="text-sm font-bold text-slate-900">Edit Data Program</h3>
             <button
               type="button"
@@ -247,7 +429,7 @@
             </button>
           </div>
 
-          <form @submit.prevent="saveEdit" class="p-5 space-y-3.5">
+          <form @submit.prevent="saveEdit" class="p-4 sm:p-5 space-y-3.5 overflow-y-auto flex-1">
             <div>
               <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Nama Program</label>
               <input
@@ -258,7 +440,7 @@
               />
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Supplier / Vendor</label>
                 <input
@@ -278,7 +460,7 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">No. Invoice</label>
                 <input
@@ -300,7 +482,7 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Nilai DPP (IDR)</label>
                 <input
@@ -330,7 +512,7 @@
               </div>
             </div>
 
-            <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5 shrink-0">
               <button
                 type="button"
                 class="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 font-semibold text-xs hover:bg-slate-50 transition-colors cursor-pointer"
@@ -354,7 +536,8 @@
     <Teleport to="body">
       <div
         v-if="programToDelete"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-150"
+        class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-150"
+        @click.self="programToDelete = null"
       >
         <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-sm w-full p-5 text-center">
           <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-3">

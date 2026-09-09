@@ -231,28 +231,69 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { formatRupiah } from '../../store/taxStore';
+import { useTaxStore, formatRupiah } from '../../store/taxStore';
 
+const store = useTaxStore();
 const hoveredIndex = ref(null);
 
-const monthlyData = [
-  { month: 'Jan 25', dpp: 945000000, ppn: 105000000, total: 1050000000 },
-  { month: 'Feb 25', dpp: 1890000000, ppn: 210000000, total: 2100000000 },
-  { month: 'Mar 25', dpp: 620000000, ppn: 70000000, total: 690000000 },
-  { month: 'Apr 25', dpp: 1080000000, ppn: 120000000, total: 1200000000 },
-  { month: 'Mei 25', dpp: 1215000000, ppn: 135000000, total: 1350000000 },
-  { month: 'Jun 25', dpp: 890000000, ppn: 98000000, total: 988000000 },
-  { month: 'Jul 25', dpp: 1420000000, ppn: 158000000, total: 1578000000 },
-  { month: 'Agu 25', dpp: 495000000, ppn: 55000000, total: 550000000 },
-  { month: 'Sep 25', dpp: 430000000, ppn: 48000000, total: 478000000 },
-  { month: 'Okt 25', dpp: 520000000, ppn: 58000000, total: 578000000 },
+const monthNames = [
+  { name: 'Jan', num: '01' },
+  { name: 'Feb', num: '02' },
+  { name: 'Mar', num: '03' },
+  { name: 'Apr', num: '04' },
+  { name: 'Mei', num: '05' },
+  { name: 'Jun', num: '06' },
+  { name: 'Jul', num: '07' },
+  { name: 'Agu', num: '08' },
+  { name: 'Sep', num: '09' },
+  { name: 'Okt', num: '10' },
 ];
 
-const hoveredMonth = computed(() => {
-  return hoveredIndex.value !== null ? monthlyData[hoveredIndex.value] : null;
+const selectedYear = computed(() => store.selectedFiscalYear.value || '2025');
+const shortYear = computed(() => {
+  const y = selectedYear.value;
+  return y === 'all' ? 'All' : y.slice(-2);
 });
 
-const maxVal = 2400000000;
+// Dynamic monthly data aggregated from dashboardPrograms
+const monthlyData = computed(() => {
+  const progs = store.dashboardPrograms.value || [];
+  
+  return monthNames.map(m => {
+    let dpp = 0;
+    let ppn = 0;
+    let total = 0;
+
+    progs.forEach(p => {
+      const dateStr = p.program_date || p.due_date || '';
+      if (dateStr.length >= 7) {
+        const parts = dateStr.split('-');
+        if (parts[1] === m.num) {
+          dpp += Number(p.dpp) || 0;
+          ppn += Number(p.ppn) || 0;
+          total += Number(p.total_invoice) || 0;
+        }
+      }
+    });
+
+    return {
+      month: `${m.name} ${shortYear.value}`,
+      dpp,
+      ppn,
+      total
+    };
+  });
+});
+
+const hoveredMonth = computed(() => {
+  return (hoveredIndex.value !== null && monthlyData.value[hoveredIndex.value]) ? monthlyData.value[hoveredIndex.value] : null;
+});
+
+const maxVal = computed(() => {
+  const highest = monthlyData.value.reduce((acc, m) => Math.max(acc, m.total, m.dpp, m.ppn), 0);
+  if (highest <= 0) return 2000000000;
+  return Math.max(2000000000, Math.ceil((highest * 1.15) / 500000000) * 500000000);
+});
 
 function getX(idx) {
   const startX = 85;
@@ -263,12 +304,12 @@ function getX(idx) {
 function getY(value) {
   const baseline = 142;
   const availableHeight = 112; // 142 - 30
-  const ratio = Math.min(1, Math.max(0, value / maxVal));
+  const ratio = Math.min(1, Math.max(0, value / maxVal.value));
   return baseline - (ratio * availableHeight);
 }
 
 const trendLinePath = computed(() => {
-  return monthlyData.reduce((path, item, idx) => {
+  return monthlyData.value.reduce((path, item, idx) => {
     const x = getX(idx);
     const y = getY(item.total);
     return idx === 0 ? `M ${x} ${y}` : `${path} L ${x} ${y}`;

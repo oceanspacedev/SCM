@@ -19,7 +19,8 @@
         </router-link>
       </div>
 
-      <div class="overflow-x-auto flex-1">
+      <!-- Desktop Table -->
+      <div class="hidden sm:block overflow-x-auto flex-1">
         <table class="w-full text-left text-xs">
           <thead>
             <tr class="bg-slate-50/70 border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
@@ -59,6 +60,38 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Mobile List (block sm:hidden) -->
+      <div class="block sm:hidden divide-y divide-slate-100 flex-1">
+        <div
+          v-for="prog in recentPrograms"
+          :key="prog.id"
+          class="p-3.5 space-y-2 hover:bg-slate-50/50 transition-colors"
+        >
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0 flex-1">
+              <router-link
+                :to="`/programs/${prog.id}`"
+                class="font-semibold text-xs text-slate-800 hover:text-[#135A46] leading-snug block break-words"
+              >
+                {{ prog.program_name }}
+              </router-link>
+              <span class="text-[11px] text-slate-500 block truncate mt-0.5">{{ prog.supplier }}</span>
+            </div>
+            <Badge :variant="getBadge(prog).variant" class="shrink-0">
+              {{ getBadge(prog).label }}
+            </Badge>
+          </div>
+          <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 text-xs">
+            <span class="text-[10px] font-mono text-slate-400">
+              {{ prog.invoice_number || '-' }}
+            </span>
+            <span class="font-mono font-bold text-slate-900 text-xs">
+              {{ formatRupiah(prog.total_invoice) }}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Right Card: Dokumen Perlu Dilengkapi -->
@@ -80,7 +113,8 @@
         </router-link>
       </div>
 
-      <div class="overflow-x-auto flex-1">
+      <!-- Desktop Table -->
+      <div class="hidden sm:block overflow-x-auto flex-1">
         <table class="w-full text-left text-xs">
           <thead>
             <tr class="bg-slate-50/70 border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
@@ -118,7 +152,7 @@
               <td class="py-2.5 px-4 text-right whitespace-nowrap">
                 <router-link
                   :to="`/programs/${item.id}`"
-                  class="inline-flex items-center justify-center px-2 py-1 text-[11px] font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded transition-colors"
+                  class="inline-flex items-center justify-center px-2 py-1 text-[11px] font-semibold text-[#135A46] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 rounded transition-colors"
                 >
                   Lihat
                 </router-link>
@@ -126,6 +160,41 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Mobile List (block sm:hidden) -->
+      <div class="block sm:hidden divide-y divide-slate-100 flex-1">
+        <div
+          v-for="item in attentionList"
+          :key="item.id"
+          class="p-3.5 space-y-2 hover:bg-slate-50/50 transition-colors"
+        >
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0 flex-1">
+              <router-link
+                :to="`/programs/${item.id}`"
+                class="font-semibold text-xs text-slate-800 hover:text-[#135A46] leading-snug block break-words"
+              >
+                {{ item.name }}
+              </router-link>
+              <span class="text-[11px] text-slate-400 block truncate mt-0.5">{{ item.supplier }}</span>
+            </div>
+            <router-link
+              :to="`/programs/${item.id}`"
+              class="inline-flex items-center justify-center h-7 px-2.5 text-xs font-semibold text-[#135A46] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 rounded-lg transition-colors shrink-0"
+            >
+              Lihat
+            </router-link>
+          </div>
+          <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 text-xs">
+            <span class="inline-block px-1.5 py-0.5 text-[10px] font-medium rounded bg-rose-50 text-rose-600 border border-rose-200 truncate">
+              Kurang: {{ item.missingDocs }}
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 shrink-0">
+              {{ item.currentCount }}/3 Dokumen
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   </div>

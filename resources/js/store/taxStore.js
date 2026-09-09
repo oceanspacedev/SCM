@@ -115,6 +115,7 @@ const state = reactive({
     currentUser: loadStoredUser(),
     showDemoAccounts: loadStoredDemoAccounts(),
     isResetting: false,
+    isMobileSidebarOpen: false,
     activeOtp: null,
     searchQuery: '',
     selectedCategory: 'Semua Kategori',
@@ -124,6 +125,7 @@ const state = reactive({
     activeNotification: null,
     isImportModalOpen: false,
     isApprovalModalOpen: false,
+    selectedFiscalYear: localStorage.getItem('scm_fiscal_year') || '2025',
 });
 
 function saveUsersToStorage() {
@@ -249,6 +251,17 @@ export function mapBackendProgram(p) {
 export const useTaxStore = () => {
     const programs = computed(() => state.programs);
 
+    const dashboardPrograms = computed(() => {
+        const yr = state.selectedFiscalYear;
+        if (!yr || yr === 'all' || yr === 'Semua') {
+            return state.programs;
+        }
+        return state.programs.filter(p => {
+            const d = p.program_date || p.due_date || '';
+            return String(d).startsWith(String(yr));
+        });
+    });
+
     const summaryMetrics = computed(() => {
         let totalInvoice = 0;
         let totalDpp = 0;
@@ -257,7 +270,7 @@ export const useTaxStore = () => {
         let sebagianCount = 0;
         let belumLengkapCount = 0;
 
-        state.programs.forEach(p => {
+        dashboardPrograms.value.forEach(p => {
             totalInvoice += Number(p.total_invoice) || 0;
             totalDpp += Number(p.dpp) || 0;
             totalPpn += Number(p.ppn) || 0;
@@ -269,7 +282,7 @@ export const useTaxStore = () => {
         });
 
         return {
-            totalPrograms: state.programs.length,
+            totalPrograms: dashboardPrograms.value.length,
             totalInvoice,
             totalDpp,
             totalPpn,
@@ -282,7 +295,7 @@ export const useTaxStore = () => {
 
     const needAttentionPrograms = computed(() => {
         // Return up to 5 programs that are incomplete or partial, prioritizing partial that only need 1 doc
-        return state.programs
+        return dashboardPrograms.value
             .filter(p => (p.documents?.length || 0) < 3)
             .sort((a, b) => {
                 const countA = a.documents?.length || 0;
@@ -301,6 +314,13 @@ export const useTaxStore = () => {
                 currentCount: p.documents?.length || 0,
             }));
     });
+
+    function setFiscalYear(year) {
+        state.selectedFiscalYear = String(year);
+        try {
+            localStorage.setItem('scm_fiscal_year', String(year));
+        } catch (e) {}
+    }
 
     const suppliersList = computed(() => {
         const set = new Set();
@@ -1317,6 +1337,19 @@ export const useTaxStore = () => {
     const isLoggedIn = computed(() => !!state.currentUser);
     const isImportModalOpen = computed(() => state.isImportModalOpen);
     const isApprovalModalOpen = computed(() => state.isApprovalModalOpen);
+    const isMobileSidebarOpen = computed(() => state.isMobileSidebarOpen);
+
+    function toggleMobileSidebar() {
+        state.isMobileSidebarOpen = !state.isMobileSidebarOpen;
+    }
+
+    function closeMobileSidebar() {
+        state.isMobileSidebarOpen = false;
+    }
+
+    function openMobileSidebar() {
+        state.isMobileSidebarOpen = true;
+    }
 
     const allUsers = computed(() => state.users);
     const pendingUsers = computed(() => state.users.filter(u => u.status === 'pending'));
@@ -1398,6 +1431,13 @@ export const useTaxStore = () => {
         fetchUsers,
         notify,
         getDocTypeLabel,
+        isMobileSidebarOpen,
+        toggleMobileSidebar,
+        closeMobileSidebar,
+        openMobileSidebar,
+        selectedFiscalYear: computed(() => state.selectedFiscalYear),
+        setFiscalYear,
+        dashboardPrograms,
     };
 };
 

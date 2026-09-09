@@ -524,6 +524,197 @@ export const initialPrograms = [
         ppn: 19819820,
         total_invoice: 200000000,
         documents: []
+    },
+    {
+        id: 19,
+        program_name: "Pengadaan Armada Truk Tronton Ekspedisi",
+        category: "Logistik",
+        program_date: "2024-03-15",
+        supplier: "PT Samudera Perkasa Abadi",
+        npwp: "02.887.123.4-041.000",
+        invoice_number: "INV/SPA/2024/0211",
+        dpp: 720720721,
+        ppn: 79279279,
+        total_invoice: 800000000,
+        documents: [
+            {
+                id: "doc-401",
+                document_type: "invoice",
+                file_name: "inv-spa-2024-0211.pdf",
+                mime_type: "application/pdf",
+                file_size: "1.5 MB",
+                uploaded_at: "15 Mar 2024, 10:15",
+                uploaded_by: "Budi Santoso"
+            },
+            {
+                id: "doc-402",
+                document_type: "faktur_pajak",
+                file_name: "fp-spa-2024.pdf",
+                mime_type: "application/pdf",
+                file_size: "780 KB",
+                uploaded_at: "16 Mar 2024, 11:30",
+                uploaded_by: "Siti Rahmawati"
+            },
+            {
+                id: "doc-403",
+                document_type: "mou",
+                file_name: "spk-truk-2024.pdf",
+                mime_type: "application/pdf",
+                file_size: "2.1 MB",
+                uploaded_at: "17 Mar 2024, 14:00",
+                uploaded_by: "Budi Santoso"
+            }
+        ]
+    },
+    {
+        id: 20,
+        program_name: "Integrasi Cloud Enterprise WMS & ERP SCM",
+        category: "IT & Software",
+        program_date: "2024-05-20",
+        supplier: "PT Global Solusi Informatika",
+        npwp: "03.221.456.7-052.000",
+        invoice_number: "INV/GSI/2024/0589",
+        dpp: 990990991,
+        ppn: 109009009,
+        total_invoice: 1100000000,
+        documents: [
+            {
+                id: "doc-404",
+                document_type: "invoice",
+                file_name: "inv-gsi-erp-2024.pdf",
+                mime_type: "application/pdf",
+                file_size: "1.8 MB",
+                uploaded_at: "20 Mei 2024, 09:40",
+                uploaded_by: "Budi Santoso"
+            },
+            {
+                id: "doc-405",
+                document_type: "faktur_pajak",
+                file_name: "faktur-gsi-2024.pdf",
+                mime_type: "application/pdf",
+                file_size: "850 KB",
+                uploaded_at: "21 Mei 2024, 15:10",
+                uploaded_by: "Siti Rahmawati"
+            },
+            {
+                id: "doc-406",
+                document_type: "mou",
+                file_name: "mou-gsi-2024.pdf",
+                mime_type: "application/pdf",
+                file_size: "3.0 MB",
+                uploaded_at: "22 Mei 2024, 16:20",
+                uploaded_by: "Budi Santoso"
+            }
+        ]
+    },
+    {
+        id: 21,
+        program_name: "Pengadaan Rak Pallet Mezzanine Heavy Duty",
+        category: "Pengadaan Material",
+        program_date: "2024-08-10",
+        supplier: "PT Bahtera Niaga Sentosa",
+        npwp: "02.441.789.0-033.000",
+        invoice_number: "INV/BNS/2024/0820",
+        dpp: 450450450,
+        ppn: 49549550,
+        total_invoice: 500000000,
+        documents: [
+            {
+                id: "doc-407",
+                document_type: "invoice",
+                file_name: "inv-bns-mezzanine-2024.pdf",
+                mime_type: "application/pdf",
+                file_size: "1.3 MB",
+                uploaded_at: "10 Agu 2024, 13:00",
+                uploaded_by: "Budi Santoso"
+            },
+            {
+                id: "doc-408",
+                document_type: "faktur_pajak",
+                file_name: "fp-bns-2024.pdf",
+                mime_type: "application/pdf",
+                file_size: "620 KB",
+                uploaded_at: "11 Agu 2024, 14:15",
+                uploaded_by: "Siti Rahmawati"
+            },
+            {
+                id: "doc-409",
+                document_type: "mou",
+                file_name: "po-bns-2024.pdf",
+                mime_type: "application/pdf",
+                file_size: "1.9 MB",
+                uploaded_at: "12 Agu 2024, 10:45",
+                uploaded_by: "Budi Santoso"
+            }
+        ]
+    },
+    {
+        id: 22,
+        program_name: "Distribusi Inter-Island Jawa - Kalimantan Barat",
+        category: "Distribusi",
+        program_date: "2024-10-12",
+        supplier: "PT Mitra Distribusi Utama",
+        npwp: "01.992.834.1-015.000",
+        invoice_number: "INV/MDU/2024/1042",
+        dpp: 585585586,
+        ppn: 64414414,
+        total_invoice: 650000000,
+        documents: [
+            {
+                id: "doc-410",
+                document_type: "invoice",
+                file_name: "inv-mdu-kalbar-2024.pdf",
+                mime_type: "application/pdf",
+                file_size: "1.4 MB",
+                uploaded_at: "12 Okt 2024, 16:30",
+                uploaded_by: "Budi Santoso"
+            }
+        ]
+    },
+    {
+        id: 23,
+        program_name: "Sewa Gudang Transit Hub Semarang",
+        category: "Operasional",
+        program_date: "2024-11-25",
+        supplier: "PT Cipta Logistik Nusantara",
+        npwp: "01.345.678.9-012.000",
+        invoice_number: "INV/CLP/2024/1190",
+        dpp: 360360360,
+        ppn: 39639640,
+        total_invoice: 400000000,
+        documents: [
+            {
+                id: "doc-411",
+                document_type: "invoice",
+                file_name: "inv-clp-smg-2024.pdf",
+                mime_type: "application/pdf",
+                file_size: "1.2 MB",
+                uploaded_at: "25 Nov 2024, 11:20",
+                uploaded_by: "Budi Santoso"
+            },
+            {
+                id: "doc-412",
+                document_type: "mou",
+                file_name: "perjanjian-sewa-2024.pdf",
+                mime_type: "application/pdf",
+                file_size: "2.5 MB",
+                uploaded_at: "26 Nov 2024, 09:15",
+                uploaded_by: "Budi Santoso"
+            }
+        ]
+    },
+    {
+        id: 24,
+        program_name: "Konsultasi Perencanaan Kapasitas Pergudangan 2025",
+        category: "Jasa Konsultasi",
+        program_date: "2024-12-05",
+        supplier: "PT Sentosa Solusi Berkelanjutan",
+        npwp: "01.773.456.2-031.000",
+        invoice_number: "INV/SSB/2024/1202",
+        dpp: 153153153,
+        ppn: 16846847,
+        total_invoice: 170000000,
+        documents: []
     }
 ];
 

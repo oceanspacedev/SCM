@@ -11,7 +11,7 @@
         </p>
       </div>
 
-      <!-- Fiscal Year Dropdown matching screenshot -->
+      <!-- Fiscal Year Dropdown -->
       <div class="relative">
         <button
           type="button"
@@ -19,28 +19,24 @@
           @click="showYearMenu = !showYearMenu"
         >
           <Calendar class="w-3.5 h-3.5 text-slate-500" />
-          <span>Tahun Pajak 2025</span>
-          <ChevronDown class="w-3.5 h-3.5 text-slate-400 ml-0.5" />
+          <span>{{ currentYearLabel }}</span>
+          <ChevronDown class="w-3.5 h-3.5 text-slate-400 ml-0.5 transition-transform" :class="{ 'rotate-180': showYearMenu }" />
         </button>
 
         <div
           v-if="showYearMenu"
-          class="absolute right-0 mt-1.5 w-44 bg-white rounded-lg border border-slate-200 shadow-lg py-1.5 z-30 text-xs"
+          class="absolute right-0 mt-1.5 w-48 bg-white rounded-xl border border-slate-200 shadow-xl py-1.5 z-30 text-xs animate-in fade-in zoom-in-95 duration-100"
         >
           <button
+            v-for="yr in yearOptions"
+            :key="yr.value"
             type="button"
-            class="w-full text-left px-3.5 py-1.5 hover:bg-slate-50 font-semibold text-[#135A46] flex items-center justify-between"
-            @click="showYearMenu = false"
+            class="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center justify-between cursor-pointer transition-colors"
+            :class="selectedYear === yr.value ? 'font-semibold text-[#135A46] bg-emerald-50/60' : 'text-slate-700'"
+            @click="chooseYear(yr.value)"
           >
-            <span>Tahun Pajak 2025</span>
-            <span class="w-1.5 h-1.5 rounded-full bg-[#135A46]"></span>
-          </button>
-          <button
-            type="button"
-            class="w-full text-left px-3.5 py-1.5 hover:bg-slate-50 text-slate-600"
-            @click="showYearMenu = false"
-          >
-            <span>Tahun Pajak 2024</span>
+            <span>{{ yr.label }}</span>
+            <span v-if="selectedYear === yr.value" class="w-1.5 h-1.5 rounded-full bg-[#135A46]"></span>
           </button>
         </div>
       </div>
@@ -70,12 +66,32 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Calendar, ChevronDown } from 'lucide-vue-next';
 import DashboardMetricCards from '../components/dashboard/DashboardMetricCards.vue';
 import MonthlyTaxChart from '../components/dashboard/MonthlyTaxChart.vue';
 import TopSuppliersChart from '../components/dashboard/TopSuppliersChart.vue';
 import IncompleteAlertSection from '../components/dashboard/IncompleteAlertSection.vue';
+import { useTaxStore } from '../store/taxStore';
 
+const store = useTaxStore();
 const showYearMenu = ref(false);
+
+const selectedYear = computed(() => store.state.selectedFiscalYear || '2025');
+
+const yearOptions = [
+  { value: '2025', label: 'Tahun Pajak 2025' },
+  { value: '2024', label: 'Tahun Pajak 2024' },
+  { value: 'all', label: 'Semua Tahun Pajak' }
+];
+
+const currentYearLabel = computed(() => {
+  const found = yearOptions.find(o => o.value === selectedYear.value);
+  return found ? found.label : `Tahun Pajak ${selectedYear.value}`;
+});
+
+function chooseYear(yr) {
+  store.setFiscalYear(yr);
+  showYearMenu.value = false;
+}
 </script>
