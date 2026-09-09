@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AdminUserController;
 use App\Http\Controllers\Api\ProgramController;
+use App\Http\Controllers\Api\AdminSettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,11 @@ Route::prefix('api')->group(function () {
     Route::get('/programs/raw-imports', [ProgramController::class, 'rawImports']);
     Route::get('/programs/raw-imports/{id}/download', [ProgramController::class, 'downloadRawImport']);
     Route::delete('/programs/raw-imports/{id}', [ProgramController::class, 'deleteRawImport']);
+
+    // 4. System Settings & Reset Data (Admin Controls)
+    Route::get('/settings', [AdminSettingController::class, 'getPublicSettings']);
+    Route::post('/admin/settings', [AdminSettingController::class, 'updateSettings']);
+    Route::post('/admin/reset-data', [AdminSettingController::class, 'resetData']);
 });
 
 /*

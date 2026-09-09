@@ -162,8 +162,8 @@
             </button>
           </div>
 
-          <!-- Demo Accounts Box (Reference Style) -->
-          <div class="pt-3 border-t border-slate-100">
+          <!-- Demo Accounts Box (Reference Style - controlled by Admin ON/OFF) -->
+          <div v-if="showDemoAccounts" class="pt-3 border-t border-slate-100 animate-in fade-in duration-200">
             <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
               AKUN DEMO (PASSWORD: PASSWORD123)
             </div>
@@ -534,6 +534,12 @@ const regForm = reactive({
 });
 
 // Demo accounts list for quick testing
+const showDemoAccounts = computed(() => store.showDemoAccounts.value);
+
+onMounted(() => {
+  store.fetchSettings();
+});
+
 const demoAccounts = [
   { label: 'Admin SCM', email: 'admin@scm.corp', role: 'Admin SCM', phone: '081234567890' },
   { label: 'Tim Pajak', email: 'auditor@pajak.corp', role: 'Tim Pajak', phone: '081224290502' },

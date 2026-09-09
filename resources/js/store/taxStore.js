@@ -1,5 +1,5 @@
 import { reactive, computed, ref } from 'vue';
-import { saveDocumentBlob, getDocumentBlob, deleteDocumentBlob } from '../utils/documentDb';
+import { saveDocumentBlob, getDocumentBlob, deleteDocumentBlob, clearAllDocumentBlobs } from '../utils/documentDb';
 
 // Storage key synced with backend
 const STORAGE_KEY = 'scm_taxvault_programs_v2';
@@ -71,6 +71,19 @@ export const demoUsers = defaultUsers.filter(u => u.status === 'approved');
 
 const USERS_LIST_STORAGE_KEY = 'scm_taxvault_users_list_v2';
 const USER_STORAGE_KEY = 'scm_taxvault_user_v2';
+const DEMO_ACCOUNTS_STORAGE_KEY = 'scm_show_demo_accounts';
+
+function loadStoredDemoAccounts() {
+    try {
+        const val = localStorage.getItem(DEMO_ACCOUNTS_STORAGE_KEY);
+        if (val !== null) {
+            return val !== 'false';
+        }
+    } catch (e) {
+        console.error("Failed to load demo accounts preference", e);
+    }
+    return true;
+}
 
 function loadStoredUsersList() {
     try {
@@ -100,6 +113,8 @@ const state = reactive({
     programs: loadStoredPrograms(),
     users: loadStoredUsersList(),
     currentUser: loadStoredUser(),
+    showDemoAccounts: loadStoredDemoAccounts(),
+    isResetting: false,
     activeOtp: null,
     searchQuery: '',
     selectedCategory: 'Semua Kategori',
@@ -803,9 +818,80 @@ export const useTaxStore = () => {
         notify("Data program berhasil diexport ke file CSV.");
     }
 
+    async function fetchSettings() {
+        try {
+            const res = await fetch('/api/settings');
+            if (res.ok) {
+                const data = await res.json();
+                if (data.success && data.settings) {
+                    if (data.settings.show_demo_accounts !== undefined) {
+                        state.showDemoAccounts = Boolean(data.settings.show_demo_accounts);
+                        localStorage.setItem(DEMO_ACCOUNTS_STORAGE_KEY, state.showDemoAccounts ? 'true' : 'false');
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to fetch settings from backend:', e);
+        }
+    }
+
+    async function setDemoAccountsVisibility(visible) {
+        state.showDemoAccounts = Boolean(visible);
+        localStorage.setItem(DEMO_ACCOUNTS_STORAGE_KEY, state.showDemoAccounts ? 'true' : 'false');
+        try {
+            await fetch('/api/admin/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ show_demo_accounts: state.showDemoAccounts })
+            });
+            notify(
+                state.showDemoAccounts
+                    ? 'Akun demo sekarang DITAMPILKAN di halaman login.'
+                    : 'Akun demo sekarang DISEMBUNYIKAN dari halaman login.',
+                'info'
+            );
+        } catch (e) {
+            console.error('Failed to sync settings with backend:', e);
+        }
+    }
+
+    async function resetEntireSystemData() {
+        state.isResetting = true;
+        try {
+            const res = await fetch('/api/admin/reset-data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+            });
+            const data = await res.json();
+
+            // Clear local cached programs, IndexedDB, and reset state
+            localStorage.removeItem(STORAGE_KEY);
+            state.programs = [];
+            await clearAllDocumentBlobs();
+            await fetchPrograms();
+            await fetchUsers();
+
+            if (data.success) {
+                notify(data.message || 'Seluruh data program, berkas lampiran, dan arsip telah berhasil dihapus bersih.', 'success');
+                return { success: true };
+            } else {
+                notify(data.message || 'Gagal menghapus data.', 'error');
+                return { success: false, message: data.message };
+            }
+        } catch (e) {
+            console.error('Failed to reset system data:', e);
+            localStorage.removeItem(STORAGE_KEY);
+            state.programs = [];
+            await clearAllDocumentBlobs();
+            notify('Seluruh data lokal telah dikosongkan.', 'info');
+            return { success: false, message: e.message };
+        } finally {
+            state.isResetting = false;
+        }
+    }
+
     async function resetToDefault() {
-        await fetchPrograms();
-        notify("Data telah disinkronkan kembali dengan database backend.", "info");
+        return await resetEntireSystemData();
     }
 
     function notify(message, type = 'success') {
@@ -883,6 +969,7 @@ export const useTaxStore = () => {
     // Auto-fetch on store creation
     fetchUsers();
     fetchPrograms();
+    fetchSettings();
 
     async function registerUser({ name, phone, email, role, password }) {
         const cleanEmail = (email || '').trim().toLowerCase();
@@ -1297,6 +1384,11 @@ export const useTaxStore = () => {
         importPrograms,
         exportToCsv,
         resetToDefault,
+        resetEntireSystemData,
+        showDemoAccounts: computed(() => state.showDemoAccounts),
+        isResetting: computed(() => state.isResetting),
+        setDemoAccountsVisibility,
+        fetchSettings,
         rawImports,
         fetchRawImports,
         deleteRawImport,

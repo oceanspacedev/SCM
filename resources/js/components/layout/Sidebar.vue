@@ -128,6 +128,30 @@
           </div>
         </router-link>
 
+        <!-- Pengaturan Link (Khusus Admin SCM) -->
+        <router-link
+          v-if="isAdmin"
+          to="/settings"
+          v-slot="{ isActive }"
+        >
+          <div
+            :class="[
+              'h-10 rounded-xl text-xs transition-all cursor-pointer font-medium flex items-center',
+              isCollapsed ? 'justify-center px-0' : 'justify-between px-3',
+              isActive
+                ? 'bg-[#135A46] text-white shadow-sm font-semibold'
+                : 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900'
+            ]"
+            :title="isCollapsed ? 'Pengaturan' : ''"
+          >
+            <div class="flex items-center gap-2.5 min-w-0">
+              <Settings class="w-4 h-4 shrink-0" :class="isActive ? 'text-white' : 'text-slate-500'" />
+              <span v-if="!isCollapsed" class="truncate">Pengaturan</span>
+            </div>
+            <ChevronRight v-if="!isCollapsed" class="w-3.5 h-3.5 shrink-0" :class="isActive ? 'text-white' : 'text-slate-400'" />
+          </div>
+        </router-link>
+
         <!-- Separator -->
         <div class="pt-2 my-1 border-t border-slate-200/70"></div>
 
@@ -173,6 +197,7 @@ import {
   FolderArchive,
   ChevronRight,
   Users,
+  Settings,
   PanelLeftClose,
   PanelLeftOpen,
   Power

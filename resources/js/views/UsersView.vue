@@ -24,6 +24,63 @@
       </div>
     </div>
 
+    <!-- Admin Controls Bar: Demo Account Toggle & Reset Data -->
+    <div class="bg-white rounded-xl border border-slate-200/90 shadow-2xs p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <!-- Left: Demo Accounts Toggle -->
+      <div class="flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#135A46] border border-emerald-100 flex items-center justify-center shrink-0">
+          <Eye v-if="showDemoAccounts" class="w-5 h-5" />
+          <EyeOff v-else class="w-5 h-5 text-slate-400" />
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-slate-900">Tampilkan Akun Demo di Login</span>
+            <span
+              class="px-2 py-0.5 rounded-full text-[10px] font-semibold transition-colors"
+              :class="showDemoAccounts ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200'"
+            >
+              {{ showDemoAccounts ? 'Aktif (Tampil di Login)' : 'Nonaktif (Disembunyikan)' }}
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-500 mt-0.5">
+            Menampilkan tombol cepat akun demo (Admin SCM, Tim Pajak, Staf SCM) di form masuk
+          </p>
+        </div>
+      </div>
+
+      <!-- Right: Actions (Toggle Switch & Reset Data Button) -->
+      <div class="flex items-center gap-3 shrink-0 self-end md:self-auto">
+        <!-- Switch Toggle Button -->
+        <button
+          type="button"
+          role="switch"
+          :aria-checked="showDemoAccounts"
+          @click="handleToggleDemoAccounts"
+          class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden"
+          :class="showDemoAccounts ? 'bg-[#135A46]' : 'bg-slate-300'"
+          title="Nyalakan / Matikan Akun Demo di Login"
+        >
+          <span
+            aria-hidden="true"
+            class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out"
+            :class="showDemoAccounts ? 'translate-x-5' : 'translate-x-0'"
+          />
+        </button>
+
+        <div class="h-6 w-px bg-slate-200"></div>
+
+        <!-- Reset Data Button -->
+        <button
+          type="button"
+          class="h-9 px-3.5 rounded-lg border border-rose-200 bg-rose-50/60 hover:bg-rose-100 text-rose-700 text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 shadow-2xs"
+          @click="isResetModalOpen = true"
+        >
+          <RotateCcw class="w-3.5 h-3.5" />
+          <span>Reset Data</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Filter Tabs & Stats -->
     <div class="flex items-center justify-between border-b border-slate-200 text-xs">
       <div class="flex gap-6">
@@ -397,17 +454,74 @@
         </div>
       </div>
     </Teleport>
+
+    <!-- Modal Konfirmasi Reset Data -->
+    <Teleport to="body">
+      <div
+        v-if="isResetModalOpen"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs"
+        @click.self="!isResetting && (isResetModalOpen = false)"
+      >
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
+          <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4 border border-rose-100">
+            <Trash2 class="w-6 h-6" :class="{ 'animate-spin': isResetting }" />
+          </div>
+
+          <h3 class="text-base font-bold text-slate-900 text-center mb-1">
+            Hapus Semua Data?
+          </h3>
+          <p class="text-xs text-slate-500 text-center leading-relaxed mb-5">
+            Apakah Anda yakin ingin menghapus <strong class="text-slate-700">SELURUH data</strong> arsip program, berkas lampiran, dan riwayat dokumen secara permanen? Data akan dikosongkan total dari sistem.
+          </p>
+
+          <div class="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              :disabled="isResetting"
+              class="w-full py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50"
+              @click="isResetModalOpen = false"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              :disabled="isResetting"
+              class="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-1.5 disabled:opacity-75"
+              @click="handleResetData"
+            >
+              <RotateCcw class="w-3.5 h-3.5" :class="{ 'animate-spin': isResetting }" />
+              <span>{{ isResetting ? 'Menghapus...' : 'Ya, Hapus Semua' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { Plus, Search, Trash2, X, AlertCircle, Users } from 'lucide-vue-next';
+import { Plus, Search, Trash2, X, AlertCircle, Users, RotateCcw, Eye, EyeOff } from 'lucide-vue-next';
 import { useTaxStore } from '../store/taxStore';
 
 const router = useRouter();
 const store = useTaxStore();
+
+const showDemoAccounts = computed(() => store.showDemoAccounts.value);
+const isResetting = computed(() => store.isResetting.value);
+const isResetModalOpen = ref(false);
+
+async function handleToggleDemoAccounts() {
+  await store.setDemoAccountsVisibility(!showDemoAccounts.value);
+}
+
+async function handleResetData() {
+  const res = await store.resetEntireSystemData();
+  if (res && res.success) {
+    isResetModalOpen.value = false;
+  }
+}
 
 onMounted(() => {
   const role = store.currentUser.value?.role || '';

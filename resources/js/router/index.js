@@ -70,8 +70,8 @@ router.beforeEach((to, from, next) => {
         document.title = to.meta.title;
     }
 
-    // Hanya role Admin SCM yang boleh membuka halaman Manajemen User
-    if (to.name === 'users') {
+    // Hanya role Admin SCM yang boleh membuka halaman Manajemen User & Pengaturan
+    if (to.name === 'users' || to.name === 'settings') {
         let currentUser = null;
         try {
             const stored = localStorage.getItem('scm_taxvault_user_v2');

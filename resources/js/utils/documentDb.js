@@ -81,3 +81,20 @@ export async function deleteDocumentBlob(id) {
     return false;
   }
 }
+
+export async function clearAllDocumentBlobs() {
+  try {
+    const db = await openDB();
+    if (!db) return false;
+    return new Promise((resolve) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      store.clear();
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = () => resolve(false);
+    });
+  } catch (e) {
+    console.warn('clearAllDocumentBlobs failed:', e);
+    return false;
+  }
+}
