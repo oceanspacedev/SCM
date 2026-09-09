@@ -74,7 +74,9 @@ class ProgramController extends Controller
         $ppn = (float) ($request->input('ppn_amount') ?? $request->input('ppn') ?? ($dpp * 0.11));
         $total = (float) ($request->input('total_amount') ?? $request->input('total_invoice') ?? ($dpp + $ppn));
 
-        $existingMax = Program::whereRaw('id REGEXP "^[0-9]+$"')->max('id');
+        $existingMax = Program::whereRaw('id REGEXP "^[0-9]+$"')
+            ->selectRaw('MAX(CAST(id AS UNSIGNED)) as max_id')
+            ->value('max_id');
         $nextId = (string) ($existingMax ? ((int) $existingMax + 1) : (Program::count() + 1));
         $id = (string) ($request->input('id') ?: $nextId);
 
