@@ -103,7 +103,7 @@ const yearOptions = computed(() => {
 });
 
 const currentYearLabel = computed(() => {
-  const found = yearOptions.find(o => o.value === selectedYear.value);
+  const found = yearOptions.value.find(o => o.value === selectedYear.value);
   return found ? found.label : `Tahun Pajak ${selectedYear.value}`;
 });
 

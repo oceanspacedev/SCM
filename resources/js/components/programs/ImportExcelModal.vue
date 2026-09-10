@@ -586,11 +586,24 @@ async function executeImport() {
   errorMessage.value = '';
   try {
     await store.importPrograms(parsedRows.value, selectedRawFile.value);
-    closeModal();
-    // Refresh halaman Programs atau Dashboard setelah import
-    if (router.currentRoute.value.path !== '/programs') {
-      router.push('/programs');
+
+    // Deteksi tahun dari data yang diimport & set filter dashboard
+    const yearCounts = {};
+    parsedRows.value.forEach(row => {
+      const dateStr = String(row.program_date || row.due_date || row.BULAN || '');
+      const yr = dateStr.slice(0, 4);
+      if (/^\d{4}$/.test(yr)) {
+        yearCounts[yr] = (yearCounts[yr] || 0) + 1;
+      }
+    });
+    const mostCommonYear = Object.keys(yearCounts).sort((a, b) => yearCounts[b] - yearCounts[a])[0];
+    if (mostCommonYear) {
+      store.setFiscalYear(mostCommonYear);
     }
+
+    closeModal();
+    // Navigasi ke Programs untuk melihat data yang baru diimport
+    router.push('/programs');
   } catch (err) {
     errorMessage.value = err.message || 'Gagal menyimpan data import ke server.';
   } finally {

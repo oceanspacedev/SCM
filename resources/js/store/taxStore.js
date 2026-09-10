@@ -127,7 +127,7 @@ const state = reactive({
     activeNotification: null,
     isImportModalOpen: false,
     isApprovalModalOpen: false,
-    selectedFiscalYear: localStorage.getItem('scm_fiscal_year') || '2025',
+    selectedFiscalYear: localStorage.getItem('scm_fiscal_year') || String(new Date().getFullYear()),
 });
 
 function saveUsersToStorage() {

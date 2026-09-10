@@ -249,7 +249,7 @@ const monthNames = [
   { name: 'Okt', num: '10' },
 ];
 
-const selectedYear = computed(() => store.selectedFiscalYear.value || '2025');
+const selectedYear = computed(() => store.selectedFiscalYear.value || String(new Date().getFullYear()));
 const shortYear = computed(() => {
   const y = selectedYear.value;
   return y === 'all' ? 'All' : y.slice(-2);
