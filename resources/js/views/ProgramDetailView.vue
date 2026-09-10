@@ -401,6 +401,18 @@
           <!-- Key-Value Rows matching screenshot -->
           <div class="px-6 divide-y divide-slate-100 text-xs">
             <div class="py-3 flex items-center justify-between">
+              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">COMPANY NAME</span>
+              <span class="text-slate-800 font-semibold max-w-[240px] truncate text-right">{{ getProgramCompanyName(program) }}</span>
+            </div>
+            <div class="py-3 flex items-center justify-between">
+              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">NO. PO / SJ</span>
+              <span class="font-mono text-slate-700 font-medium">{{ getProgramPoSjNumber(program) }}</span>
+            </div>
+            <div class="py-3 flex items-center justify-between">
+              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">BULAN / MASA PAJAK</span>
+              <span class="font-semibold text-slate-700">{{ getProgramMonth(program.program_date) }} {{ getProgramYear(program.program_date) }}</span>
+            </div>
+            <div class="py-3 flex items-center justify-between">
               <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">NAMA SUPPLIER</span>
               <span class="text-slate-800 font-semibold max-w-[240px] truncate text-right">{{ program.supplier }}</span>
             </div>
@@ -697,7 +709,17 @@ import {
 } from 'lucide-vue-next';
 import DocumentUploadModal from '../components/detail/DocumentUploadModal.vue';
 import DocumentPreviewSheet from '../components/detail/DocumentPreviewSheet.vue';
-import { useTaxStore, formatRupiah, formatDate, formatUploadDate, getCompleteness } from '../store/taxStore';
+import {
+  useTaxStore,
+  formatRupiah,
+  formatDate,
+  formatUploadDate,
+  getCompleteness,
+  getProgramMonth,
+  getProgramYear,
+  getProgramCompanyName,
+  getProgramPoSjNumber
+} from '../store/taxStore';
 
 const route = useRoute();
 const router = useRouter();

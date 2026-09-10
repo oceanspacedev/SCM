@@ -121,6 +121,8 @@ const state = reactive({
     selectedCategory: 'Semua Kategori',
     selectedStatus: 'all',
     selectedSupplier: 'all',
+    selectedMonth: 'all',
+    selectedCompany: 'all',
     sortBy: 'date-desc',
     activeNotification: null,
     isImportModalOpen: false,
@@ -221,6 +223,105 @@ export function getMissingDocuments(program) {
     return missing;
 }
 
+export function getProgramMonth(dateString) {
+    if (!dateString) return '-';
+    try {
+        const months = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        const s = String(dateString).trim();
+        for (const m of months) {
+            if (s.toLowerCase().includes(m.toLowerCase())) return m;
+        }
+        const parts = s.split('-');
+        if (parts.length >= 2) {
+            const mIndex = parseInt(parts[1], 10) - 1;
+            if (mIndex >= 0 && mIndex < 12) {
+                return months[mIndex];
+            }
+        }
+        const d = new Date(dateString);
+        if (!isNaN(d.getTime())) {
+            return new Intl.DateTimeFormat('id-ID', { month: 'long' }).format(d);
+        }
+    } catch (e) {}
+    return '-';
+}
+
+export function getProgramYear(dateString) {
+    if (!dateString) return '';
+    try {
+        const parts = String(dateString).split('-');
+        if (parts.length >= 1 && parts[0].length === 4) {
+            return parts[0];
+        }
+        const d = new Date(dateString);
+        if (!isNaN(d.getTime())) {
+            return String(d.getFullYear());
+        }
+    } catch (e) {}
+    return '';
+}
+
+export function getProgramMonthNumber(dateString) {
+    if (!dateString) return null;
+    try {
+        const parts = String(dateString).split('-');
+        if (parts.length >= 2) {
+            return parseInt(parts[1], 10);
+        }
+        const d = new Date(dateString);
+        if (!isNaN(d.getTime())) {
+            return d.getMonth() + 1;
+        }
+    } catch (e) {}
+    return null;
+}
+
+export function getProgramCompanyName(program) {
+    if (!program) return 'PT SCM Nusantara';
+    if (program.company_name) return program.company_name;
+    if (program.company) return program.company;
+    
+    const companies = [
+        'PT SCM Nusantara',
+        'PT SCM Solusi Indonesia',
+        'PT SCM Logistik Utama',
+        'PT Surya Citra Media Tbk'
+    ];
+    const idNum = typeof program.id === 'number' ? program.id : (parseInt(String(program.id).replace(/\D/g, ''), 10) || 1);
+    return companies[(idNum - 1) % companies.length];
+}
+
+export function getProgramPoSjNumber(program) {
+    if (!program) return '-';
+    if (program.po_sj_number) return program.po_sj_number;
+    if (program.no_po_sj) return program.no_po_sj;
+    if (program.po_number && program.sj_number) return `${program.po_number} / ${program.sj_number}`;
+    if (program.po_number) return program.po_number;
+    if (program.mou_number) return program.mou_number;
+    
+    const idStr = String(program.id).padStart(4, '0');
+    return `PO/2025/${idStr}`;
+}
+
+export const monthsList = [
+    { value: 'all', label: 'Semua Bulan' },
+    { value: '1', label: 'Januari' },
+    { value: '2', label: 'Februari' },
+    { value: '3', label: 'Maret' },
+    { value: '4', label: 'April' },
+    { value: '5', label: 'Mei' },
+    { value: '6', label: 'Juni' },
+    { value: '7', label: 'Juli' },
+    { value: '8', label: 'Agustus' },
+    { value: '9', label: 'September' },
+    { value: '10', label: 'Oktober' },
+    { value: '11', label: 'November' },
+    { value: '12', label: 'Desember' }
+];
+
 export function mapBackendProgram(p) {
     if (!p) return null;
     return {
@@ -228,6 +329,8 @@ export function mapBackendProgram(p) {
         program_name: p.title || p.program_name || '',
         supplier: p.supplier || '',
         category: p.category || 'Logistik',
+        company_name: p.company_name || p.company || getProgramCompanyName(p),
+        po_sj_number: p.po_sj_number || p.no_po_sj || getProgramPoSjNumber(p),
         npwp: p.npwp || '01.000.000.0-000.000',
         invoice_number: p.invoice_no || p.invoice_number || '',
         dpp: Number(p.dpp_amount ?? p.dpp) || 0,
@@ -338,11 +441,22 @@ export const useTaxStore = () => {
         return ['Semua Kategori', ...Array.from(set).sort()];
     });
 
+    const companiesList = computed(() => {
+        const set = new Set();
+        state.programs.forEach(p => {
+            const c = getProgramCompanyName(p);
+            if (c) set.add(c);
+        });
+        return ['Semua Company', ...Array.from(set).sort()];
+    });
+
     const filteredPrograms = computed(() => {
         const query = (state.searchQuery || '').toLowerCase().trim();
         const category = state.selectedCategory;
         const status = state.selectedStatus;
         const supplier = state.selectedSupplier;
+        const month = state.selectedMonth;
+        const company = state.selectedCompany;
 
         return state.programs.filter(p => {
             // Search filter
@@ -351,7 +465,18 @@ export const useTaxStore = () => {
                 const matchSupplier = (p.supplier || '').toLowerCase().includes(query);
                 const matchInvoice = (p.invoice_number || '').toLowerCase().includes(query);
                 const matchNpwp = (p.npwp || '').toLowerCase().includes(query);
-                if (!matchName && !matchSupplier && !matchInvoice && !matchNpwp) {
+                const matchCompany = getProgramCompanyName(p).toLowerCase().includes(query);
+                const matchPoSj = getProgramPoSjNumber(p).toLowerCase().includes(query);
+                const matchCategory = (p.category || '').toLowerCase().includes(query);
+                if (!matchName && !matchSupplier && !matchInvoice && !matchNpwp && !matchCompany && !matchPoSj && !matchCategory) {
+                    return false;
+                }
+            }
+
+            // Month filter
+            if (month && month !== 'all') {
+                const pMonth = getProgramMonthNumber(p.program_date || p.due_date);
+                if (String(pMonth) !== String(month)) {
                     return false;
                 }
             }
@@ -359,6 +484,14 @@ export const useTaxStore = () => {
             // Category filter
             if (category && category !== 'Semua Kategori' && p.category !== category) {
                 return false;
+            }
+
+            // Company filter
+            if (company && company !== 'all' && company !== 'Semua Company') {
+                const compName = getProgramCompanyName(p);
+                if (compName !== company) {
+                    return false;
+                }
             }
 
             // Supplier filter
@@ -648,6 +781,9 @@ export const useTaxStore = () => {
 
                 res = await fetch('/api/programs/import', {
                     method: 'POST',
+                    headers: {
+                        'Accept': 'application/json'
+                    },
                     body: formData
                 });
             } else {
@@ -661,7 +797,15 @@ export const useTaxStore = () => {
                 });
             }
 
-            const data = await res.json();
+            const contentType = res.headers.get('content-type') || '';
+            let data;
+            if (contentType.includes('application/json')) {
+                data = await res.json();
+            } else {
+                const text = await res.text();
+                throw new Error(`Respon server tidak valid (${res.status}): ${text.slice(0, 100)}`);
+            }
+
             if (res.ok && data.success) {
                 if (Array.isArray(data.programs)) {
                     state.programs = data.programs.map(mapBackendProgram);
@@ -720,9 +864,11 @@ export const useTaxStore = () => {
             const XLSX = window.XLSX;
             const headers = [
                 "ID",
-                "PROGRAM",
+                "BULAN",
                 "KATEGORI",
-                "TANGGAL",
+                "COMPANY NAME",
+                "NO. PO/SJ",
+                "PROGRAM",
                 "SUPPLIER",
                 "NPWP",
                 "NO. INVOICE",
@@ -738,9 +884,11 @@ export const useTaxStore = () => {
                 const docs = (p.documents || []).map(d => getDocTypeLabel(d.document_type)).join(', ') || 'Belum Ada';
                 return [
                     p.id,
-                    p.program_name || '',
+                    `${getProgramMonth(p.program_date)} ${getProgramYear(p.program_date)}`.trim() || '-',
                     p.category || '',
-                    p.program_date || '',
+                    getProgramCompanyName(p),
+                    getProgramPoSjNumber(p),
+                    p.program_name || '',
                     p.supplier || '',
                     p.npwp || '',
                     p.invoice_number || '',
@@ -758,9 +906,11 @@ export const useTaxStore = () => {
             // Set generous column widths
             ws['!cols'] = [
                 { wch: 8 },   // ID
-                { wch: 44 },  // PROGRAM
+                { wch: 18 },  // BULAN
                 { wch: 22 },  // KATEGORI
-                { wch: 15 },  // TANGGAL
+                { wch: 28 },  // COMPANY NAME
+                { wch: 24 },  // NO. PO/SJ
+                { wch: 44 },  // PROGRAM
                 { wch: 40 },  // SUPPLIER
                 { wch: 24 },  // NPWP
                 { wch: 24 },  // NO. INVOICE
@@ -773,9 +923,9 @@ export const useTaxStore = () => {
 
             // Format numbers (#,##0)
             for (let R = 1; R <= dataRows.length; ++R) {
-                const dppRef = XLSX.utils.encode_cell({ r: R, c: 7 });
-                const ppnRef = XLSX.utils.encode_cell({ r: R, c: 8 });
-                const totRef = XLSX.utils.encode_cell({ r: R, c: 9 });
+                const dppRef = XLSX.utils.encode_cell({ r: R, c: 9 });
+                const ppnRef = XLSX.utils.encode_cell({ r: R, c: 10 });
+                const totRef = XLSX.utils.encode_cell({ r: R, c: 11 });
 
                 if (ws[dppRef]) { ws[dppRef].t = 'n'; ws[dppRef].z = '#,##0'; }
                 if (ws[ppnRef]) { ws[ppnRef].t = 'n'; ws[ppnRef].z = '#,##0'; }
@@ -791,9 +941,11 @@ export const useTaxStore = () => {
         // CSV Fallback
         const headers = [
             "ID",
-            "Program",
+            "Bulan",
             "Kategori",
-            "Tanggal",
+            "Company Name",
+            "No. PO/SJ",
+            "Program",
             "Supplier",
             "NPWP",
             "No Invoice",
@@ -810,10 +962,12 @@ export const useTaxStore = () => {
                 const comp = getCompleteness(p);
                 const docs = (p.documents || []).map(d => d.document_type).join('; ');
                 return [
-                    `"${p.id}"`,
-                    `"${(p.program_name || '').replace(/"/g, '""')}"`,
+                    p.id,
+                    `"${getProgramMonth(p.program_date)} ${getProgramYear(p.program_date)}"`,
                     `"${p.category || ''}"`,
-                    `"${p.program_date || ''}"`,
+                    `"${getProgramCompanyName(p)}"`,
+                    `"${getProgramPoSjNumber(p)}"`,
+                    `"${(p.program_name || '').replace(/"/g, '""')}"`,
                     `"${(p.supplier || '').replace(/"/g, '""')}"`,
                     `"${p.npwp || ''}"`,
                     `"${p.invoice_number || ''}"`,
@@ -824,7 +978,7 @@ export const useTaxStore = () => {
                     `"${docs}"`
                 ].join(',');
             })
-        ].join('\r\n');
+        ].join('\n');
 
         const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
@@ -1427,6 +1581,12 @@ export const useTaxStore = () => {
         deleteRawImport,
         suppliersList,
         categoriesList,
+        companiesList,
+        monthsList,
+        getProgramMonth,
+        getProgramYear,
+        getProgramCompanyName,
+        getProgramPoSjNumber,
         fetchPrograms,
         fetchUsers,
         notify,

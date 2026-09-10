@@ -2,9 +2,13 @@
   <div class="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden flex flex-col">
     <!-- Desktop Table Container (hidden md:block) -->
     <div class="hidden md:block overflow-x-auto">
-      <table class="w-full text-left text-xs border-collapse min-w-[940px]">
+      <table class="w-full text-left text-xs border-collapse min-w-[1240px]">
         <thead>
           <tr class="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500 font-sans">
+            <th class="py-2.5 px-3 font-bold min-w-[95px]">BULAN</th>
+            <th class="py-2.5 px-2.5 font-bold min-w-[110px]">KATEGORI</th>
+            <th class="py-2.5 px-2.5 font-bold min-w-[145px]">COMPANY NAME</th>
+            <th class="py-2.5 px-2.5 font-bold min-w-[125px]">NO. PO/SJ</th>
             <th class="py-2.5 px-3 font-bold min-w-[160px]">PROGRAM</th>
             <th class="py-2.5 px-2.5 font-bold min-w-[130px]">SUPPLIER</th>
             <th class="py-2.5 px-2 font-bold min-w-[100px]">NO. INVOICE</th>
@@ -23,7 +27,36 @@
             class="hover:bg-slate-50/70 transition-colors group cursor-pointer"
             @click="goToDetail(program.id)"
           >
-            <!-- 1. PROGRAM -->
+            <!-- 1. BULAN -->
+            <td class="py-2.5 px-3 whitespace-nowrap">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200/60 text-slate-700 font-semibold text-[11px]">
+                {{ getProgramMonth(program.program_date) }} {{ getProgramYear(program.program_date) }}
+              </span>
+            </td>
+
+            <!-- 2. KATEGORI -->
+            <td class="py-2.5 px-2.5 whitespace-nowrap">
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border"
+                :class="getCategoryBadgeClass(program.category)"
+              >
+                {{ program.category || 'Logistik' }}
+              </span>
+            </td>
+
+            <!-- 3. COMPANY NAME -->
+            <td class="py-2.5 px-2.5 max-w-[160px]">
+              <div class="font-semibold text-slate-800 truncate text-xs" :title="getProgramCompanyName(program)">
+                {{ getProgramCompanyName(program) }}
+              </div>
+            </td>
+
+            <!-- 4. NO. PO/SJ -->
+            <td class="py-2.5 px-2.5 font-mono text-slate-700 whitespace-nowrap text-[11px]">
+              {{ getProgramPoSjNumber(program) }}
+            </td>
+
+            <!-- 5. PROGRAM -->
             <td class="py-2.5 px-3 max-w-[210px]">
               <router-link
                 :to="`/programs/${program.id}`"
@@ -33,8 +66,8 @@
               >
                 {{ program.program_name }}
               </router-link>
-              <div class="text-[10px] text-slate-400 mt-0.5 truncate">
-                {{ program.category }} · {{ formatDate(program.program_date) }}
+              <div class="text-[10px] text-slate-400 mt-0.5 truncate font-mono">
+                {{ formatDate(program.program_date) }}
               </div>
             </td>
 
@@ -157,7 +190,7 @@
 
           <!-- Empty State Desktop -->
           <tr v-if="filteredPrograms.length === 0">
-            <td colspan="9" class="py-14 text-center">
+            <td colspan="13" class="py-14 text-center">
               <div class="flex flex-col items-center justify-center space-y-2">
                 <FolderArchive class="w-8 h-8 text-slate-300" />
                 <p class="text-sm font-semibold text-slate-800">Tidak ada program ditemukan</p>
@@ -189,15 +222,19 @@
             >
               {{ program.program_name }}
             </router-link>
-            <div class="flex items-center gap-1.5 mt-1 text-[11px] text-slate-500">
+            <div class="flex flex-wrap items-center gap-1.5 mt-1 text-[11px] text-slate-500">
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700">
+                {{ getProgramMonth(program.program_date) }} {{ getProgramYear(program.program_date) }}
+              </span>
               <span
                 class="px-2 py-0.5 rounded text-[10px] font-medium border"
                 :class="getCategoryBadgeClass(program.category)"
               >
                 {{ program.category }}
               </span>
-              <span>·</span>
-              <span class="text-slate-400">{{ formatDate(program.program_date) }}</span>
+              <span class="text-slate-500 font-medium truncate max-w-[140px]">
+                {{ getProgramCompanyName(program) }}
+              </span>
             </div>
           </div>
 
@@ -228,6 +265,18 @@
             <div class="text-right min-w-0">
               <span class="font-semibold text-slate-800 block truncate max-w-[210px]">{{ program.supplier }}</span>
               <span class="font-mono text-[10px] text-slate-400 block">{{ program.npwp || '-' }}</span>
+            </div>
+          </div>
+
+          <!-- No. PO/SJ & Company -->
+          <div class="flex items-center justify-between gap-2 pt-1.5 border-t border-slate-200/60 text-[11px]">
+            <div>
+              <span class="text-slate-500 block">No. PO/SJ:</span>
+              <span class="font-mono font-medium text-slate-700 block">{{ getProgramPoSjNumber(program) }}</span>
+            </div>
+            <div class="text-right">
+              <span class="text-slate-500 block">Company:</span>
+              <span class="font-semibold text-slate-700 block truncate max-w-[160px]">{{ getProgramCompanyName(program) }}</span>
             </div>
           </div>
 
@@ -462,6 +511,27 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
+                <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Company Name</label>
+                <input
+                  v-model="editForm.company_name"
+                  type="text"
+                  placeholder="Contoh: PT SCM Nusantara"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46]"
+                />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">No. PO / SJ</label>
+                <input
+                  v-model="editForm.po_sj_number"
+                  type="text"
+                  placeholder="Contoh: PO/2025/1016 / SJ-1016"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 font-mono focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46]"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
                 <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">No. Invoice</label>
                 <input
                   v-model="editForm.invoice_number"
@@ -588,7 +658,15 @@
 import { computed, ref, reactive, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { FolderArchive, Trash2, X, ChevronLeft, ChevronRight, Eye, Pencil } from 'lucide-vue-next';
-import { useTaxStore, formatRupiah, formatDate } from '../../store/taxStore';
+import {
+  useTaxStore,
+  formatRupiah,
+  formatDate,
+  getProgramMonth,
+  getProgramYear,
+  getProgramCompanyName,
+  getProgramPoSjNumber
+} from '../../store/taxStore';
 import DocumentPreviewSheet from '../detail/DocumentPreviewSheet.vue';
 import DocumentUploadModal from '../detail/DocumentUploadModal.vue';
 
@@ -643,6 +721,8 @@ const editProgramId = ref(null);
 const editForm = reactive({
   program_name: '',
   supplier: '',
+  company_name: '',
+  po_sj_number: '',
   npwp: '',
   invoice_number: '',
   category: 'Logistik',
@@ -692,6 +772,8 @@ function openEditModal(program) {
   editProgramId.value = program.id;
   editForm.program_name = program.program_name;
   editForm.supplier = program.supplier;
+  editForm.company_name = getProgramCompanyName(program);
+  editForm.po_sj_number = getProgramPoSjNumber(program);
   editForm.npwp = program.npwp || '';
   editForm.invoice_number = program.invoice_number || '';
   editForm.category = program.category || 'Logistik';
@@ -709,6 +791,8 @@ async function saveEdit() {
   await store.updateProgram(editProgramId.value, {
     program_name: editForm.program_name,
     supplier: editForm.supplier,
+    company_name: editForm.company_name,
+    po_sj_number: editForm.po_sj_number,
     npwp: editForm.npwp,
     invoice_number: editForm.invoice_number,
     category: editForm.category,

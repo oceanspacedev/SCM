@@ -56,6 +56,98 @@ class ProgramController extends Controller
     }
 
     /**
+     * Safely parse various date/month formats (including Indonesian month strings like 'Maret 2026')
+     */
+    private function parseSafeDate($val): string
+    {
+        if (empty($val)) {
+            return Carbon::now()->toDateString();
+        }
+
+        if ($val instanceof \DateTimeInterface) {
+            return Carbon::instance($val)->toDateString();
+        }
+
+        $str = trim((string) $val);
+
+        // Excel numeric serial date (e.g. 45367)
+        if (is_numeric($str) && (float)$str > 30000 && (float)$str < 60000) {
+            try {
+                $days = (int) $str;
+                return Carbon::create(1899, 12, 30)->addDays($days)->toDateString();
+            } catch (\Throwable $e) {}
+        }
+
+        // Map Indonesian month names to English
+        $indoMonths = [
+            'januari' => 'January',
+            'februari' => 'February',
+            'maret' => 'March',
+            'april' => 'April',
+            'mei' => 'May',
+            'juni' => 'June',
+            'juli' => 'July',
+            'agustus' => 'August',
+            'september' => 'September',
+            'oktober' => 'October',
+            'november' => 'November',
+            'desember' => 'December',
+            'jan' => 'Jan',
+            'feb' => 'Feb',
+            'mar' => 'Mar',
+            'apr' => 'Apr',
+            'jun' => 'Jun',
+            'jul' => 'Jul',
+            'agu' => 'Aug',
+            'agt' => 'Aug',
+            'sep' => 'Sep',
+            'okt' => 'Oct',
+            'nov' => 'Nov',
+            'des' => 'Dec',
+        ];
+
+        $normalized = strtolower($str);
+        foreach ($indoMonths as $indo => $eng) {
+            $normalized = preg_replace('/\b' . preg_quote($indo, '/') . '\b/i', $eng, $normalized);
+        }
+
+        // Try standard Carbon parsing (handles "March 2026", "2026-03-01", etc.)
+        try {
+            return Carbon::parse($normalized)->toDateString();
+        } catch (\Throwable $e) {}
+
+        // Try DD/MM/YYYY or DD-MM-YYYY
+        try {
+            return Carbon::createFromFormat('d/m/Y', $str)->toDateString();
+        } catch (\Throwable $e) {}
+
+        try {
+            return Carbon::createFromFormat('d-m-Y', $str)->toDateString();
+        } catch (\Throwable $e) {}
+
+        // If it's MM/YYYY or MM-YYYY
+        if (preg_match('/^(\d{1,2})[\/\-](\d{4})$/', $str, $matches)) {
+            $m = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
+            $y = $matches[2];
+            return "{$y}-{$m}-01";
+        }
+
+        // If it's YYYY-MM or YYYY/MM
+        if (preg_match('/^(\d{4})[\/\-](\d{1,2})$/', $str, $matches)) {
+            $m = str_pad($matches[2], 2, '0', STR_PAD_LEFT);
+            $y = $matches[1];
+            return "{$y}-{$m}-01";
+        }
+
+        // If only month name was passed (e.g. "Maret" -> "March")
+        try {
+            return Carbon::parse("1 " . $normalized . " " . date('Y'))->toDateString();
+        } catch (\Throwable $e) {}
+
+        return Carbon::now()->toDateString();
+    }
+
+    /**
      * Create new program
      */
     public function store(Request $request)
@@ -74,11 +166,17 @@ class ProgramController extends Controller
         $ppn = (float) ($request->input('ppn_amount') ?? $request->input('ppn') ?? ($dpp * 0.11));
         $total = (float) ($request->input('total_amount') ?? $request->input('total_invoice') ?? ($dpp + $ppn));
 
-        $existingMax = Program::whereRaw('id REGEXP "^[0-9]+$"')
-            ->selectRaw('MAX(CAST(id AS UNSIGNED)) as max_id')
-            ->value('max_id');
+        try {
+            $existingMax = Program::whereRaw('id REGEXP "^[0-9]+$"')
+                ->selectRaw('MAX(CAST(id AS UNSIGNED)) as max_id')
+                ->value('max_id');
+        } catch (\Throwable $e) {
+            $existingMax = null;
+        }
         $nextId = (string) ($existingMax ? ((int) $existingMax + 1) : (Program::count() + 1));
         $id = (string) ($request->input('id') ?: $nextId);
+
+        $dueDate = $this->parseSafeDate($request->input('due_date') ?: $request->input('program_date'));
 
         $program = Program::create([
             'id' => $id,
@@ -86,11 +184,13 @@ class ProgramController extends Controller
             'supplier' => $supplier,
             'npwp' => $request->input('npwp') ?: '01.000.000.0-000.000',
             'category' => $request->input('category') ?: 'Logistik',
+            'company_name' => $request->input('company_name') ?: 'PT SCM Nusantara',
+            'po_sj_number' => $request->input('po_sj_number') ?: $request->input('no_po_sj'),
             'invoice_no' => $request->input('invoice_no') ?: $request->input('invoice_number') ?: ('INV/' . date('Y') . '/SCM/' . rand(1000, 9999)),
             'dpp_amount' => $dpp,
             'ppn_amount' => $ppn,
             'total_amount' => $total,
-            'due_date' => $request->input('due_date') ?: $request->input('program_date') ?: Carbon::now()->addDays(14)->toDateString(),
+            'due_date' => $dueDate,
             'status' => $request->input('status') ?: 'Perlu Tindakan'
         ]);
 
@@ -117,6 +217,10 @@ class ProgramController extends Controller
         if ($request->has('supplier')) $data['supplier'] = $request->input('supplier');
         if ($request->has('npwp')) $data['npwp'] = $request->input('npwp');
         if ($request->has('category')) $data['category'] = $request->input('category');
+        if ($request->has('company_name')) $data['company_name'] = $request->input('company_name');
+        if ($request->has('po_sj_number') || $request->has('no_po_sj')) {
+            $data['po_sj_number'] = $request->input('po_sj_number') ?? $request->input('no_po_sj');
+        }
         if ($invoiceNo !== null) $data['invoice_no'] = $invoiceNo;
         if ($request->has('dpp_amount') || $request->has('dpp')) {
             $data['dpp_amount'] = (float) ($request->input('dpp_amount') ?? $request->input('dpp'));
@@ -127,7 +231,7 @@ class ProgramController extends Controller
         if ($request->has('total_amount') || $request->has('total_invoice')) {
             $data['total_amount'] = (float) ($request->input('total_amount') ?? $request->input('total_invoice'));
         }
-        if ($dueDate) $data['due_date'] = $dueDate;
+        if ($dueDate) $data['due_date'] = $this->parseSafeDate($dueDate);
         if ($request->has('status')) $data['status'] = $request->input('status');
 
         $program->update($data);
@@ -268,105 +372,125 @@ class ProgramController extends Controller
      */
     public function import(Request $request)
     {
-        // 1. Upload Raw File to SeaweedFS / S3 storage if file is present
-        $rawImport = null;
-        if ($request->hasFile('file')) {
-            try {
-                $seaweed = new SeaweedStorageService();
-                $uploadedFile = $request->file('file');
-                $storageResult = $seaweed->uploadRawFile(
-                    $uploadedFile,
-                    $uploadedFile->getClientOriginalName(),
-                    'mentahan_excel'
-                );
-
-                $rawImport = RawImport::create([
-                    'file_name' => $storageResult['file_name'],
-                    'file_key' => $storageResult['file_key'],
-                    'file_size' => $storageResult['file_size'],
-                    'file_url' => $storageResult['file_url'],
-                    'storage_type' => $storageResult['storage'],
-                    'imported_rows_count' => 0,
-                    'uploaded_by' => $request->input('uploaded_by', 'Admin SCM'),
-                    'notes' => $storageResult['warning'] ?? 'Tersimpan di storage SeaweedFS'
-                ]);
-            } catch (\Throwable $e) {
-                \Log::error('Error uploading raw import file: ' . $e->getMessage());
-            }
-        }
-
-        // 2. Parse program rows (can be JSON string or array)
-        $programsInput = $request->input('programs', []);
-        if (is_string($programsInput)) {
-            $items = json_decode($programsInput, true) ?: [];
-        } else {
-            $items = is_array($programsInput) ? $programsInput : [];
-        }
-
-        $existingMax = Program::whereRaw('id REGEXP "^[0-9]+$"')->max('id');
-        $nextNumericId = $existingMax ? ((int) $existingMax) : Program::count();
-
-        $imported = 0;
-        foreach ($items as $p) {
-            $nextNumericId++;
-            $id = isset($p['id']) && !empty($p['id']) ? (string) $p['id'] : (string) $nextNumericId;
-
-            $dpp = (float) ($p['dpp_amount'] ?? $p['dpp'] ?? 0);
-            $ppn = (float) ($p['ppn_amount'] ?? $p['ppn'] ?? ($dpp * 0.11));
-            $total = (float) ($p['total_amount'] ?? $p['total_invoice'] ?? ($dpp + $ppn));
-
-            $program = Program::updateOrCreate(
-                ['id' => $id],
-                [
-                    'title' => $p['title'] ?? $p['program_name'] ?? 'Program Pengadaan SCM',
-                    'supplier' => $p['supplier'] ?? 'PT Rekanan Vendor',
-                    'npwp' => $p['npwp'] ?? '01.000.000.0-000.000',
-                    'category' => $p['category'] ?? 'Logistik',
-                    'invoice_no' => $p['invoice_no'] ?? $p['invoice_number'] ?? ('INV/' . date('Y') . '/SCM/' . rand(1000, 9999)),
-                    'dpp_amount' => $dpp,
-                    'ppn_amount' => $ppn,
-                    'total_amount' => $total,
-                    'due_date' => $p['due_date'] ?? $p['program_date'] ?? Carbon::now()->toDateString(),
-                    'status' => $p['status'] ?? 'Perlu Tindakan'
-                ]
-            );
-
-            // Import attached documents if present
-            if (!empty($p['documents']) && is_array($p['documents'])) {
-                foreach ($p['documents'] as $d) {
-                    $rawType = $d['document_type'] ?? $d['type'] ?? 'invoice';
-                    $bType = $rawType === 'faktur_pajak' ? 'faktur' : ($rawType === 'mou' ? 'memo' : $rawType);
-
-                    ProgramDocument::updateOrCreate(
-                        ['id' => $d['id'] ?? ('doc-' . Str::random(8))],
-                        [
-                            'program_id' => $program->id,
-                            'type' => $bType,
-                            'file_name' => $d['file_name'] ?? ($rawType . '.pdf'),
-                            'file_size' => $d['file_size'] ?? '1.2 MB',
-                            'uploaded_at' => Carbon::now()
-                        ]
+        try {
+            // 1. Upload Raw File to SeaweedFS / S3 storage if file is present
+            $rawImport = null;
+            if ($request->hasFile('file')) {
+                try {
+                    $seaweed = new SeaweedStorageService();
+                    $uploadedFile = $request->file('file');
+                    $storageResult = $seaweed->uploadRawFile(
+                        $uploadedFile,
+                        $uploadedFile->getClientOriginalName(),
+                        'mentahan_excel'
                     );
+
+                    $rawImport = RawImport::create([
+                        'file_name' => $storageResult['file_name'],
+                        'file_key' => $storageResult['file_key'],
+                        'file_size' => $storageResult['file_size'],
+                        'file_url' => $storageResult['file_url'],
+                        'storage_type' => $storageResult['storage'],
+                        'imported_rows_count' => 0,
+                        'uploaded_by' => $request->input('uploaded_by', 'Admin SCM'),
+                        'notes' => $storageResult['warning'] ?? 'Tersimpan di storage SeaweedFS'
+                    ]);
+                } catch (\Throwable $e) {
+                    \Log::error('Error uploading raw import file: ' . $e->getMessage());
                 }
             }
-            $imported++;
+
+            // 2. Parse program rows (can be JSON string or array)
+            $programsInput = $request->input('programs', []);
+            if (is_string($programsInput)) {
+                $items = json_decode($programsInput, true) ?: [];
+            } else {
+                $items = is_array($programsInput) ? $programsInput : [];
+            }
+
+            try {
+                $existingMax = Program::whereRaw('id REGEXP "^[0-9]+$"')
+                    ->selectRaw('MAX(CAST(id AS UNSIGNED)) as max_id')
+                    ->value('max_id');
+            } catch (\Throwable $e) {
+                $existingMax = null;
+            }
+            $nextNumericId = $existingMax ? ((int) $existingMax) : Program::count();
+
+            $imported = 0;
+            foreach ($items as $p) {
+                $nextNumericId++;
+                $id = isset($p['id']) && !empty($p['id']) ? (string) $p['id'] : (string) $nextNumericId;
+
+                $dpp = (float) ($p['dpp_amount'] ?? $p['dpp'] ?? 0);
+                $ppn = (float) ($p['ppn_amount'] ?? $p['ppn'] ?? ($dpp * 0.11));
+                $total = (float) ($p['total_amount'] ?? $p['total_invoice'] ?? ($dpp + $ppn));
+
+                $dueDate = $this->parseSafeDate($p['due_date'] ?? $p['program_date'] ?? null);
+                $companyName = $p['company_name'] ?? $p['company'] ?? 'PT SCM Nusantara';
+                $poSjNumber = $p['po_sj_number'] ?? $p['no_po_sj'] ?? null;
+
+                $program = Program::updateOrCreate(
+                    ['id' => $id],
+                    [
+                        'title' => $p['title'] ?? $p['program_name'] ?? 'Program Pengadaan SCM',
+                        'supplier' => $p['supplier'] ?? 'PT Rekanan Vendor',
+                        'npwp' => $p['npwp'] ?? '01.000.000.0-000.000',
+                        'category' => $p['category'] ?? 'Logistik',
+                        'company_name' => $companyName,
+                        'po_sj_number' => $poSjNumber,
+                        'invoice_no' => $p['invoice_no'] ?? $p['invoice_number'] ?? ('INV/' . date('Y') . '/SCM/' . rand(1000, 9999)),
+                        'dpp_amount' => $dpp,
+                        'ppn_amount' => $ppn,
+                        'total_amount' => $total,
+                        'due_date' => $dueDate,
+                        'status' => $p['status'] ?? 'Perlu Tindakan'
+                    ]
+                );
+
+                // Import attached documents if present
+                if (!empty($p['documents']) && is_array($p['documents'])) {
+                    foreach ($p['documents'] as $d) {
+                        $rawType = $d['document_type'] ?? $d['type'] ?? 'invoice';
+                        $bType = $rawType === 'faktur_pajak' ? 'faktur' : ($rawType === 'mou' ? 'memo' : $rawType);
+
+                        ProgramDocument::updateOrCreate(
+                            ['id' => $d['id'] ?? ('doc-' . Str::random(8))],
+                            [
+                                'program_id' => $program->id,
+                                'type' => $bType,
+                                'file_name' => $d['file_name'] ?? ($rawType . '.pdf'),
+                                'file_size' => $d['file_size'] ?? '1.2 MB',
+                                'uploaded_at' => Carbon::now()
+                            ]
+                        );
+                    }
+                }
+                $imported++;
+            }
+
+            if ($rawImport && $imported > 0) {
+                $rawImport->update(['imported_rows_count' => $imported]);
+            }
+
+            $allPrograms = Program::with('documents')->orderBy('due_date', 'desc')->get();
+
+            $storageMessage = $rawImport ? ' Berkas mentahan tersimpan di SeaweedFS SCM.' : '';
+
+            return response()->json([
+                'success' => true,
+                'message' => "Berhasil mengimpor {$imported} data program ke database.{$storageMessage}",
+                'imported_count' => $imported,
+                'programs' => $allPrograms,
+                'raw_import' => $rawImport
+            ]);
+        } catch (\Throwable $e) {
+            \Log::error('Import fatal error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memproses file import: ' . $e->getMessage()
+            ], 422);
         }
-
-        if ($rawImport && $imported > 0) {
-            $rawImport->update(['imported_rows_count' => $imported]);
-        }
-
-        $allPrograms = Program::with('documents')->orderBy('due_date', 'desc')->get();
-
-        $storageMessage = $rawImport ? ' Berkas mentahan tersimpan di SeaweedFS SCM.' : '';
-
-        return response()->json([
-            'success' => true,
-            'message' => "Berhasil mengimpor {$imported} data program ke database.{$storageMessage}",
-            'imported_count' => $imported,
-            'programs' => $allPrograms,
-            'raw_import' => $rawImport
-        ]);
     }
 
     /**

@@ -44,6 +44,33 @@
           </div>
         </div>
 
+        <!-- Row 1.5: Company Name & No. PO / SJ -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
+          <div class="md:col-span-6">
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 font-sans">
+              COMPANY NAME
+            </label>
+            <input
+              v-model="form.company_name"
+              type="text"
+              placeholder="Contoh: PT SCM Nusantara"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors"
+            />
+          </div>
+
+          <div class="md:col-span-6">
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 font-sans">
+              NO. PO / SJ
+            </label>
+            <input
+              v-model="form.po_sj_number"
+              type="text"
+              placeholder="Contoh: PO/2025/1016 / SJ-1016"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors font-mono"
+            />
+          </div>
+        </div>
+
         <!-- Row 2: Nama Supplier & NPWP Supplier -->
         <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
           <div class="md:col-span-6">
@@ -369,6 +396,8 @@ const categoriesList = [
 const form = reactive({
   program_name: '',
   category: 'Promosi',
+  company_name: 'PT SCM Nusantara',
+  po_sj_number: '',
   supplier: '',
   npwp: '',
   mou_number: '',

@@ -77,13 +77,30 @@ import { useTaxStore } from '../store/taxStore';
 const store = useTaxStore();
 const showYearMenu = ref(false);
 
-const selectedYear = computed(() => store.state.selectedFiscalYear || '2025');
+const selectedYear = computed(() => store.state.selectedFiscalYear || String(new Date().getFullYear()));
 
-const yearOptions = [
-  { value: '2025', label: 'Tahun Pajak 2025' },
-  { value: '2024', label: 'Tahun Pajak 2024' },
-  { value: 'all', label: 'Semua Tahun Pajak' }
-];
+const yearOptions = computed(() => {
+  // Kumpulkan semua tahun dari data program
+  const years = new Set();
+  (store.programs?.value || []).forEach(p => {
+    const date = p.program_date || p.due_date || '';
+    const yr = String(date).slice(0, 4);
+    if (yr && /^\d{4}$/.test(yr)) years.add(yr);
+  });
+
+  // Selalu tampilkan tahun saat ini dan 2 tahun sebelumnya
+  const currentYear = new Date().getFullYear();
+  for (let y = currentYear; y >= currentYear - 2; y--) {
+    years.add(String(y));
+  }
+
+  const sortedYears = Array.from(years).sort((a, b) => Number(b) - Number(a));
+
+  return [
+    ...sortedYears.map(y => ({ value: y, label: `Tahun Pajak ${y}` })),
+    { value: 'all', label: 'Semua Tahun Pajak' }
+  ];
+});
 
 const currentYearLabel = computed(() => {
   const found = yearOptions.find(o => o.value === selectedYear.value);

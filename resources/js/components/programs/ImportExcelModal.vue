@@ -43,6 +43,10 @@
           <div class="flex-1 text-[11px] leading-relaxed">
             <p class="font-bold text-slate-900">Format Kolom yang Didukung:</p>
             <div class="mt-1.5 flex flex-wrap gap-1.5">
+              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">BULAN</span>
+              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">KATEGORI</span>
+              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">COMPANY NAME</span>
+              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">NO. PO/SJ</span>
               <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">PROGRAM</span>
               <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">SUPPLIER</span>
               <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">NO. INVOICE</span>
@@ -54,14 +58,23 @@
               * PPN (11%) dan Total Invoice akan dihitung otomatis jika nilainya dikosongkan.
             </p>
           </div>
-          <button
-            type="button"
-            class="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
-            @click="downloadTemplate('xlsx')"
-          >
-            <ExcelIcon class="w-3.5 h-3.5" />
-            <span>Unduh Contoh Excel</span>
-          </button>
+          <div class="shrink-0 flex flex-col sm:flex-row gap-1.5">
+            <button
+              type="button"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+              @click="downloadTemplate('xlsx')"
+            >
+              <ExcelIcon class="w-3.5 h-3.5" />
+              <span>Unduh Template (.xlsx)</span>
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-[11px] font-semibold text-slate-600 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+              @click="downloadTemplate('csv')"
+            >
+              <span>Unduh CSV</span>
+            </button>
+          </div>
         </div>
 
         <!-- Dropzone -->
@@ -153,6 +166,10 @@
                 <thead class="sticky top-0 bg-slate-100 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px]">
                   <tr>
                     <th class="py-2.5 px-3">NO</th>
+                    <th class="py-2.5 px-2">BULAN</th>
+                    <th class="py-2.5 px-2">KATEGORI</th>
+                    <th class="py-2.5 px-2">COMPANY</th>
+                    <th class="py-2.5 px-2">NO. PO/SJ</th>
                     <th class="py-2.5 px-3">PROGRAM</th>
                     <th class="py-2.5 px-3">SUPPLIER</th>
                     <th class="py-2.5 px-3">NO. INVOICE</th>
@@ -168,13 +185,25 @@
                     class="hover:bg-slate-50/70 transition-colors"
                   >
                     <td class="py-2 px-3 text-slate-400 font-mono text-[10px]">{{ idx + 1 }}</td>
-                    <td class="py-2 px-3 font-semibold text-slate-900 max-w-[160px] truncate" :title="row.program_name">
+                    <td class="py-2 px-2 text-slate-700 whitespace-nowrap text-[11px] font-medium">
+                      {{ getProgramMonth(row.program_date) }}
+                    </td>
+                    <td class="py-2 px-2 text-slate-700 whitespace-nowrap">
+                      <span class="px-1.5 py-0.5 bg-slate-100 rounded text-[10px] font-medium">{{ row.category }}</span>
+                    </td>
+                    <td class="py-2 px-2 text-slate-700 max-w-[120px] truncate" :title="row.company_name">
+                      {{ row.company_name }}
+                    </td>
+                    <td class="py-2 px-2 font-mono text-slate-600 whitespace-nowrap text-[10px]">
+                      {{ row.po_sj_number }}
+                    </td>
+                    <td class="py-2 px-3 font-semibold text-slate-900 max-w-[140px] truncate" :title="row.program_name">
                       {{ row.program_name }}
                     </td>
-                    <td class="py-2 px-3 text-slate-700 max-w-[140px] truncate" :title="row.supplier">
+                    <td class="py-2 px-3 text-slate-700 max-w-[120px] truncate" :title="row.supplier">
                       {{ row.supplier }}
                     </td>
-                    <td class="py-2 px-3 font-mono text-slate-600 whitespace-nowrap">
+                    <td class="py-2 px-3 font-mono text-slate-600 whitespace-nowrap text-[10px]">
                       {{ row.invoice_number }}
                     </td>
                     <td class="py-2 px-3 font-mono text-right text-slate-700 whitespace-nowrap">
@@ -237,7 +266,7 @@ import {
   AlertCircle
 } from 'lucide-vue-next';
 import ExcelIcon from '../ui/ExcelIcon.vue';
-import { useTaxStore, formatRupiah } from '../../store/taxStore';
+import { useTaxStore, formatRupiah, getProgramMonth } from '../../store/taxStore';
 
 const router = useRouter();
 const store = useTaxStore();
@@ -307,10 +336,85 @@ function cleanNumber(val) {
   return isNaN(num) ? 0 : num;
 }
 
+function parseImportDate(val) {
+  if (!val) return new Date().toISOString().split('T')[0];
+
+  // If already YYYY-MM-DD
+  if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(val.trim())) {
+    return val.trim();
+  }
+
+  // Handle Excel Serial Number (e.g. 45367)
+  if (typeof val === 'number' && val > 30000 && val < 60000) {
+    const excelEpoch = new Date(1899, 11, 30);
+    const date = new Date(excelEpoch.getTime() + val * 86400000);
+    if (!isNaN(date.getTime())) {
+      return date.toISOString().split('T')[0];
+    }
+  }
+
+  const str = String(val).trim();
+
+  // Check for Indonesian month names
+  const indoMonths = [
+    { name: 'januari', num: '01' },
+    { name: 'februari', num: '02' },
+    { name: 'maret', num: '03' },
+    { name: 'april', num: '04' },
+    { name: 'mei', num: '05' },
+    { name: 'juni', num: '06' },
+    { name: 'juli', num: '07' },
+    { name: 'agustus', num: '08' },
+    { name: 'september', num: '09' },
+    { name: 'oktober', num: '10' },
+    { name: 'november', num: '11' },
+    { name: 'desember', num: '12' }
+  ];
+
+  const lower = str.toLowerCase();
+  for (const m of indoMonths) {
+    if (lower.includes(m.name)) {
+      const yearMatch = str.match(/\b(20\d\d)\b/);
+      const year = yearMatch ? yearMatch[1] : new Date().getFullYear().toString();
+      const dayMatch = str.match(/\b(\d{1,2})\s+[a-zA-Z]/);
+      const day = dayMatch ? String(dayMatch[1]).padStart(2, '0') : '01';
+      return `${year}-${m.num}-${day}`;
+    }
+  }
+
+  // Check DD/MM/YYYY or DD-MM-YYYY
+  const dmy = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (dmy) {
+    const day = String(dmy[1]).padStart(2, '0');
+    const month = String(dmy[2]).padStart(2, '0');
+    const year = dmy[3];
+    return `${year}-${month}-${day}`;
+  }
+
+  // Check MM/YYYY
+  const my = str.match(/^(\d{1,2})[\/\-](\d{4})$/);
+  if (my) {
+    const month = String(my[1]).padStart(2, '0');
+    const year = my[2];
+    return `${year}-${month}-01`;
+  }
+
+  try {
+    const d = new Date(str);
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().split('T')[0];
+    }
+  } catch (e) {}
+
+  return new Date().toISOString().split('T')[0];
+}
+
 function mapRawRow(raw) {
   let program_name = '';
   let supplier = '';
   let invoice_number = '';
+  let company_name = '';
+  let po_sj_number = '';
   let dpp = 0;
   let ppn = 0;
   let total_invoice = 0;
@@ -326,8 +430,16 @@ function mapRawRow(raw) {
       program_name = String(val || '').trim();
     }
     // SUPPLIER
-    else if (k.includes('supplier') || k.includes('vendor') || k.includes('suplier') || k === 'perusahaan') {
+    else if (k.includes('supplier') || k.includes('vendor') || k.includes('suplier')) {
       supplier = String(val || '').trim();
+    }
+    // COMPANY NAME
+    else if (k.includes('company') || k.includes('perusahaan') || k.includes('entitas') || k === 'pt') {
+      company_name = String(val || '').trim();
+    }
+    // NO. PO/SJ
+    else if (k.includes('posj') || k.includes('po') || k.includes('sj') || k.includes('suratjalan') || k.includes('purchaseorder')) {
+      po_sj_number = String(val || '').trim();
     }
     // NO. INVOICE
     else if (k.includes('invoice') || k.includes('inv') || k.includes('faktur')) {
@@ -353,9 +465,9 @@ function mapRawRow(raw) {
     else if (k.includes('kategori') || k.includes('category')) {
       category = String(val || '').trim();
     }
-    // TANGGAL
-    else if (k.includes('tanggal') || k.includes('date') || k.includes('tgl')) {
-      program_date = String(val || '').trim() || program_date;
+    // TANGGAL / BULAN
+    else if (k.includes('tanggal') || k.includes('date') || k.includes('tgl') || k.includes('bulan') || k.includes('month')) {
+      program_date = parseImportDate(val);
     }
   }
 
@@ -376,6 +488,8 @@ function mapRawRow(raw) {
   return {
     program_name: program_name || 'Program SCM',
     supplier: supplier || 'Vendor SCM',
+    company_name: company_name || 'PT SCM Nusantara',
+    po_sj_number: po_sj_number || `PO-${Date.now().toString().slice(-4)}`,
     invoice_number,
     dpp,
     ppn,
@@ -452,35 +566,18 @@ function parseCsvText(text) {
 }
 
 function downloadTemplate(format = 'xlsx') {
-  const sampleHeaders = ['PROGRAM', 'SUPPLIER', 'NO. INVOICE', 'DPP', 'PPN', 'TOTAL INVOICE', 'KATEGORI', 'TANGGAL'];
-  const sampleRows = [
-    ['Pengadaan Komponen Pipa Gas Tuban', 'PT Steel Pipe Industry of Indonesia Tbk', 'INV/2026/SCM/0101', 45000000, 4950000, 49950000, 'Pipa & Tubing', '2026-03-01'],
-    ['Penyewaan Heavy Crane Lepas Pantai', 'PT Radiant Utama Interinsco Tbk', 'INV/2026/SCM/0102', 120000000, 13200000, 133200000, 'Sewa Alat Berat', '2026-03-02'],
-    ['Jasa Inspeksi Tangki Kilang Balikpapan', 'PT Sucofindo (Persero)', 'INV/2026/SCM/0103', 75000000, 8250000, 83250000, 'Inspeksi & Sertifikasi', '2026-03-03'],
-    ['Pengadaan High Pressure Valve & Flange', 'PT Kitz Valve Indonesia', 'INV/2026/SCM/0104', 38500000, 4235000, 42735000, 'Mekanikal & Valve', '2026-03-04'],
-    ['Pengadaan Chemical Demulsifier Lapangan', 'PT Clariant Indonesia', 'INV/2026/SCM/0105', 92000000, 10120000, 102120000, 'Bahan Kimia', '2026-03-05']
-  ];
+  const fileName = format === 'csv'
+    ? 'Template_Import_Arsip_Program_SCM.csv'
+    : 'Template_Import_Arsip_Program_SCM.xlsx';
 
-  if (format === 'xlsx' && window.XLSX) {
-    const XLSX = window.XLSX;
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet([sampleHeaders, ...sampleRows]);
+  const link = document.createElement('a');
+  link.href = `/${fileName}`;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 
-    ws['!cols'] = [
-      { wch: 38 },
-      { wch: 34 },
-      { wch: 22 },
-      { wch: 16 },
-      { wch: 14 },
-      { wch: 18 },
-      { wch: 20 },
-      { wch: 14 }
-    ];
-
-    XLSX.utils.book_append_sheet(wb, ws, 'Template Program');
-    XLSX.writeFile(wb, 'Template_Import_Arsip_Program_SCM.xlsx');
-    store.notify('Template Excel (.xlsx) berhasil diunduh.');
-  }
+  store.notify(`Template Dummy (${format.toUpperCase()}) berhasil diunduh.`);
 }
 
 async function executeImport() {
@@ -490,7 +587,10 @@ async function executeImport() {
   try {
     await store.importPrograms(parsedRows.value, selectedRawFile.value);
     closeModal();
-    router.push('/programs');
+    // Refresh halaman Programs atau Dashboard setelah import
+    if (router.currentRoute.value.path !== '/programs') {
+      router.push('/programs');
+    }
   } catch (err) {
     errorMessage.value = err.message || 'Gagal menyimpan data import ke server.';
   } finally {
