@@ -60,7 +60,7 @@
             <td class="py-2.5 px-3 max-w-[210px]">
               <router-link
                 :to="`/programs/${program.id}`"
-                class="font-bold text-slate-900 group-hover:text-[#135A46] transition-colors truncate block text-xs"
+                class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors truncate block text-xs"
                 :title="program.program_name"
                 @click.stop
               >
@@ -92,7 +92,7 @@
             </td>
 
             <!-- 5. PPN -->
-            <td class="py-2.5 px-2 font-mono text-amber-700 font-medium text-right whitespace-nowrap text-[11px]">
+            <td class="py-2.5 px-2 font-mono text-slate-600 font-medium text-right whitespace-nowrap text-[11px]">
               {{ formatRupiah(program.ppn) }}
             </td>
 
@@ -110,7 +110,7 @@
                   class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold transition-all cursor-pointer select-none active:scale-95"
                   :class="hasDoc(program, 'invoice')
                     ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
-                    : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-amber-50 hover:text-amber-700'"
+                    : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-slate-100 hover:text-slate-700'"
                   :title="hasDoc(program, 'invoice') ? 'Invoice ada - Klik untuk melihat' : 'Invoice belum ada - Klik unggah'"
                   @click="handlePillClick(program, 'invoice', 'Invoice')"
                 >
@@ -123,20 +123,20 @@
                   class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold transition-all cursor-pointer select-none active:scale-95"
                   :class="hasDoc(program, 'faktur_pajak')
                     ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
-                    : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-amber-50 hover:text-amber-700'"
+                    : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-slate-100 hover:text-slate-700'"
                   :title="hasDoc(program, 'faktur_pajak') ? 'Faktur Pajak ada - Klik untuk melihat' : 'Faktur Pajak belum ada - Klik unggah'"
                   @click="handlePillClick(program, 'faktur_pajak', 'Faktur Pajak')"
                 >
                   <span v-if="!hasDoc(program, 'faktur_pajak')" class="mr-0.5 text-[8px] font-normal">+</span>FP
                 </button>
 
-                <!-- MOU -->
+                <!-- MEMO / MOU -->
                 <button
                   type="button"
                   class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold transition-all cursor-pointer select-none active:scale-95"
                   :class="hasDoc(program, 'mou')
                     ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
-                    : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-amber-50 hover:text-amber-700'"
+                    : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-slate-100 hover:text-slate-700'"
                   :title="hasDoc(program, 'mou') ? 'MOU ada - Klik untuk melihat' : 'MOU belum ada - Klik unggah'"
                   @click="handlePillClick(program, 'mou', 'Memo / MOU')"
                 >
@@ -145,15 +145,21 @@
               </div>
             </td>
 
-            <!-- 8. STATUS -->
+            <!-- 8. STATUS KELENGKAPAN -->
             <td class="py-2.5 px-2 text-center whitespace-nowrap">
               <span
-                :class="[
-                  'inline-block px-2 py-0.5 rounded-full text-[10px] font-medium border',
-                  getStatusBadgeClass(program)
-                ]"
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border"
+                :class="getStatusBadgeClass(program)"
               >
-                {{ getStatusText(program) }}
+                <span
+                  class="w-1.5 h-1.5 rounded-full shrink-0"
+                  :class="{
+                    'bg-emerald-500': getStatusText(program) === 'Lengkap',
+                    'bg-rose-500': getStatusText(program) === 'Belum Lengkap',
+                    'bg-amber-500': getStatusText(program).startsWith('Sebagian')
+                  }"
+                ></span>
+                <span>{{ getStatusText(program) }}</span>
               </span>
             </td>
 
@@ -162,7 +168,7 @@
               <div class="inline-flex items-center justify-center gap-0.5">
                 <button
                   type="button"
-                  class="p-1 rounded-md text-slate-400 hover:text-[#135A46] hover:bg-emerald-50 transition-colors cursor-pointer"
+                  class="p-1 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
                   title="Lihat Detail Program"
                   @click="goToDetail(program.id)"
                 >
@@ -217,7 +223,7 @@
           <div class="min-w-0 flex-1">
             <router-link
               :to="`/programs/${program.id}`"
-              class="font-bold text-slate-900 hover:text-[#135A46] text-sm leading-snug block break-words"
+              class="font-bold text-slate-900 hover:text-blue-600 text-sm leading-snug block break-words"
               @click.stop
             >
               {{ program.program_name }}
@@ -288,7 +294,7 @@
             </div>
             <div class="text-right">
               <span class="text-slate-500 text-[11px] block">Total Invoice</span>
-              <span class="font-mono font-bold text-xs sm:text-sm block text-[#135A46]">
+              <span class="font-mono font-bold text-xs sm:text-sm block text-slate-900">
                 {{ formatRupiah(program.total_invoice) }}
               </span>
             </div>
@@ -302,7 +308,7 @@
             </div>
             <div class="text-right">
               <span class="text-slate-400 text-[10px]">PPN 11%:</span>
-              <span class="font-mono text-amber-700 font-medium ml-1">{{ formatRupiah(program.ppn) }}</span>
+              <span class="font-mono text-slate-700 font-medium ml-1">{{ formatRupiah(program.ppn) }}</span>
             </div>
           </div>
         </div>
@@ -318,7 +324,7 @@
               class="px-2 py-1 rounded text-[10px] font-mono font-bold transition-all cursor-pointer active:scale-95"
               :class="hasDoc(program, 'invoice')
                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
-                : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-amber-50 hover:text-amber-700'"
+                : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-slate-100 hover:text-slate-700'"
               :title="hasDoc(program, 'invoice') ? 'Invoice ada - Klik untuk melihat' : 'Invoice belum ada - Klik unggah'"
               @click="handlePillClick(program, 'invoice', 'Invoice')"
             >
@@ -331,7 +337,7 @@
               class="px-2 py-1 rounded text-[10px] font-mono font-bold transition-all cursor-pointer active:scale-95"
               :class="hasDoc(program, 'faktur_pajak')
                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
-                : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-amber-50 hover:text-amber-700'"
+                : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-slate-100 hover:text-slate-700'"
               :title="hasDoc(program, 'faktur_pajak') ? 'Faktur Pajak ada - Klik untuk melihat' : 'Faktur Pajak belum ada - Klik unggah'"
               @click="handlePillClick(program, 'faktur_pajak', 'Faktur Pajak')"
             >
@@ -344,7 +350,7 @@
               class="px-2 py-1 rounded text-[10px] font-mono font-bold transition-all cursor-pointer active:scale-95"
               :class="hasDoc(program, 'mou')
                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
-                : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-amber-50 hover:text-amber-700'"
+                : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 hover:bg-slate-100 hover:text-slate-700'"
               :title="hasDoc(program, 'mou') ? 'MOU ada - Klik untuk melihat' : 'MOU belum ada - Klik unggah'"
               @click="handlePillClick(program, 'mou', 'Memo / MOU')"
             >
@@ -356,7 +362,7 @@
           <div class="flex items-center gap-1.5">
             <button
               type="button"
-              class="h-8 px-2.5 rounded-lg bg-emerald-50 text-[#135A46] border border-emerald-200/80 font-semibold text-xs transition-colors flex items-center gap-1 hover:bg-emerald-100 cursor-pointer"
+              class="h-8 px-2.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200/80 font-semibold text-xs transition-colors flex items-center gap-1 hover:bg-slate-200 cursor-pointer"
               @click="goToDetail(program.id)"
               title="Lihat Detail"
             >
@@ -433,7 +439,7 @@
             :class="[
               'w-7 h-7 rounded-lg text-xs font-semibold flex items-center justify-center transition-colors cursor-pointer',
               currentPage === page
-                ? 'bg-[#135A46] text-white shadow-2xs'
+                ? 'bg-blue-600 text-white shadow-2xs'
                 : 'text-slate-600 hover:bg-slate-100'
             ]"
           >
@@ -485,7 +491,7 @@
                 v-model="editForm.program_name"
                 type="text"
                 required
-                class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46]"
+                class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               />
             </div>
 
@@ -496,7 +502,7 @@
                   v-model="editForm.supplier"
                   type="text"
                   required
-                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46]"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                 />
               </div>
               <div>
@@ -504,7 +510,7 @@
                 <input
                   v-model="editForm.npwp"
                   type="text"
-                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 font-mono focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46]"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 font-mono focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                 />
               </div>
             </div>
@@ -516,7 +522,7 @@
                   v-model="editForm.company_name"
                   type="text"
                   placeholder="Contoh: PT SCM Nusantara"
-                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46]"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                 />
               </div>
               <div>
@@ -525,7 +531,7 @@
                   v-model="editForm.po_sj_number"
                   type="text"
                   placeholder="Contoh: PO/2025/1016 / SJ-1016"
-                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 font-mono focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46]"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 font-mono focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                 />
               </div>
             </div>
@@ -536,14 +542,14 @@
                 <input
                   v-model="editForm.invoice_number"
                   type="text"
-                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 font-mono focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46]"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 font-mono focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                 />
               </div>
               <div>
                 <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Kategori</label>
                 <select
                   v-model="editForm.category"
-                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46]"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                 >
                   <option v-for="cat in categoriesList" :key="cat" :value="cat">
                     {{ cat }}
@@ -560,7 +566,7 @@
                   type="number"
                   required
                   @input="handleDppInput"
-                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 font-mono focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46]"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 font-mono focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                 />
               </div>
               <div>
@@ -592,7 +598,7 @@
               </button>
               <button
                 type="submit"
-                class="px-4 py-2 rounded-lg bg-[#135A46] text-white font-semibold text-xs hover:bg-[#0e4334] transition-colors shadow-2xs cursor-pointer"
+                class="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 transition-colors shadow-2xs cursor-pointer"
               >
                 Simpan Perubahan
               </button>
@@ -815,25 +821,7 @@ async function executeDelete() {
 }
 
 function getCategoryBadgeClass(category) {
-  switch (category) {
-    case 'Logistik':
-      return 'bg-blue-50 text-blue-700 border-blue-100';
-    case 'IT & Software':
-    case 'Teknologi':
-      return 'bg-purple-50 text-purple-700 border-purple-100';
-    case 'Operasional':
-      return 'bg-emerald-50 text-emerald-700 border-emerald-100';
-    case 'Pengadaan Material':
-    case 'Material':
-      return 'bg-orange-50 text-orange-700 border-orange-100';
-    case 'Distribusi':
-      return 'bg-cyan-50 text-cyan-700 border-cyan-100';
-    case 'Jasa Konsultasi':
-    case 'Jasa':
-      return 'bg-indigo-50 text-indigo-700 border-indigo-100';
-    default:
-      return 'bg-slate-50 text-slate-700 border-slate-200';
-  }
+  return 'bg-slate-100 text-slate-700 border-slate-200/80';
 }
 
 function getStatusText(program) {

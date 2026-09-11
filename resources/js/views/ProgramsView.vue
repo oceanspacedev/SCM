@@ -40,7 +40,7 @@
         <!-- Tambah Program -->
         <button
           type="button"
-          class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#135A46] text-white text-xs font-semibold hover:bg-[#0e4334] shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
           @click="isAddSheetOpen = true"
         >
           <Plus class="w-3.5 h-3.5" />

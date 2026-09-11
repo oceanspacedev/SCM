@@ -13,7 +13,7 @@
             v-model="store.state.searchQuery"
             type="text"
             placeholder="Cari program, vendor, no. invoice, PO/SJ, company..."
-            class="w-full pl-9 pr-8 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors"
+            class="w-full pl-9 pr-8 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors"
           />
           <button
             v-if="store.state.searchQuery"
@@ -34,7 +34,7 @@
         </label>
         <button
           type="button"
-          class="w-full flex items-center justify-between px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer text-left focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46]"
+          class="w-full flex items-center justify-between px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer text-left focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
           @click="toggleDropdown('status')"
         >
           <span class="truncate">{{ currentStatusLabel }}</span>
@@ -70,7 +70,7 @@
         </label>
         <button
           type="button"
-          class="w-full flex items-center justify-between px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer text-left focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46]"
+          class="w-full flex items-center justify-between px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer text-left focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
           @click="toggleDropdown('month')"
         >
           <span class="truncate">{{ currentMonthLabel }}</span>
@@ -109,7 +109,7 @@
         </label>
         <button
           type="button"
-          class="w-full flex items-center justify-between px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer text-left focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46]"
+          class="w-full flex items-center justify-between px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer text-left focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
           @click="toggleDropdown('category')"
         >
           <span class="truncate">{{ store.state.selectedCategory || 'Semua Kategori' }}</span>
@@ -144,7 +144,7 @@
         </label>
         <button
           type="button"
-          class="w-full flex items-center justify-between px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer text-left focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46]"
+          class="w-full flex items-center justify-between px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer text-left focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
           @click="toggleDropdown('company')"
         >
           <span class="truncate">{{ currentCompanyLabel }}</span>
@@ -180,7 +180,7 @@
           </label>
           <button
             type="button"
-            class="w-full flex items-center justify-between px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer text-left focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46]"
+            class="w-full flex items-center justify-between px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer text-left focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
             @click="toggleDropdown('supplier')"
           >
             <span class="truncate">{{ currentSupplierLabel }}</span>

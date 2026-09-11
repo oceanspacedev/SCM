@@ -58,7 +58,7 @@
             cy="50"
             r="38"
             fill="transparent"
-            stroke="#135A46"
+            stroke="#2563EB"
             stroke-width="12"
             stroke-dasharray="79.6 238.76"
             stroke-dashoffset="-159.1"
@@ -78,7 +78,7 @@
       <div class="flex-1 space-y-3 pr-2">
         <div class="flex items-center justify-between text-xs">
           <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-[#135A46]"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-[#2563EB]"></span>
             <span class="text-slate-700 font-medium">Lengkap</span>
           </div>
           <span class="font-bold text-slate-900 font-mono">6</span>

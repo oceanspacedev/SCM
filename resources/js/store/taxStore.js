@@ -322,6 +322,32 @@ export const monthsList = [
     { value: '12', label: 'Desember' }
 ];
 
+export const PPH_OPTIONS = [
+    { value: 'NON_PPH', label: 'Non PPh', rate: 0 },
+    { value: 'PPH_21', label: 'PPh 21 (2,5%)', rate: 0.025 },
+    { value: 'PPH_23', label: 'PPh 23 (2%)', rate: 0.02 },
+    { value: 'PPH_4_2', label: 'PPh 4 Ayat 2 (10%)', rate: 0.10 },
+    { value: 'PPH_23_BONUS', label: 'PPh 23 Atas Bonus (15%)', rate: 0.15 }
+];
+
+export function getPphLabel(type) {
+    if (!type) return 'Non PPh';
+    const found = PPH_OPTIONS.find(opt => opt.value === type);
+    if (found) return found.label;
+    if (type === 'PPH_21') return 'PPh 21 (2,5%)';
+    if (type === 'PPH_23') return 'PPh 23 (2%)';
+    if (type === 'PPH_4_2') return 'PPh 4 Ayat 2 (10%)';
+    if (type === 'PPH_23_BONUS') return 'PPh 23 Atas Bonus (15%)';
+    return type;
+}
+
+export function calculatePphAmount(dpp, pphType) {
+    const numDpp = Number(dpp) || 0;
+    const found = PPH_OPTIONS.find(opt => opt.value === pphType);
+    if (!found || !found.rate) return 0;
+    return Math.round(numDpp * found.rate);
+}
+
 export function mapBackendProgram(p) {
     if (!p) return null;
     return {
@@ -336,6 +362,12 @@ export function mapBackendProgram(p) {
         dpp: Number(p.dpp_amount ?? p.dpp) || 0,
         ppn: Number(p.ppn_amount ?? p.ppn) || 0,
         total_invoice: Number(p.total_amount ?? p.total_invoice) || 0,
+        pph_type: p.pph_type || 'NON_PPH',
+        pph: Number(p.pph_amount ?? p.pph) || 0,
+        faktur_number: p.faktur_number || p.tax_invoice_number || '',
+        faktur_date: p.faktur_date ? String(p.faktur_date).slice(0, 10) : (p.tax_invoice_date || ''),
+        tax_notes: p.tax_notes || '',
+        is_verified: !!p.is_verified,
         program_date: p.due_date ? String(p.due_date).slice(0, 10) : (p.program_date || ''),
         status: p.status || 'Perlu Tindakan',
         documents: (p.documents || []).map(d => ({
@@ -558,6 +590,13 @@ export const useTaxStore = () => {
             dpp: dppVal,
             ppn: ppnVal,
             total_invoice: totalVal,
+            pph_type: newProg.pph_type || 'NON_PPH',
+            pph: Number(newProg.pph) || 0,
+            pph_amount: Number(newProg.pph) || 0,
+            faktur_number: newProg.faktur_number || newProg.tax_invoice_number || '',
+            faktur_date: newProg.faktur_date || newProg.tax_invoice_date || null,
+            tax_notes: newProg.tax_notes || '',
+            is_verified: !!newProg.is_verified,
         };
 
         try {

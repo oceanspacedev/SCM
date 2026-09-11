@@ -64,14 +64,14 @@ import { useTaxStore } from '../../store/taxStore';
 const store = useTaxStore();
 const hoveredSupplier = ref(null);
 
-// Color gradient from primary deep emerald to soft tints
+// Color gradient from primary blue to soft tints
 const supplierColors = [
-  '#135A46', // Top 1: Brand Emerald
-  '#2D7B66', // Top 2
-  '#4E9E87', // Top 3
-  '#6FB9A5', // Top 4
-  '#8FD2C0', // Top 5
-  '#B2E4D6', // Top 6
+  '#2563EB', // Top 1: Brand Blue
+  '#3B82F6', // Top 2
+  '#60A5FA', // Top 3
+  '#93C5FD', // Top 4
+  '#BFDBFE', // Top 5
+  '#DBEAFE', // Top 6
 ];
 
 const suppliers = computed(() => {

@@ -32,12 +32,12 @@
       </div>
 
       <!-- Tab switch if real file exists -->
-      <div v-if="actualFileUrl" class="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs">
+      <div v-if="actualFileUrl" class="flex items-center gap-1.5 border-b border-slate-200 pb-2 text-xs">
         <button
           type="button"
           :class="[
-            'px-3 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer',
-            activeTab === 'actual' ? 'bg-[#135A46] text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            'px-3 py-1.5 rounded-md font-medium transition-colors cursor-pointer',
+            activeTab === 'actual' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           ]"
           @click="activeTab = 'actual'"
         >
@@ -46,8 +46,8 @@
         <button
           type="button"
           :class="[
-            'px-3 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer',
-            activeTab === 'template' ? 'bg-[#135A46] text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            'px-3 py-1.5 rounded-md font-medium transition-colors cursor-pointer',
+            activeTab === 'template' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           ]"
           @click="activeTab = 'template'"
         >
@@ -63,7 +63,7 @@
             :href="actualFileUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center gap-1 font-semibold text-[#135A46] hover:underline"
+            class="inline-flex items-center gap-1 font-semibold text-blue-600 hover:underline"
           >
             <ExternalLink class="w-3.5 h-3.5" />
             Buka di Tab Baru
@@ -94,7 +94,7 @@
           <p class="text-xs text-slate-500">Berkas ini dapat Anda unduh langsung ke komputer.</p>
           <button
             type="button"
-            class="px-4 py-2 bg-[#135A46] text-white rounded-lg text-xs font-semibold hover:bg-[#0E4636] transition-colors inline-flex items-center gap-1.5"
+            class="px-4 py-2 bg-slate-900 text-white rounded-lg text-xs font-medium hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
             @click="handleDownload"
           >
             <Download class="w-3.5 h-3.5" />

@@ -72,7 +72,7 @@
             <div class="min-w-0 flex-1">
               <router-link
                 :to="`/programs/${prog.id}`"
-                class="font-semibold text-xs text-slate-800 hover:text-[#135A46] leading-snug block break-words"
+                class="font-semibold text-xs text-slate-800 hover:text-blue-600 leading-snug block break-words"
               >
                 {{ prog.program_name }}
               </router-link>
@@ -152,7 +152,7 @@
               <td class="py-2.5 px-4 text-right whitespace-nowrap">
                 <router-link
                   :to="`/programs/${item.id}`"
-                  class="inline-flex items-center justify-center px-2 py-1 text-[11px] font-semibold text-[#135A46] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 rounded transition-colors"
+                  class="inline-flex items-center justify-center px-2 py-1 text-[11px] font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded transition-colors"
                 >
                   Lihat
                 </router-link>
@@ -173,7 +173,7 @@
             <div class="min-w-0 flex-1">
               <router-link
                 :to="`/programs/${item.id}`"
-                class="font-semibold text-xs text-slate-800 hover:text-[#135A46] leading-snug block break-words"
+                class="font-semibold text-xs text-slate-800 hover:text-blue-600 leading-snug block break-words"
               >
                 {{ item.name }}
               </router-link>
@@ -181,7 +181,7 @@
             </div>
             <router-link
               :to="`/programs/${item.id}`"
-              class="inline-flex items-center justify-center h-7 px-2.5 text-xs font-semibold text-[#135A46] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 rounded-lg transition-colors shrink-0"
+              class="inline-flex items-center justify-center h-7 px-2.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-lg transition-colors shrink-0"
             >
               Lihat
             </router-link>

@@ -96,11 +96,11 @@
           />
 
           <div class="flex flex-col items-center justify-center gap-2">
-            <div class="w-12 h-12 rounded-full bg-emerald-100 text-[#135A46] flex items-center justify-center mb-1">
+            <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-1">
               <UploadCloud class="w-6 h-6" />
             </div>
             <p class="font-bold text-slate-800 text-sm">
-              Tarik file Excel / CSV ke sini, atau <span class="text-[#135A46] underline">pilih dari perangkat</span>
+              Tarik file Excel / CSV ke sini, atau <span class="text-blue-600 underline">pilih dari perangkat</span>
             </p>
             <p class="text-slate-400 text-[11px]">
               Mendukung format .xlsx, .xls, atau .csv (Maksimal 10 MB)
@@ -110,7 +110,7 @@
 
         <!-- Loading State -->
         <div v-if="isLoading" class="py-8 text-center text-slate-500 flex flex-col items-center justify-center gap-2">
-          <div class="w-6 h-6 border-2 border-[#135A46] border-t-transparent rounded-full animate-spin"></div>
+          <div class="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
           <p class="font-medium text-xs">Membaca dan memvalidasi file data...</p>
         </div>
 
@@ -242,7 +242,7 @@
           <button
             type="button"
             :disabled="parsedRows.length === 0 || isLoading || isImporting"
-            class="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#135A46] text-white text-xs font-bold hover:bg-[#0e4334] disabled:opacity-50 disabled:cursor-not-allowed shadow-2xs transition-all cursor-pointer"
+            class="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-2xs transition-all cursor-pointer"
             @click="executeImport"
           >
             <UploadCloud v-if="!isImporting" class="w-4 h-4" />
@@ -425,48 +425,82 @@ function mapRawRow(raw) {
   for (const [key, val] of Object.entries(raw)) {
     const k = normalizeKey(key);
 
-    // PROGRAM
-    if (k.includes('program') || k === 'nama' || k === 'project') {
+    // 1. TOTAL INVOICE (Wajib dicek sebelum invoice_number agar 'totalinvoice' tidak tertangkap sebagai invoice_number)
+    if (
+      (k.includes('total') || k.includes('grand') || k.includes('jumlah') || k.includes('totaltagihan')) &&
+      !k.includes('dpp') &&
+      !k.includes('ppn')
+    ) {
+      total_invoice = cleanNumber(val);
+    }
+    // 2. DPP
+    else if (k === 'dpp' || (k.includes('dpp') && !k.includes('ppn')) || k.includes('dasar')) {
+      dpp = cleanNumber(val);
+    }
+    // 3. PPN
+    else if (
+      k === 'ppn' ||
+      (k.includes('ppn') && !k.includes('dpp')) ||
+      (k.includes('pajak') && !k.includes('faktur') && !k.includes('npwp'))
+    ) {
+      ppn = cleanNumber(val);
+    }
+    // 4. NO. INVOICE (Eksklusif untuk nomor invoice/tagihan, abaikan total, tanggal, dan faktur pajak)
+    else if (
+      (k.includes('noinvoice') || k.includes('nomorinvoice') || k.includes('invoice') || k.includes('inv') || k.includes('tagihan') || (k.includes('faktur') && !k.includes('pajak'))) &&
+      !k.includes('total') &&
+      !k.includes('grand') &&
+      !k.includes('jumlah') &&
+      !k.includes('nilai') &&
+      !k.includes('tanggal') &&
+      !k.includes('tgl') &&
+      !k.includes('date')
+    ) {
+      invoice_number = String(val || '').trim();
+    }
+    // 5. PROGRAM
+    else if (k.includes('program') || k === 'nama' || k === 'project' || k.includes('namaprogram') || k.includes('namaproject')) {
       program_name = String(val || '').trim();
     }
-    // SUPPLIER
-    else if (k.includes('supplier') || k.includes('vendor') || k.includes('suplier')) {
+    // 6. SUPPLIER
+    else if (k.includes('supplier') || k.includes('vendor') || k.includes('suplier') || k.includes('namasupplier') || k.includes('namavendor')) {
       supplier = String(val || '').trim();
     }
-    // COMPANY NAME
+    // 7. COMPANY NAME
     else if (k.includes('company') || k.includes('perusahaan') || k.includes('entitas') || k === 'pt') {
       company_name = String(val || '').trim();
     }
-    // NO. PO/SJ
-    else if (k.includes('posj') || k.includes('po') || k.includes('sj') || k.includes('suratjalan') || k.includes('purchaseorder')) {
+    // 8. NO. PO / SJ
+    else if (
+      k.includes('posj') ||
+      k.includes('noposj') ||
+      k.includes('suratjalan') ||
+      k.includes('purchaseorder') ||
+      k.includes('nopo') ||
+      k.includes('nosj') ||
+      k === 'po' ||
+      k === 'sj' ||
+      (k.includes('po') && k.includes('sj'))
+    ) {
       po_sj_number = String(val || '').trim();
     }
-    // NO. INVOICE
-    else if (k.includes('invoice') || k.includes('inv') || k.includes('faktur')) {
-      invoice_number = String(val || '').trim();
-    }
-    // DPP
-    else if (k === 'dpp' || k.includes('dpp') || k.includes('dasar')) {
-      dpp = cleanNumber(val);
-    }
-    // PPN
-    else if (k === 'ppn' || k.includes('ppn') || k === 'pajak') {
-      ppn = cleanNumber(val);
-    }
-    // TOTAL INVOICE
-    else if (k.includes('total') || k.includes('grand') || k.includes('jumlah')) {
-      total_invoice = cleanNumber(val);
-    }
-    // NPWP
+    // 9. NPWP
     else if (k.includes('npwp')) {
       npwp = String(val || '').trim();
     }
-    // KATEGORI
+    // 10. KATEGORI
     else if (k.includes('kategori') || k.includes('category')) {
       category = String(val || '').trim();
     }
-    // TANGGAL / BULAN
-    else if (k.includes('tanggal') || k.includes('date') || k.includes('tgl') || k.includes('bulan') || k.includes('month')) {
+    // 11. TANGGAL / BULAN
+    else if (
+      k.includes('tanggal') ||
+      k.includes('date') ||
+      k.includes('tgl') ||
+      k.includes('bulan') ||
+      k.includes('month') ||
+      k.includes('periode')
+    ) {
       program_date = parseImportDate(val);
     }
   }

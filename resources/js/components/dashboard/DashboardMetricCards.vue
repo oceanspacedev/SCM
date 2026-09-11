@@ -6,7 +6,7 @@
         <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase font-sans">
           TOTAL NILAI INVOICE
         </span>
-        <Wallet class="w-4 h-4 text-[#135A46] stroke-[1.75]" />
+        <Wallet class="w-4 h-4 text-blue-600 stroke-[1.75]" />
       </div>
 
       <div class="my-2.5">
@@ -28,7 +28,7 @@
         <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase font-sans">
           TOTAL DPP
         </span>
-        <FileSpreadsheet class="w-4 h-4 text-[#135A46] stroke-[1.75]" />
+        <FileSpreadsheet class="w-4 h-4 text-blue-600 stroke-[1.75]" />
       </div>
 
       <div class="my-2.5">
@@ -50,7 +50,7 @@
         <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase font-sans">
           TOTAL PPN (11%)
         </span>
-        <Percent class="w-4 h-4 text-[#135A46] stroke-[1.75]" />
+        <Percent class="w-4 h-4 text-blue-600 stroke-[1.75]" />
       </div>
 
       <div class="my-2.5">
@@ -72,7 +72,7 @@
         <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase font-sans">
           SIAP AUDIT
         </span>
-        <CheckCircle2 class="w-4 h-4 text-[#135A46] stroke-[1.75]" />
+        <CheckCircle2 class="w-4 h-4 text-blue-600 stroke-[1.75]" />
       </div>
 
       <div class="my-2.5">

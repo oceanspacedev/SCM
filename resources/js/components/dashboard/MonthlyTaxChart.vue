@@ -21,8 +21,8 @@
         <defs>
           <!-- Gradient for DPP bar -->
           <linearGradient id="dppGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#1A735B" />
-            <stop offset="100%" stop-color="#135A46" />
+            <stop offset="0%" stop-color="#3B82F6" />
+            <stop offset="100%" stop-color="#2563EB" />
           </linearGradient>
 
           <!-- Gradient for PPN bar -->
@@ -143,7 +143,7 @@
             :cx="getX(idx)"
             :cy="getY(item.total)"
             r="8"
-            fill="#135A46"
+            fill="#2563EB"
             fill-opacity="0.2"
             class="animate-ping"
           />
@@ -153,7 +153,7 @@
             :cx="getX(idx)"
             :cy="getY(item.total)"
             :r="hoveredIndex === idx ? 5 : 3.5"
-            :fill="hoveredIndex === idx ? '#135A46' : '#1E293B'"
+            :fill="hoveredIndex === idx ? '#2563EB' : '#1E293B'"
             stroke="#FFFFFF"
             stroke-width="1.8"
             filter="url(#dotShadow)"
@@ -178,7 +178,7 @@
           class="absolute top-1 right-2 bg-slate-900/95 backdrop-blur-xs text-white px-3 py-2 rounded-lg shadow-xl text-xs space-y-1 border border-slate-700/80 pointer-events-none z-20 min-w-[175px]"
         >
           <div class="flex items-center justify-between border-b border-slate-700/70 pb-1">
-            <span class="font-bold text-emerald-400 text-[11px]">
+            <span class="font-bold text-blue-400 text-[11px]">
               {{ hoveredMonth.month }} 2025
             </span>
             <span class="text-[9px] text-slate-400 uppercase tracking-wider">Perpajakan</span>
@@ -186,7 +186,7 @@
 
           <div class="flex justify-between items-center text-slate-300 text-[11px] pt-0.5">
             <span class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-[#1A735B]"></span>
+              <span class="w-2 h-2 rounded-full bg-[#2563EB]"></span>
               <span>DPP:</span>
             </span>
             <span class="font-mono font-medium text-white">{{ formatRupiah(hoveredMonth.dpp) }}</span>
@@ -202,7 +202,7 @@
 
           <div class="flex justify-between items-center text-slate-200 pt-1 border-t border-slate-700/70 text-[11px] font-semibold">
             <span>Total Invoice:</span>
-            <span class="font-mono text-emerald-300">{{ formatRupiah(hoveredMonth.total) }}</span>
+            <span class="font-mono text-blue-300">{{ formatRupiah(hoveredMonth.total) }}</span>
           </div>
         </div>
       </transition>
@@ -211,7 +211,7 @@
     <!-- Chart Legend (Bottom) -->
     <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-center gap-6 text-xs text-slate-600">
       <div class="flex items-center gap-1.5 cursor-default hover:text-slate-900 transition-colors">
-        <span class="w-2.5 h-2.5 rounded-full bg-[#135A46] shadow-2xs"></span>
+        <span class="w-2.5 h-2.5 rounded-full bg-[#2563EB] shadow-2xs"></span>
         <span class="text-xs font-medium text-slate-700">DPP</span>
       </div>
       <div class="flex items-center gap-1.5 cursor-default hover:text-slate-900 transition-colors">

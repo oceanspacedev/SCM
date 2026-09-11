@@ -7,7 +7,7 @@
       </h3>
       <router-link
         to="/programs"
-        class="text-xs font-semibold text-[#135A46] hover:underline"
+        class="text-xs font-semibold text-blue-600 hover:underline"
       >
         Lihat semua →
       </router-link>
@@ -32,7 +32,7 @@
             <td class="py-2.5 px-4">
               <router-link
                 :to="`/programs/${item.id}`"
-                class="font-medium text-slate-800 hover:text-[#135A46] transition-colors truncate block max-w-[190px]"
+                class="font-medium text-slate-800 hover:text-blue-600 transition-colors truncate block max-w-[190px]"
                 :title="item.name"
               >
                 {{ item.name }}

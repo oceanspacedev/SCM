@@ -12,11 +12,11 @@
       </div>
 
       <!-- Action Buttons Top Right matching screenshot: Kembali, Ubah, Hapus -->
-      <div class="flex items-center gap-2.5 shrink-0 self-start">
+      <div class="flex items-center gap-2 shrink-0 self-start">
         <!-- Kembali -->
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
           @click="goBack"
         >
           <ArrowLeft class="w-3.5 h-3.5 text-slate-500" />
@@ -26,7 +26,7 @@
         <!-- Ubah -->
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
           @click="openEditModal"
         >
           <Pencil class="w-3.5 h-3.5 text-slate-500" />
@@ -36,30 +36,29 @@
         <!-- Hapus -->
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 border border-rose-200/80 text-xs font-semibold text-rose-600 hover:bg-rose-100 hover:text-rose-700 shadow-2xs transition-colors cursor-pointer"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-medium text-slate-700 hover:text-red-600 hover:border-red-200 hover:bg-red-50/50 transition-colors cursor-pointer"
           @click="confirmDeleteProgram"
         >
-          <Trash2 class="w-3.5 h-3.5 text-rose-500" />
+          <Trash2 class="w-3.5 h-3.5 text-slate-400" />
           <span>Hapus</span>
         </button>
       </div>
     </div>
 
-    <!-- Status & Meta Strip matching screenshot -->
+    <!-- Status & Meta Strip -->
     <div class="flex flex-wrap items-center gap-3 text-xs">
       <!-- Status Badge -->
-      <span
-        :class="[
-          'px-3 py-1 rounded-full text-xs font-semibold border',
-          completeness.count === 3
-            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-            : completeness.count > 0
-            ? 'bg-amber-50 text-amber-800 border-amber-200'
-            : 'bg-rose-50 text-rose-700 border-rose-200'
-        ]"
-      >
-        {{ statusBadgeText }}
-      </span>
+      <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 border border-slate-200 text-slate-700">
+        <span
+          class="w-1.5 h-1.5 rounded-full"
+          :class="{
+            'bg-emerald-600': completeness.count === 3,
+            'bg-amber-500': completeness.count > 0 && completeness.count < 3,
+            'bg-slate-400': completeness.count === 0
+          }"
+        ></span>
+        <span>{{ statusBadgeText }}</span>
+      </div>
 
       <!-- Meta Info -->
       <span class="text-slate-500 text-xs">
@@ -67,41 +66,30 @@
       </span>
     </div>
 
-    <!-- Three Document Cards Grid matching screenshot -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <!-- Three Document Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
       <!-- CARD 1: INVOICE -->
-      <div
-        class="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-2xs flex flex-col justify-between min-h-[190px]"
-      >
+      <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 flex flex-col justify-between min-h-[175px]">
         <div>
           <!-- Card Header -->
-          <div class="flex items-center gap-3">
-            <div
-              :class="[
-                'w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border',
-                getDoc('invoice')
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                  : 'bg-slate-100 text-slate-400 border-slate-200'
-              ]"
-            >
-              <FileText class="w-4.5 h-4.5" />
-            </div>
-            <div>
-              <h4 class="font-bold text-slate-900 text-sm leading-tight">
+          <div class="flex items-start gap-2.5">
+            <FileText class="w-4.5 h-4.5 text-slate-500 shrink-0 mt-0.5" />
+            <div class="min-w-0 flex-1">
+              <h4 class="font-semibold text-slate-900 text-sm leading-none">
                 Invoice
               </h4>
-              <p class="text-[11px] font-mono text-slate-400 mt-0.5">
+              <p class="text-[11px] font-mono text-slate-400 mt-1">
                 {{ getDoc('invoice') ? (getDoc('invoice').file_size || '404 B') : 'Belum diunggah' }}
               </p>
             </div>
           </div>
 
           <!-- Card Body: Uploaded State -->
-          <div v-if="getDoc('invoice')" class="mt-4 space-y-1">
-            <p class="text-xs font-mono font-medium text-slate-800 truncate" :title="getDoc('invoice').file_name">
+          <div v-if="getDoc('invoice')" class="mt-4 space-y-0.5">
+            <p class="text-xs font-medium text-slate-800 truncate" :title="getDoc('invoice').file_name">
               {{ getDoc('invoice').file_name }}
             </p>
-            <p class="text-[11px] text-slate-400">
+            <p class="text-[11px] text-slate-400 truncate">
               Diunggah {{ formatUploadDate(getDoc('invoice').uploaded_at || program.program_date) }} · oleh {{ getDoc('invoice').uploaded_by || uploaderName }}
             </p>
           </div>
@@ -110,10 +98,10 @@
           <div v-else class="mt-4">
             <button
               type="button"
-              class="w-full py-2 px-3 rounded-xl bg-[#0284c7] hover:bg-[#0369a1] text-white text-xs font-bold transition-all shadow-2xs flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              class="w-full py-2 px-3 rounded-lg border border-dashed border-slate-300 hover:border-slate-400 bg-slate-50/60 hover:bg-slate-100/80 text-slate-700 text-xs font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer"
               @click="openUpload('invoice', 'Invoice')"
             >
-              <UploadCloud class="w-4 h-4" />
+              <UploadCloud class="w-4 h-4 text-slate-400" />
               <span>Unggah Invoice</span>
             </button>
             <p class="text-[11px] text-slate-400 text-center mt-2">
@@ -127,24 +115,24 @@
           <div class="flex items-center gap-2">
             <button
               type="button"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors cursor-pointer"
               @click="openPreview('invoice')"
             >
-              <Eye class="w-3.5 h-3.5 text-slate-500" />
+              <Eye class="w-3.5 h-3.5 text-slate-400" />
               <span>Pratinjau</span>
             </button>
             <button
               type="button"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors cursor-pointer"
               @click="downloadDoc('invoice')"
             >
-              <Download class="w-3.5 h-3.5 text-slate-500" />
+              <Download class="w-3.5 h-3.5 text-slate-400" />
               <span>Unduh</span>
             </button>
           </div>
           <button
             type="button"
-            class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+            class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
             title="Hapus Invoice"
             @click="deleteDoc('invoice')"
           >
@@ -154,38 +142,27 @@
       </div>
 
       <!-- CARD 2: FAKTUR PAJAK -->
-      <div
-        class="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-2xs flex flex-col justify-between min-h-[190px]"
-      >
+      <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 flex flex-col justify-between min-h-[175px]">
         <div>
           <!-- Card Header -->
-          <div class="flex items-center gap-3">
-            <div
-              :class="[
-                'w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border',
-                getDoc('faktur_pajak')
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                  : 'bg-slate-100 text-slate-400 border-slate-200'
-              ]"
-            >
-              <FileText class="w-4.5 h-4.5" />
-            </div>
-            <div>
-              <h4 class="font-bold text-slate-900 text-sm leading-tight">
+          <div class="flex items-start gap-2.5">
+            <FileText class="w-4.5 h-4.5 text-slate-500 shrink-0 mt-0.5" />
+            <div class="min-w-0 flex-1">
+              <h4 class="font-semibold text-slate-900 text-sm leading-none">
                 Faktur Pajak
               </h4>
-              <p class="text-[11px] font-mono text-slate-400 mt-0.5">
+              <p class="text-[11px] font-mono text-slate-400 mt-1">
                 {{ getDoc('faktur_pajak') ? (getDoc('faktur_pajak').file_size || '1.2 MB') : 'Belum diunggah' }}
               </p>
             </div>
           </div>
 
           <!-- Card Body: Uploaded State -->
-          <div v-if="getDoc('faktur_pajak')" class="mt-4 space-y-1">
-            <p class="text-xs font-mono font-medium text-slate-800 truncate" :title="getDoc('faktur_pajak').file_name">
+          <div v-if="getDoc('faktur_pajak')" class="mt-4 space-y-0.5">
+            <p class="text-xs font-medium text-slate-800 truncate" :title="getDoc('faktur_pajak').file_name">
               {{ getDoc('faktur_pajak').file_name }}
             </p>
-            <p class="text-[11px] text-slate-400">
+            <p class="text-[11px] text-slate-400 truncate">
               Diunggah {{ formatUploadDate(getDoc('faktur_pajak').uploaded_at || program.program_date) }} · oleh {{ getDoc('faktur_pajak').uploaded_by || uploaderName }}
             </p>
           </div>
@@ -194,10 +171,10 @@
           <div v-else class="mt-4">
             <button
               type="button"
-              class="w-full py-2 px-3 rounded-xl bg-[#0284c7] hover:bg-[#0369a1] text-white text-xs font-bold transition-all shadow-2xs flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              class="w-full py-2 px-3 rounded-lg border border-dashed border-slate-300 hover:border-slate-400 bg-slate-50/60 hover:bg-slate-100/80 text-slate-700 text-xs font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer"
               @click="openUpload('faktur_pajak', 'Faktur Pajak')"
             >
-              <UploadCloud class="w-4 h-4" />
+              <UploadCloud class="w-4 h-4 text-slate-400" />
               <span>Unggah Faktur Pajak</span>
             </button>
             <p class="text-[11px] text-slate-400 text-center mt-2">
@@ -211,24 +188,24 @@
           <div class="flex items-center gap-2">
             <button
               type="button"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors cursor-pointer"
               @click="openPreview('faktur_pajak')"
             >
-              <Eye class="w-3.5 h-3.5 text-slate-500" />
+              <Eye class="w-3.5 h-3.5 text-slate-400" />
               <span>Pratinjau</span>
             </button>
             <button
               type="button"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors cursor-pointer"
               @click="downloadDoc('faktur_pajak')"
             >
-              <Download class="w-3.5 h-3.5 text-slate-500" />
+              <Download class="w-3.5 h-3.5 text-slate-400" />
               <span>Unduh</span>
             </button>
           </div>
           <button
             type="button"
-            class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+            class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
             title="Hapus Faktur Pajak"
             @click="deleteDoc('faktur_pajak')"
           >
@@ -238,38 +215,27 @@
       </div>
 
       <!-- CARD 3: MEMO / MOU -->
-      <div
-        class="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-2xs flex flex-col justify-between min-h-[190px]"
-      >
+      <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 flex flex-col justify-between min-h-[175px]">
         <div>
           <!-- Card Header -->
-          <div class="flex items-center gap-3">
-            <div
-              :class="[
-                'w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border',
-                getDoc('mou')
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                  : 'bg-slate-100 text-slate-400 border-slate-200'
-              ]"
-            >
-              <FileText class="w-4.5 h-4.5" />
-            </div>
-            <div>
-              <h4 class="font-bold text-slate-900 text-sm leading-tight">
+          <div class="flex items-start gap-2.5">
+            <FileText class="w-4.5 h-4.5 text-slate-500 shrink-0 mt-0.5" />
+            <div class="min-w-0 flex-1">
+              <h4 class="font-semibold text-slate-900 text-sm leading-none">
                 Memo / MOU
               </h4>
-              <p class="text-[11px] font-mono text-slate-400 mt-0.5">
+              <p class="text-[11px] font-mono text-slate-400 mt-1">
                 {{ getDoc('mou') ? (getDoc('mou').file_size || '404 B') : 'Belum diunggah' }}
               </p>
             </div>
           </div>
 
           <!-- Card Body: Uploaded State -->
-          <div v-if="getDoc('mou')" class="mt-4 space-y-1">
-            <p class="text-xs font-mono font-medium text-slate-800 truncate" :title="getDoc('mou').file_name">
+          <div v-if="getDoc('mou')" class="mt-4 space-y-0.5">
+            <p class="text-xs font-medium text-slate-800 truncate" :title="getDoc('mou').file_name">
               {{ getDoc('mou').file_name }}
             </p>
-            <p class="text-[11px] text-slate-400">
+            <p class="text-[11px] text-slate-400 truncate">
               Diunggah {{ formatUploadDate(getDoc('mou').uploaded_at || program.program_date) }} · oleh {{ getDoc('mou').uploaded_by || uploaderName }}
             </p>
           </div>
@@ -278,10 +244,10 @@
           <div v-else class="mt-4">
             <button
               type="button"
-              class="w-full py-2 px-3 rounded-xl bg-[#0284c7] hover:bg-[#0369a1] text-white text-xs font-bold transition-all shadow-2xs flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              class="w-full py-2 px-3 rounded-lg border border-dashed border-slate-300 hover:border-slate-400 bg-slate-50/60 hover:bg-slate-100/80 text-slate-700 text-xs font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer"
               @click="openUpload('mou', 'Memo / MOU')"
             >
-              <UploadCloud class="w-4 h-4" />
+              <UploadCloud class="w-4 h-4 text-slate-400" />
               <span>Unggah Memo / MOU</span>
             </button>
             <p class="text-[11px] text-slate-400 text-center mt-2">
@@ -295,24 +261,24 @@
           <div class="flex items-center gap-2">
             <button
               type="button"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors cursor-pointer"
               @click="openPreview('mou')"
             >
-              <Eye class="w-3.5 h-3.5 text-slate-500" />
+              <Eye class="w-3.5 h-3.5 text-slate-400" />
               <span>Pratinjau</span>
             </button>
             <button
               type="button"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors cursor-pointer"
               @click="downloadDoc('mou')"
             >
-              <Download class="w-3.5 h-3.5 text-slate-500" />
+              <Download class="w-3.5 h-3.5 text-slate-400" />
               <span>Unduh</span>
             </button>
           </div>
           <button
             type="button"
-            class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+            class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
             title="Hapus Memo/MOU"
             @click="deleteDoc('mou')"
           >
@@ -325,7 +291,7 @@
     <!-- Bottom Section: Two Columns Grid matching screenshot -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Left Card: Rekonsiliasi Nilai & Perpajakan -->
-      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden flex flex-col justify-between">
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col justify-between">
         <div>
           <!-- Title -->
           <div class="p-6 pb-4">
@@ -357,19 +323,21 @@
               <span class="font-mono text-slate-800 font-semibold">{{ formatRupiah(program.ppn) }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">NON PPH</span>
-              <span class="font-mono text-slate-700">{{ formatRupiah(program.pph || 0) }}</span>
+              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">
+                {{ getPphLabel(program.pph_type) }}
+              </span>
+              <span class="font-mono text-slate-700 font-semibold">{{ formatRupiah(program.pph || 0) }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
               <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">NO. FAKTUR PAJAK</span>
-              <span class="font-mono text-slate-600">
+              <span class="font-mono text-slate-600 font-medium">
                 {{ program.faktur_number || (getDoc('faktur_pajak') ? '010.002-25.88291024' : '-') }}
               </span>
             </div>
             <div class="py-3 flex items-center justify-between">
               <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">TANGGAL FAKTUR PAJAK</span>
-              <span class="text-slate-600">
-                {{ program.faktur_date || (getDoc('faktur_pajak') ? formatDate(program.program_date) : '-') }}
+              <span class="text-slate-600 font-medium">
+                {{ program.faktur_date ? formatDate(program.faktur_date) : (getDoc('faktur_pajak') ? formatDate(program.program_date) : '-') }}
               </span>
             </div>
           </div>
@@ -389,7 +357,7 @@
       </div>
 
       <!-- Right Card: Data Program & Supplier -->
-      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden flex flex-col justify-between">
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col justify-between">
         <div>
           <!-- Title -->
           <div class="p-6 pb-4">
@@ -459,10 +427,10 @@
       class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
     >
       <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" @click="isEditModalOpen = false"></div>
-      <div class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-xl overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-150">
+      <div class="relative bg-white rounded-xl shadow-xl border border-slate-200 w-full max-w-xl overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-150">
         <div class="px-6 py-4 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
           <h3 class="text-sm font-bold text-slate-900">Ubah Data Program & Invoice</h3>
-          <button type="button" class="text-slate-400 hover:text-slate-600" @click="isEditModalOpen = false">
+          <button type="button" class="text-slate-400 hover:text-slate-600 cursor-pointer" @click="isEditModalOpen = false">
             <X class="w-5 h-5" />
           </button>
         </div>
@@ -474,7 +442,7 @@
               v-model="editForm.program_name"
               type="text"
               required
-              class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#135A46] focus:outline-hidden"
+              class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
             />
           </div>
 
@@ -485,7 +453,7 @@
                 v-model="editForm.supplier"
                 type="text"
                 required
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#135A46] focus:outline-hidden"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
               />
             </div>
             <div>
@@ -493,7 +461,7 @@
               <input
                 v-model="editForm.npwp"
                 type="text"
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono focus:ring-2 focus:ring-[#135A46] focus:outline-hidden"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
               />
             </div>
           </div>
@@ -505,22 +473,18 @@
                 v-model="editForm.invoice_number"
                 type="text"
                 required
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono focus:ring-2 focus:ring-[#135A46] focus:outline-hidden"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
               />
             </div>
             <div>
               <label class="block font-semibold text-slate-700 mb-1">Kategori</label>
               <select
                 v-model="editForm.category"
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#135A46] focus:outline-hidden"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-hidden cursor-pointer"
               >
-                <option value="Pipa & Tubing">Pipa & Tubing</option>
-                <option value="Sewa Alat Berat">Sewa Alat Berat</option>
-                <option value="Inspeksi & Sertifikasi">Inspeksi & Sertifikasi</option>
-                <option value="Mekanikal & Valve">Mekanikal & Valve</option>
-                <option value="Bahan Kimia">Bahan Kimia</option>
-                <option value="Logistik">Logistik</option>
-                <option value="Operasional">Operasional</option>
+                <option v-for="cat in availableCategories" :key="cat" :value="cat">
+                  {{ cat }}
+                </option>
               </select>
             </div>
           </div>
@@ -533,7 +497,7 @@
                 type="number"
                 required
                 @input="calculateTaxes"
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono focus:ring-2 focus:ring-[#135A46] focus:outline-hidden"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
               />
             </div>
             <div>
@@ -555,17 +519,68 @@
             </div>
           </div>
 
+          <!-- Jenis PPh & Nilai PPh -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Jenis PPh</label>
+              <select
+                v-model="editForm.pph_type"
+                @change="onPphTypeChange"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-hidden cursor-pointer"
+              >
+                <option value="NON_PPH">Non PPh</option>
+                <option value="PPH_21">PPh 21 (2,5%)</option>
+                <option value="PPH_23">PPh 23 (2%)</option>
+                <option value="PPH_4_2">PPh 4 Ayat 2 (10%)</option>
+                <option value="PPH_23_BONUS">PPh 23 Atas Bonus (15%)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Nilai PPh (IDR)</label>
+              <input
+                v-model.number="editForm.pph"
+                type="number"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono bg-slate-50 focus:outline-hidden"
+              />
+              <p class="text-[10px] text-slate-400 mt-0.5 font-mono">
+                {{ formatRupiah(editForm.pph || 0) }}
+              </p>
+            </div>
+          </div>
+
+          <!-- No. Faktur Pajak & Tanggal Faktur Pajak -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">No. Faktur Pajak (No. FP)</label>
+              <input
+                v-model="editForm.faktur_number"
+                type="text"
+                placeholder="010.000-25.00000001"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
+              />
+              <p class="text-[10px] text-slate-400 mt-0.5">Format: XXX.XXX-XX.XXXXXXXX</p>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Tanggal Faktur Pajak (Tgl FP)</label>
+              <input
+                v-model="editForm.faktur_date"
+                type="date"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
+              />
+            </div>
+          </div>
+
           <div class="pt-4 border-t border-slate-200 flex items-center justify-end gap-2.5">
             <button
               type="button"
-              class="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50"
+              class="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 font-medium hover:bg-slate-50 cursor-pointer"
               @click="isEditModalOpen = false"
             >
               Batal
             </button>
             <button
               type="submit"
-              class="px-5 py-2 rounded-lg bg-[#135A46] text-white font-bold hover:bg-[#0e4334] shadow-2xs"
+              class="px-5 py-2 rounded-lg bg-slate-900 text-white font-medium hover:bg-slate-800 transition-colors cursor-pointer"
             >
               Simpan Perubahan
             </button>
@@ -593,42 +608,42 @@
     <Teleport to="body">
       <div
         v-if="docToDelete"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs"
       >
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
-          <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4 border border-rose-100">
-            <Trash2 class="w-6 h-6" />
+        <div class="bg-white rounded-xl max-w-sm w-full p-5 shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+          <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mx-auto mb-3 border border-slate-200">
+            <Trash2 class="w-5 h-5 text-red-600" />
           </div>
 
-          <h3 class="text-base font-bold text-slate-900 text-center mb-1">
+          <h3 class="text-sm font-semibold text-slate-900 text-center mb-1">
             Hapus Berkas Dokumen?
           </h3>
           <p class="text-xs text-slate-500 text-center leading-relaxed mb-4">
             Apakah Anda yakin ingin menghapus berkas <strong class="text-slate-800">{{ docToDelete.label }}</strong>? Tindakan ini tidak dapat dibatalkan.
           </p>
 
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 mb-5 text-xs">
+          <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 mb-4 text-xs">
             <div class="flex items-center justify-between">
               <span class="text-slate-500">Tipe Dokumen:</span>
-              <span class="font-semibold text-slate-800">{{ docToDelete.label }}</span>
+              <span class="font-medium text-slate-800">{{ docToDelete.label }}</span>
             </div>
-            <div v-if="docToDelete.fileName" class="flex items-center justify-between mt-1 pt-1 border-t border-slate-200/60">
+            <div v-if="docToDelete.fileName" class="flex items-center justify-between mt-1 pt-1 border-t border-slate-200">
               <span class="text-slate-500">Nama File:</span>
               <span class="font-mono text-slate-700 truncate max-w-[160px]">{{ docToDelete.fileName }}</span>
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-2 gap-2.5">
             <button
               type="button"
-              class="w-full py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
+              class="w-full py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs transition-colors cursor-pointer"
               @click="docToDelete = null"
             >
               Batal
             </button>
             <button
               type="button"
-              class="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-1.5"
+              class="w-full py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"
               @click="confirmDeleteDoc"
             >
               <Trash2 class="w-3.5 h-3.5" />
@@ -643,35 +658,35 @@
     <Teleport to="body">
       <div
         v-if="isDeleteProgramModalOpen"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs"
       >
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
-          <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4 border border-rose-100">
-            <Trash2 class="w-6 h-6" />
+        <div class="bg-white rounded-xl max-w-sm w-full p-5 shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+          <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mx-auto mb-3 border border-slate-200">
+            <Trash2 class="w-5 h-5 text-red-600" />
           </div>
 
-          <h3 class="text-base font-bold text-slate-900 text-center mb-1">
+          <h3 class="text-sm font-semibold text-slate-900 text-center mb-1">
             Hapus Program Ini?
           </h3>
-          <p class="text-xs text-slate-500 text-center leading-relaxed mb-5">
-            Apakah Anda yakin ingin menghapus program <strong class="text-slate-800">{{ program?.program_name }}</strong>? Seluruh dokumen perpajakan terkait akan dihapus.
+          <p class="text-xs text-slate-500 text-center leading-relaxed mb-4">
+            Apakah Anda yakin ingin menghapus program <strong class="text-slate-800">{{ program?.program_name }}</strong>? Seluruh berkas perpajakan terkait akan dihapus.
           </p>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-2 gap-2.5">
             <button
               type="button"
-              class="w-full py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
+              class="w-full py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs transition-colors cursor-pointer"
               @click="isDeleteProgramModalOpen = false"
             >
               Batal
             </button>
             <button
               type="button"
-              class="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-1.5"
+              class="w-full py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"
               @click="executeDeleteProgram"
             >
               <Trash2 class="w-3.5 h-3.5" />
-              <span>Ya, Hapus</span>
+              <span>Ya, Hapus Program</span>
             </button>
           </div>
         </div>
@@ -680,13 +695,13 @@
   </div>
 
   <!-- Not Found State -->
-  <div v-else class="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
+  <div v-else class="bg-white rounded-xl border border-slate-200 p-12 text-center space-y-3">
     <FileText class="w-10 h-10 text-slate-300 mx-auto" />
     <h3 class="text-base font-bold text-slate-800">Program Tidak Ditemukan</h3>
     <p class="text-xs text-slate-500">Program mungkin telah dihapus atau URL tidak sesuai.</p>
     <router-link
       to="/programs"
-      class="inline-flex items-center gap-2 px-4 py-2 bg-[#135A46] text-white text-xs font-semibold rounded-lg hover:bg-[#0e4334]"
+      class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700"
     >
       <ArrowLeft class="w-3.5 h-3.5" />
       <span>Kembali ke Arsip Program</span>
@@ -718,7 +733,10 @@ import {
   getProgramMonth,
   getProgramYear,
   getProgramCompanyName,
-  getProgramPoSjNumber
+  getProgramPoSjNumber,
+  getPphLabel,
+  calculatePphAmount,
+  PPH_OPTIONS
 } from '../store/taxStore';
 
 const route = useRoute();
@@ -849,6 +867,38 @@ async function confirmDeleteDoc() {
   docToDelete.value = null;
 }
 
+// Available Categories for Edit Modal (inclusive of all system categories)
+const availableCategories = computed(() => {
+  const defaults = [
+    'Promosi',
+    'Rebate',
+    'Cashback',
+    'Sewa Display',
+    'Listing Fee',
+    'Digital Promo',
+    'Distribusi',
+    'Insentif',
+    'Bundling',
+    'Sampling',
+    'Branding',
+    'Loyalty',
+    'Diskon',
+    'Event',
+    'Logistik',
+    'Kemitraan',
+    'Pipa & Tubing',
+    'Sewa Alat Berat',
+    'Inspeksi & Sertifikasi',
+    'Mekanikal & Valve',
+    'Bahan Kimia',
+    'Operasional'
+  ];
+  if (program.value?.category && !defaults.includes(program.value.category)) {
+    return [program.value.category, ...defaults];
+  }
+  return defaults;
+});
+
 // Edit Modal State & Handling
 const isEditModalOpen = ref(false);
 const editForm = reactive({
@@ -859,6 +909,10 @@ const editForm = reactive({
   category: 'Logistik',
   dpp: 0,
   ppn: 0,
+  pph_type: 'NON_PPH',
+  pph: 0,
+  faktur_number: '',
+  faktur_date: ''
 });
 
 function openEditModal() {
@@ -870,11 +924,24 @@ function openEditModal() {
   editForm.category = program.value.category || 'Logistik';
   editForm.dpp = Number(program.value.dpp) || 0;
   editForm.ppn = Number(program.value.ppn) || Math.round(editForm.dpp * 0.11);
+  editForm.pph_type = program.value.pph_type || 'NON_PPH';
+  editForm.pph = Number(program.value.pph) || calculatePphAmount(editForm.dpp, editForm.pph_type);
+  editForm.faktur_number = program.value.faktur_number || '';
+  editForm.faktur_date = program.value.faktur_date ? String(program.value.faktur_date).slice(0, 10) : '';
   isEditModalOpen.value = true;
 }
 
 function calculateTaxes() {
   editForm.ppn = Math.round((Number(editForm.dpp) || 0) * 0.11);
+  if (editForm.pph_type && editForm.pph_type !== 'NON_PPH') {
+    editForm.pph = calculatePphAmount(editForm.dpp, editForm.pph_type);
+  } else {
+    editForm.pph = 0;
+  }
+}
+
+function onPphTypeChange() {
+  editForm.pph = calculatePphAmount(editForm.dpp, editForm.pph_type);
 }
 
 async function saveEditProgram() {
@@ -886,7 +953,12 @@ async function saveEditProgram() {
     category: editForm.category,
     dpp: editForm.dpp,
     ppn: editForm.ppn,
-    total_invoice: editForm.dpp + editForm.ppn
+    total_invoice: editForm.dpp + editForm.ppn,
+    pph_type: editForm.pph_type,
+    pph: editForm.pph,
+    pph_amount: editForm.pph,
+    faktur_number: editForm.faktur_number,
+    faktur_date: editForm.faktur_date || null
   });
   isEditModalOpen.value = false;
 }

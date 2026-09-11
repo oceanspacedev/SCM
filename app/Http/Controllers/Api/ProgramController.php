@@ -190,6 +190,12 @@ class ProgramController extends Controller
             'dpp_amount' => $dpp,
             'ppn_amount' => $ppn,
             'total_amount' => $total,
+            'pph_type' => $request->input('pph_type') ?: 'NON_PPH',
+            'pph_amount' => (float) ($request->input('pph_amount') ?? $request->input('pph') ?? 0),
+            'faktur_number' => $request->input('faktur_number') ?: $request->input('tax_invoice_number'),
+            'faktur_date' => ($request->input('faktur_date') ?: $request->input('tax_invoice_date')) ? $this->parseSafeDate($request->input('faktur_date') ?: $request->input('tax_invoice_date')) : null,
+            'tax_notes' => $request->input('tax_notes'),
+            'is_verified' => (bool) $request->input('is_verified', false),
             'due_date' => $dueDate,
             'status' => $request->input('status') ?: 'Perlu Tindakan'
         ]);
@@ -230,6 +236,25 @@ class ProgramController extends Controller
         }
         if ($request->has('total_amount') || $request->has('total_invoice')) {
             $data['total_amount'] = (float) ($request->input('total_amount') ?? $request->input('total_invoice'));
+        }
+        if ($request->has('pph_type')) {
+            $data['pph_type'] = $request->input('pph_type') ?: 'NON_PPH';
+        }
+        if ($request->has('pph_amount') || $request->has('pph')) {
+            $data['pph_amount'] = (float) ($request->input('pph_amount') ?? $request->input('pph'));
+        }
+        if ($request->has('faktur_number') || $request->has('tax_invoice_number')) {
+            $data['faktur_number'] = $request->input('faktur_number') ?? $request->input('tax_invoice_number');
+        }
+        if ($request->has('faktur_date') || $request->has('tax_invoice_date')) {
+            $fDate = $request->input('faktur_date') ?? $request->input('tax_invoice_date');
+            $data['faktur_date'] = $fDate ? $this->parseSafeDate($fDate) : null;
+        }
+        if ($request->has('tax_notes')) {
+            $data['tax_notes'] = $request->input('tax_notes');
+        }
+        if ($request->has('is_verified')) {
+            $data['is_verified'] = (bool) $request->input('is_verified');
         }
         if ($dueDate) $data['due_date'] = $this->parseSafeDate($dueDate);
         if ($request->has('status')) $data['status'] = $request->input('status');
@@ -443,6 +468,12 @@ class ProgramController extends Controller
                         'dpp_amount' => $dpp,
                         'ppn_amount' => $ppn,
                         'total_amount' => $total,
+                        'pph_type' => $p['pph_type'] ?? 'NON_PPH',
+                        'pph_amount' => (float) ($p['pph_amount'] ?? $p['pph'] ?? 0),
+                        'faktur_number' => $p['faktur_number'] ?? $p['tax_invoice_number'] ?? null,
+                        'faktur_date' => !empty($p['faktur_date'] ?? $p['tax_invoice_date']) ? $this->parseSafeDate($p['faktur_date'] ?? $p['tax_invoice_date']) : null,
+                        'tax_notes' => $p['tax_notes'] ?? null,
+                        'is_verified' => (bool) ($p['is_verified'] ?? false),
                         'due_date' => $dueDate,
                         'status' => $p['status'] ?? 'Perlu Tindakan'
                     ]

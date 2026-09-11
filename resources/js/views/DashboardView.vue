@@ -32,11 +32,11 @@
             :key="yr.value"
             type="button"
             class="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center justify-between cursor-pointer transition-colors"
-            :class="selectedYear === yr.value ? 'font-semibold text-[#135A46] bg-emerald-50/60' : 'text-slate-700'"
+            :class="selectedYear === yr.value ? 'font-semibold text-blue-600 bg-blue-50/60' : 'text-slate-700'"
             @click="chooseYear(yr.value)"
           >
             <span>{{ yr.label }}</span>
-            <span v-if="selectedYear === yr.value" class="w-1.5 h-1.5 rounded-full bg-[#135A46]"></span>
+            <span v-if="selectedYear === yr.value" class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
           </button>
         </div>
       </div>

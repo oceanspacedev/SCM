@@ -29,11 +29,10 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200/70 text-[10px] font-semibold text-emerald-800">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-[10px] font-medium text-slate-600">
             <span class="truncate max-w-[95px]">{{ userRole }}</span>
           </div>
-          <div class="w-7 h-7 rounded-full bg-[#135A46] text-white font-bold flex items-center justify-center text-[10px] shrink-0">
+          <div class="w-7 h-7 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-[10px] shrink-0">
             {{ userInitials }}
           </div>
         </div>

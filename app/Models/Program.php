@@ -21,6 +21,12 @@ class Program extends Model
         'dpp_amount',
         'ppn_amount',
         'total_amount',
+        'pph_type',
+        'pph_amount',
+        'faktur_number',
+        'faktur_date',
+        'tax_notes',
+        'is_verified',
         'due_date',
         'status'
     ];
@@ -29,6 +35,9 @@ class Program extends Model
         'dpp_amount' => 'float',
         'ppn_amount' => 'float',
         'total_amount' => 'float',
+        'pph_amount' => 'float',
+        'faktur_date' => 'date',
+        'is_verified' => 'boolean',
         'due_date' => 'date'
     ];
 

@@ -35,7 +35,7 @@
         <button
           type="button"
           class="pb-2.5 border-b-2 transition-colors flex items-center gap-2 cursor-pointer"
-          :class="activeTab === 'pending' ? 'border-[#135A46] text-[#135A46] font-bold' : 'border-transparent text-slate-500 hover:text-slate-800'"
+          :class="activeTab === 'pending' ? 'border-blue-600 text-blue-600 font-bold' : 'border-transparent text-slate-500 hover:text-slate-800'"
           @click="activeTab = 'pending'"
         >
           <span>Menunggu Persetujuan</span>
@@ -50,7 +50,7 @@
         <button
           type="button"
           class="pb-2.5 border-b-2 transition-colors flex items-center gap-2 cursor-pointer"
-          :class="activeTab === 'all' ? 'border-[#135A46] text-[#135A46] font-bold' : 'border-transparent text-slate-500 hover:text-slate-800'"
+          :class="activeTab === 'all' ? 'border-blue-600 text-blue-600 font-bold' : 'border-transparent text-slate-500 hover:text-slate-800'"
           @click="activeTab = 'all'"
         >
           <span>Semua Akun</span>
@@ -78,7 +78,7 @@
             <div class="space-y-1">
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="font-bold text-slate-900 text-sm">{{ user.name }}</span>
-                <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-[#135A46] border border-emerald-200">
+                <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                   {{ user.role }}
                 </span>
                 <span class="inline-flex items-center gap-1 text-[11px] font-medium text-amber-700">
@@ -120,7 +120,7 @@
               <button
                 type="button"
                 :disabled="processingId === user.id"
-                class="px-3.5 py-1.5 rounded-md bg-[#135A46] hover:bg-[#0F4939] active:bg-[#0C3B2E] text-white font-semibold text-xs transition-colors cursor-pointer shadow-2xs flex items-center gap-1.5 disabled:opacity-75 disabled:cursor-wait"
+                class="px-3.5 py-1.5 rounded-md bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs transition-colors cursor-pointer shadow-2xs flex items-center gap-1.5 disabled:opacity-75 disabled:cursor-wait"
                 @click="approveUser(user.id)"
               >
                 <span v-if="processingId === user.id" class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -149,7 +149,7 @@
                   <div class="text-slate-400 text-[11px] font-mono">{{ user.email }} • {{ user.phone }}</div>
                 </td>
                 <td class="py-2.5 px-3.5">
-                  <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-[#135A46] border border-emerald-200">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                     {{ user.role }}
                   </span>
                 </td>
@@ -157,7 +157,7 @@
                   <span
                     class="px-2 py-0.5 rounded-full text-[10px] font-semibold"
                     :class="{
-                      'bg-emerald-50 text-[#135A46] border border-emerald-200': user.status === 'approved',
+                      'bg-slate-100 text-slate-700 border border-slate-200': user.status === 'approved',
                       'bg-amber-50 text-amber-800 border border-amber-200': user.status === 'pending',
                       'bg-rose-50 text-rose-700 border border-rose-200': user.status === 'rejected'
                     }"
@@ -171,7 +171,7 @@
                       v-if="user.status !== 'approved'"
                       type="button"
                       :disabled="processingId === user.id"
-                      class="px-2.5 py-1 rounded bg-[#135A46] hover:bg-[#0F4939] active:bg-[#0C3B2E] text-white text-[10px] font-semibold transition-colors cursor-pointer disabled:opacity-60 flex items-center gap-1"
+                      class="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[10px] font-semibold transition-colors cursor-pointer disabled:opacity-60 flex items-center gap-1"
                       @click="approveUser(user.id)"
                       title="Setujui Akun"
                     >

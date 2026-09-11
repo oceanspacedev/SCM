@@ -40,8 +40,7 @@
         </router-link>
 
         <!-- User Role Badge under title -->
-        <div class="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200/70 text-[10px] font-semibold text-emerald-800 select-none">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse"></span>
+        <div class="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-[10px] font-medium text-slate-600 select-none">
           <span class="truncate">{{ userRole }}</span>
         </div>
       </div>
@@ -79,19 +78,19 @@
         >
           <div
             :class="[
-              'h-10 rounded-xl text-xs transition-all cursor-pointer font-medium flex items-center',
+              'h-10 rounded-xl text-xs transition-all cursor-pointer flex items-center',
               isCollapsed ? 'md:justify-center md:px-0 justify-between px-3' : 'justify-between px-3',
               isActive
-                ? 'bg-[#135A46] text-white shadow-sm font-semibold'
-                : 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900'
+                ? 'bg-slate-100 text-slate-900 font-semibold'
+                : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 font-medium'
             ]"
             :title="isCollapsed ? 'Dashboard' : ''"
           >
             <div class="flex items-center gap-2.5 min-w-0">
-              <LayoutDashboard class="w-4 h-4 shrink-0" :class="isActive ? 'text-white' : 'text-slate-500'" />
+              <LayoutDashboard class="w-4 h-4 shrink-0" :class="isActive ? 'text-slate-900' : 'text-slate-500'" />
               <span v-if="!isCollapsed || isMobileOpen" class="truncate">Dashboard</span>
             </div>
-            <ChevronRight v-if="!isCollapsed || isMobileOpen" class="w-3.5 h-3.5 shrink-0" :class="isActive ? 'text-white' : 'text-slate-400'" />
+            <ChevronRight v-if="!isCollapsed || isMobileOpen" class="w-3.5 h-3.5 shrink-0" :class="isActive ? 'text-slate-900' : 'text-slate-400'" />
           </div>
         </router-link>
 
@@ -103,19 +102,19 @@
         >
           <div
             :class="[
-              'h-10 rounded-xl text-xs transition-all cursor-pointer font-medium flex items-center',
+              'h-10 rounded-xl text-xs transition-all cursor-pointer flex items-center',
               isCollapsed ? 'md:justify-center md:px-0 justify-between px-3' : 'justify-between px-3',
               isActive
-                ? 'bg-[#135A46] text-white shadow-sm font-semibold'
-                : 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900'
+                ? 'bg-slate-100 text-slate-900 font-semibold'
+                : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 font-medium'
             ]"
             :title="isCollapsed ? 'Arsip Program' : ''"
           >
             <div class="flex items-center gap-2.5 min-w-0">
-              <FolderArchive class="w-4 h-4 shrink-0" :class="isActive ? 'text-white' : 'text-slate-500'" />
+              <FolderArchive class="w-4 h-4 shrink-0" :class="isActive ? 'text-slate-900' : 'text-slate-500'" />
               <span v-if="!isCollapsed || isMobileOpen" class="truncate">Arsip Program</span>
             </div>
-            <ChevronRight v-if="!isCollapsed || isMobileOpen" class="w-3.5 h-3.5 shrink-0" :class="isActive ? 'text-white' : 'text-slate-400'" />
+            <ChevronRight v-if="!isCollapsed || isMobileOpen" class="w-3.5 h-3.5 shrink-0" :class="isActive ? 'text-slate-900' : 'text-slate-400'" />
           </div>
         </router-link>
 
@@ -128,31 +127,30 @@
         >
           <div
             :class="[
-              'h-10 rounded-xl text-xs transition-all cursor-pointer font-medium flex items-center',
+              'h-10 rounded-xl text-xs transition-all cursor-pointer flex items-center',
               isCollapsed ? 'md:justify-center md:px-0 relative justify-between px-3' : 'justify-between px-3',
               isActive
-                ? 'bg-[#135A46] text-white shadow-sm font-semibold'
-                : 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900'
+                ? 'bg-slate-100 text-slate-900 font-semibold'
+                : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 font-medium'
             ]"
             :title="isCollapsed ? 'Manajemen User' : ''"
           >
             <div class="flex items-center gap-2.5 min-w-0">
-              <Users class="w-4 h-4 shrink-0" :class="isActive ? 'text-white' : 'text-slate-500'" />
+              <Users class="w-4 h-4 shrink-0" :class="isActive ? 'text-slate-900' : 'text-slate-500'" />
               <span v-if="!isCollapsed || isMobileOpen" class="truncate">Manajemen User</span>
             </div>
             <div v-if="!isCollapsed || isMobileOpen" class="flex items-center gap-1.5">
               <span
                 v-if="pendingCount > 0"
-                class="px-1.5 py-0.2 rounded-full text-[10px] font-bold"
-                :class="isActive ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-900'"
+                class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-slate-200 text-slate-800"
               >
                 {{ pendingCount }}
               </span>
-              <ChevronRight class="w-3.5 h-3.5 shrink-0" :class="isActive ? 'text-white' : 'text-slate-400'" />
+              <ChevronRight class="w-3.5 h-3.5 shrink-0" :class="isActive ? 'text-slate-900' : 'text-slate-400'" />
             </div>
             <span
               v-else-if="pendingCount > 0"
-              class="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white"
+              class="absolute top-2 right-2 w-2 h-2 rounded-full bg-slate-600 ring-2 ring-white"
             ></span>
           </div>
         </router-link>
@@ -166,19 +164,19 @@
         >
           <div
             :class="[
-              'h-10 rounded-xl text-xs transition-all cursor-pointer font-medium flex items-center',
+              'h-10 rounded-xl text-xs transition-all cursor-pointer flex items-center',
               isCollapsed ? 'md:justify-center md:px-0 justify-between px-3' : 'justify-between px-3',
               isActive
-                ? 'bg-[#135A46] text-white shadow-sm font-semibold'
-                : 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900'
+                ? 'bg-slate-100 text-slate-900 font-semibold'
+                : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 font-medium'
             ]"
             :title="isCollapsed ? 'Pengaturan' : ''"
           >
             <div class="flex items-center gap-2.5 min-w-0">
-              <Settings class="w-4 h-4 shrink-0" :class="isActive ? 'text-white' : 'text-slate-500'" />
+              <Settings class="w-4 h-4 shrink-0" :class="isActive ? 'text-slate-900' : 'text-slate-500'" />
               <span v-if="!isCollapsed || isMobileOpen" class="truncate">Pengaturan</span>
             </div>
-            <ChevronRight v-if="!isCollapsed || isMobileOpen" class="w-3.5 h-3.5 shrink-0" :class="isActive ? 'text-white' : 'text-slate-400'" />
+            <ChevronRight v-if="!isCollapsed || isMobileOpen" class="w-3.5 h-3.5 shrink-0" :class="isActive ? 'text-slate-900' : 'text-slate-400'" />
           </div>
         </router-link>
 

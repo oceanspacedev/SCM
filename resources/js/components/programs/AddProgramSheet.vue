@@ -9,7 +9,7 @@
     <form @submit.prevent="handleSubmit" class="space-y-4 text-xs select-none">
       <!-- SECTION 1: DATA PROGRAM -->
       <div>
-        <h4 class="text-xs font-bold text-[#135A46] tracking-wider uppercase mb-3 font-sans flex items-center gap-1.5">
+        <h4 class="text-xs font-bold text-slate-800 tracking-wider uppercase mb-3 font-sans flex items-center gap-1.5">
           <span>DATA PROGRAM</span>
         </h4>
 
@@ -24,7 +24,7 @@
               type="text"
               placeholder="Contoh: Program Supply Chain Optimization"
               required
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors"
             />
           </div>
 
@@ -35,7 +35,7 @@
             <select
               v-model="form.category"
               required
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors cursor-pointer"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors cursor-pointer"
             >
               <option v-for="cat in categoriesList" :key="cat" :value="cat">
                 {{ cat }}
@@ -54,7 +54,7 @@
               v-model="form.company_name"
               type="text"
               placeholder="Contoh: PT SCM Nusantara"
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors"
             />
           </div>
 
@@ -66,7 +66,7 @@
               v-model="form.po_sj_number"
               type="text"
               placeholder="Contoh: PO/2025/1016 / SJ-1016"
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors font-mono"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors font-mono"
             />
           </div>
         </div>
@@ -82,7 +82,7 @@
               type="text"
               placeholder="Contoh: PT Unilever Indonesia Tbk"
               required
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors"
             />
           </div>
 
@@ -94,7 +94,7 @@
               v-model="form.npwp"
               type="text"
               placeholder="01.234.567.8-901.000"
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors font-mono"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors font-mono"
             />
             <p class="text-[10px] text-slate-400 mt-1">Format: XX.XXX.XXX.X-XXX.XXX</p>
           </div>
@@ -110,7 +110,7 @@
               v-model="form.mou_number"
               type="text"
               placeholder="Contoh: MOU/SCM/2025/088"
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors font-mono"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors font-mono"
             />
           </div>
 
@@ -121,7 +121,7 @@
             <input
               v-model="form.start_date"
               type="date"
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors"
             />
           </div>
 
@@ -132,7 +132,7 @@
             <input
               v-model="form.end_date"
               type="date"
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors"
             />
           </div>
         </div>
@@ -140,7 +140,7 @@
 
       <!-- SECTION 2: INVOICE & PERPAJAKAN -->
       <div class="pt-3 border-t border-slate-100">
-        <h4 class="text-xs font-bold text-[#135A46] tracking-wider uppercase mb-3 font-sans flex items-center gap-1.5">
+        <h4 class="text-xs font-bold text-slate-800 tracking-wider uppercase mb-3 font-sans flex items-center gap-1.5">
           <span>INVOICE & PERPAJAKAN</span>
         </h4>
 
@@ -155,7 +155,7 @@
               type="text"
               placeholder="Contoh: INV/SCM/2025/1042"
               required
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors font-mono"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors font-mono"
             />
           </div>
 
@@ -167,7 +167,7 @@
               v-model="form.program_date"
               type="date"
               required
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors"
             />
           </div>
 
@@ -178,7 +178,7 @@
             <input
               v-model="form.due_date"
               type="date"
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors"
             />
           </div>
         </div>
@@ -195,7 +195,7 @@
               min="0"
               step="1000"
               required
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors font-mono"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors font-mono"
             />
             <p class="text-[10px] text-slate-400 mt-1 font-mono">
               {{ formatRupiah(form.dpp || 0) }}
@@ -208,7 +208,7 @@
             </label>
             <select
               v-model="form.ppn_rate"
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors cursor-pointer"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors cursor-pointer"
             >
               <option value="0.11">11%</option>
               <option value="0.12">12%</option>
@@ -258,12 +258,13 @@
             </label>
             <select
               v-model="form.pph_type"
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors cursor-pointer"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors cursor-pointer"
             >
               <option value="NON_PPH">Non PPh</option>
-              <option value="PPH_21">PPh 21 (0.5%)</option>
+              <option value="PPH_21">PPh 21 (2,5%)</option>
               <option value="PPH_23">PPh 23 (2%)</option>
-              <option value="PPH_4_2">PPh 4 ayat 2 (10%)</option>
+              <option value="PPH_4_2">PPh 4 Ayat 2 (10%)</option>
+              <option value="PPH_23_BONUS">PPh 23 Atas Bonus (15%)</option>
             </select>
           </div>
 
@@ -293,7 +294,7 @@
               v-model="form.tax_invoice_number"
               type="text"
               placeholder="010.000-25.00000001"
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors font-mono"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors font-mono"
             />
             <p class="text-[10px] text-slate-400 mt-1">Format: XXX.XXX-XX.XXXXXXXX</p>
           </div>
@@ -305,7 +306,7 @@
             <input
               v-model="form.tax_invoice_date"
               type="date"
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors"
             />
           </div>
         </div>
@@ -319,7 +320,7 @@
             v-model="form.tax_notes"
             rows="2"
             placeholder="Catatan kepatuhan pajak, verifikasi e-Faktur, nomor registrasi DJP..."
-            class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] transition-colors resize-none"
+            class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors resize-none"
           ></textarea>
         </div>
 
@@ -329,7 +330,7 @@
             id="is_verified"
             v-model="form.is_verified"
             type="checkbox"
-            class="w-4 h-4 rounded border-slate-300 text-[#135A46] focus:ring-[#135A46] cursor-pointer"
+            class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600 cursor-pointer"
           />
           <label for="is_verified" class="text-xs font-semibold text-slate-700 cursor-pointer">
             Sudah diverifikasi Tim Pajak
@@ -348,7 +349,7 @@
         </button>
         <button
           type="submit"
-          class="px-4 py-2 text-xs font-semibold text-white bg-[#135A46] hover:bg-[#0e4334] rounded-lg shadow-2xs transition-colors cursor-pointer"
+          class="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-2xs transition-colors cursor-pointer"
         >
           Simpan
         </button>
@@ -433,11 +434,13 @@ const calculatedPph = computed(() => {
   const dpp = Number(form.dpp) || 0;
   switch (form.pph_type) {
     case 'PPH_21':
-      return Math.round(dpp * 0.005);
+      return Math.round(dpp * 0.025);
     case 'PPH_23':
       return Math.round(dpp * 0.02);
     case 'PPH_4_2':
       return Math.round(dpp * 0.10);
+    case 'PPH_23_BONUS':
+      return Math.round(dpp * 0.15);
     default:
       return 0;
   }

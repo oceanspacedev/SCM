@@ -35,7 +35,7 @@
             <button
               type="button"
               class="pb-2 px-2 border-b-2 transition-all cursor-pointer flex-1 text-center text-xs"
-              :class="loginTab === 'password' ? 'border-[#135A46] text-[#135A46] font-bold' : 'border-transparent text-slate-400 hover:text-slate-700'"
+              :class="loginTab === 'password' ? 'border-[#2563EB] text-[#2563EB] font-bold' : 'border-transparent text-slate-400 hover:text-slate-700'"
               @click="loginTab = 'password'; errorMessage = ''"
             >
               Email & Kata Sandi
@@ -43,7 +43,7 @@
             <button
               type="button"
               class="pb-2 px-2 border-b-2 transition-all cursor-pointer flex-1 text-center text-xs"
-              :class="loginTab === 'whatsapp' ? 'border-[#135A46] text-[#135A46] font-bold' : 'border-transparent text-slate-400 hover:text-slate-700'"
+              :class="loginTab === 'whatsapp' ? 'border-[#2563EB] text-[#2563EB] font-bold' : 'border-transparent text-slate-400 hover:text-slate-700'"
               @click="loginTab = 'whatsapp'; errorMessage = ''"
             >
               WhatsApp
@@ -74,7 +74,7 @@
                 type="email"
                 placeholder="reza25022003@gmail.com"
                 required
-                class="w-full h-8.5 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] focus:outline-hidden transition-all placeholder:text-slate-400"
+                class="w-full h-8.5 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] focus:outline-hidden transition-all placeholder:text-slate-400"
               />
             </div>
 
@@ -88,7 +88,7 @@
                   :type="showPassword ? 'text' : 'password'"
                   placeholder="••••••••"
                   required
-                  class="w-full h-8.5 px-3 pr-9 text-xs rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] focus:outline-hidden transition-all placeholder:text-slate-400"
+                  class="w-full h-8.5 px-3 pr-9 text-xs rounded-lg border border-slate-300 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] focus:outline-hidden transition-all placeholder:text-slate-400"
                 />
                 <button
                   type="button"
@@ -106,7 +106,7 @@
                 <input
                   v-model="rememberMe"
                   type="checkbox"
-                  class="w-3.5 h-3.5 rounded border-slate-300 text-[#135A46] focus:ring-[#135A46] cursor-pointer"
+                  class="w-3.5 h-3.5 rounded border-slate-300 text-[#2563EB] focus:ring-[#2563EB] cursor-pointer"
                 />
                 <span>Ingat saya</span>
               </label>
@@ -114,7 +114,7 @@
 
             <button
               type="submit"
-              class="w-full h-8.5 rounded-lg bg-[#135A46] hover:bg-[#0F4939] active:bg-[#0C3B2E] text-white font-semibold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-2xs"
+              class="w-full h-8.5 rounded-lg bg-[#2563EB] hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-2xs"
               :disabled="isLoading"
             >
               <span v-if="isLoading" class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -133,7 +133,7 @@
                 type="text"
                 placeholder="Contoh: 081224290502"
                 required
-                class="w-full h-8.5 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-1 focus:ring-[#135A46] focus:outline-hidden transition-all placeholder:text-slate-400 font-mono"
+                class="w-full h-8.5 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] focus:outline-hidden transition-all placeholder:text-slate-400 font-mono"
               />
               <p class="text-[10px] text-slate-400 mt-0.5">
                 Kode OTP 6-digit akan dikirimkan ke WhatsApp yang terdaftar.
@@ -142,7 +142,7 @@
 
             <button
               type="submit"
-              class="w-full h-8.5 rounded-lg bg-[#135A46] hover:bg-[#0F4939] active:bg-[#0C3B2E] text-white font-semibold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-2xs"
+              class="w-full h-8.5 rounded-lg bg-[#2563EB] hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-2xs"
               :disabled="isLoading"
             >
               <span v-if="isLoading" class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -155,7 +155,7 @@
             Belum memiliki akun?
             <button
               type="button"
-              class="text-[#135A46] font-semibold hover:underline cursor-pointer ml-1"
+              class="text-[#2563EB] font-semibold hover:underline cursor-pointer ml-1"
               @click="goToRegister"
             >
               Daftar Akun Baru
@@ -176,7 +176,7 @@
                 class="p-1.5 rounded-md border border-slate-200 bg-[#F9FBFB] hover:bg-emerald-50/60 hover:border-emerald-300 transition-all text-left cursor-pointer group"
                 @click="fillDemoAccount(user)"
               >
-                <div class="font-bold text-[10px] text-slate-800 group-hover:text-[#135A46] leading-tight truncate">
+                <div class="font-bold text-[10px] text-slate-800 group-hover:text-[#2563EB] leading-tight truncate">
                   {{ user.label }}
                 </div>
                 <div class="text-[9px] text-slate-400 truncate mt-0.5 font-mono">
@@ -226,13 +226,13 @@
                 placeholder="123456"
                 autofocus
                 required
-                class="w-full h-12 px-4 text-center font-mono text-xl font-bold tracking-[0.4em] rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-2 focus:ring-[#135A46]/20 focus:outline-hidden transition-all placeholder:text-slate-300 placeholder:tracking-normal"
+                class="w-full h-12 px-4 text-center font-mono text-xl font-bold tracking-[0.4em] rounded-lg border border-slate-300 focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 focus:outline-hidden transition-all placeholder:text-slate-300 placeholder:tracking-normal"
               />
             </div>
 
             <button
               type="submit"
-              class="w-full h-10 rounded-lg bg-[#135A46] hover:bg-[#0F4939] active:bg-[#0C3B2E] text-white font-semibold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm shadow-[#135A46]/25"
+              class="w-full h-10 rounded-lg bg-[#2563EB] hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm shadow-[#2563EB]/25"
               :disabled="isLoading"
             >
               <span v-if="isLoading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -253,7 +253,7 @@
 
             <button
               type="button"
-              class="font-semibold text-[#135A46] hover:underline cursor-pointer disabled:text-slate-400 disabled:no-underline"
+              class="font-semibold text-[#2563EB] hover:underline cursor-pointer disabled:text-slate-400 disabled:no-underline"
               :disabled="resendCooldown > 0"
               @click="handleResendOtp"
             >
@@ -283,7 +283,7 @@
             class="space-y-5 text-center py-2"
           >
             <!-- Clean Icon -->
-            <div class="w-12 h-12 rounded-full bg-emerald-50 text-[#135A46] border border-emerald-200 flex items-center justify-center mx-auto">
+            <div class="w-12 h-12 rounded-full bg-emerald-50 text-[#2563EB] border border-emerald-200 flex items-center justify-center mx-auto">
               <Check class="w-6 h-6 stroke-[2.5]" />
             </div>
 
@@ -324,7 +324,7 @@
             <div class="pt-2 max-w-sm mx-auto">
               <button
                 type="button"
-                class="w-full h-10 rounded-lg bg-[#135A46] hover:bg-[#0F4939] active:bg-[#0C3B2E] text-white font-semibold text-xs transition-all cursor-pointer shadow-sm"
+                class="w-full h-10 rounded-lg bg-[#2563EB] hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs transition-all cursor-pointer shadow-sm"
                 @click="backToLoginForm"
               >
                 Kembali ke Halaman Masuk
@@ -353,7 +353,7 @@
                 type="text"
                 placeholder="Nama sesuai identitas kantor"
                 required
-                class="w-full h-9 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-2 focus:ring-[#135A46]/20 focus:outline-hidden transition-all placeholder:text-slate-400"
+                class="w-full h-9 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 focus:outline-hidden transition-all placeholder:text-slate-400"
               />
             </div>
 
@@ -368,7 +368,7 @@
                   type="text"
                   placeholder="Contoh: 081234567890"
                   required
-                  class="w-full h-9 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-2 focus:ring-[#135A46]/20 focus:outline-hidden transition-all placeholder:text-slate-400 font-mono"
+                  class="w-full h-9 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 focus:outline-hidden transition-all placeholder:text-slate-400 font-mono"
                 />
               </div>
 
@@ -381,7 +381,7 @@
                   type="email"
                   placeholder="nama@perusahaan.com"
                   required
-                  class="w-full h-9 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-2 focus:ring-[#135A46]/20 focus:outline-hidden transition-all placeholder:text-slate-400"
+                  class="w-full h-9 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 focus:outline-hidden transition-all placeholder:text-slate-400"
                 />
               </div>
             </div>
@@ -394,7 +394,7 @@
               <select
                 v-model="regForm.role"
                 required
-                class="w-full h-9 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-2 focus:ring-[#135A46]/20 focus:outline-hidden transition-all bg-white text-slate-800 font-medium"
+                class="w-full h-9 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 focus:outline-hidden transition-all bg-white text-slate-800 font-medium"
               >
                 <option value="Tim Pajak">Tim Pajak (Verifikasi Faktur & Compliance)</option>
                 <option value="Staf SCM">Staf SCM (Pengadaan & Logistik)</option>
@@ -413,7 +413,7 @@
                   placeholder="Minimal 6 karakter"
                   required
                   minlength="6"
-                  class="w-full h-9 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-2 focus:ring-[#135A46]/20 focus:outline-hidden transition-all placeholder:text-slate-400"
+                  class="w-full h-9 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 focus:outline-hidden transition-all placeholder:text-slate-400"
                 />
               </div>
 
@@ -427,14 +427,14 @@
                   placeholder="Ketik ulang kata sandi"
                   required
                   minlength="6"
-                  class="w-full h-9 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#135A46] focus:ring-2 focus:ring-[#135A46]/20 focus:outline-hidden transition-all placeholder:text-slate-400"
+                  class="w-full h-9 px-3 text-xs rounded-lg border border-slate-300 focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 focus:outline-hidden transition-all placeholder:text-slate-400"
                 />
               </div>
             </div>
 
             <!-- Notice Banner -->
             <div class="p-2.5 rounded-lg bg-emerald-50/80 border border-emerald-200/80 text-[11px] text-emerald-950 flex items-start gap-2">
-              <AlertCircle class="w-4 h-4 text-[#135A46] shrink-0 mt-0.5" />
+              <AlertCircle class="w-4 h-4 text-[#2563EB] shrink-0 mt-0.5" />
               <span>
                 Akun baru akan diverifikasi oleh Administrator sebelum dapat login ke sistem.
               </span>
@@ -443,7 +443,7 @@
             <!-- Submit Button -->
             <button
               type="submit"
-              class="w-full h-10 rounded-lg bg-[#135A46] hover:bg-[#0F4939] active:bg-[#0C3B2E] text-white font-semibold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm shadow-[#135A46]/25"
+              class="w-full h-10 rounded-lg bg-[#2563EB] hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm shadow-[#2563EB]/25"
               :disabled="isLoading"
             >
               <span v-if="isLoading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -455,7 +455,7 @@
               Sudah memiliki akun?
               <button
                 type="button"
-                class="text-[#135A46] font-semibold hover:underline cursor-pointer ml-1"
+                class="text-[#2563EB] font-semibold hover:underline cursor-pointer ml-1"
                 @click="backToLoginForm"
               >
                 Masuk di sini

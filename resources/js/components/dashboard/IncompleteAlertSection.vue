@@ -26,7 +26,7 @@
 
       <router-link
         to="/programs"
-        class="text-xs font-semibold text-[#135A46] hover:underline whitespace-nowrap flex items-center gap-1 self-start sm:self-auto"
+        class="text-xs font-semibold text-blue-600 hover:underline whitespace-nowrap flex items-center gap-1 self-start sm:self-auto"
       >
         <span>Lihat semua arsip</span>
         <span>→</span>
@@ -58,7 +58,7 @@
             <td class="py-3 px-5">
               <router-link
                 :to="`/programs/${item.id}`"
-                class="font-medium text-slate-800 hover:text-[#135A46] transition-colors line-clamp-1 block max-w-xs"
+                class="font-medium text-slate-800 hover:text-blue-600 transition-colors line-clamp-1 block max-w-xs"
               >
                 {{ item.name }}
               </router-link>
@@ -84,7 +84,7 @@
             <td class="py-3 px-5 text-right whitespace-nowrap">
               <router-link
                 :to="`/programs/${item.id}`"
-                class="inline-flex items-center justify-center px-3 py-1 text-xs font-semibold text-[#135A46] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 rounded-lg transition-colors"
+                class="inline-flex items-center justify-center px-3 py-1 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-lg transition-colors"
               >
                 Lihat
               </router-link>
@@ -110,7 +110,7 @@
           <div class="min-w-0 flex-1">
             <router-link
               :to="`/programs/${item.id}`"
-              class="font-semibold text-xs text-slate-900 hover:text-[#135A46] transition-colors leading-snug block break-words"
+              class="font-semibold text-xs text-slate-900 hover:text-blue-600 transition-colors leading-snug block break-words"
             >
               {{ item.name }}
             </router-link>
@@ -121,7 +121,7 @@
 
           <router-link
             :to="`/programs/${item.id}`"
-            class="inline-flex items-center justify-center h-7 px-3 text-xs font-semibold text-[#135A46] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 rounded-lg transition-colors shrink-0"
+            class="inline-flex items-center justify-center h-7 px-3 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-lg transition-colors shrink-0"
           >
             Lihat
           </router-link>
