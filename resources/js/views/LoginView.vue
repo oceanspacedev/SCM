@@ -540,12 +540,12 @@ const loginTab = ref('password'); // 'password' | 'whatsapp'
 const isOtpStep = ref(false);
 
 // Form models
-const email = ref('admin@scm.corp');
-const password = ref('password123');
+const email = ref('');
+const password = ref('');
 const showPassword = ref(false);
-const rememberMe = ref(true);
+const rememberMe = ref(false);
 
-const identifier = ref('081224290502');
+const identifier = ref('');
 const otpInput = ref('');
 const activeOtpCode = ref('');
 const targetPhone = ref('');

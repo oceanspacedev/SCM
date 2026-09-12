@@ -51,17 +51,22 @@ watch(
 )
 
 function handleUsersMenuClick() {
-  if (!route.path.startsWith('/users')) {
-    isUsersSubmenuOpen.value = true
-    router.push('/users')
-  } else {
-    isUsersSubmenuOpen.value = !isUsersSubmenuOpen.value
-  }
+  isUsersSubmenuOpen.value = true
+  router.push({ name: 'users', query: { tab: 'all' } })
 }
 
-function handleLogout() {
-  store.logout()
-  router.push('/login')
+function toggleUsersSubmenu(event) {
+  event.stopPropagation()
+  isUsersSubmenuOpen.value = !isUsersSubmenuOpen.value
+}
+
+async function handleLogout() {
+  store.beginLogout()
+  try {
+    await router.replace({ name: 'login' })
+  } finally {
+    store.logout()
+  }
 }
 </script>
 
@@ -115,7 +120,6 @@ function handleLogout() {
             <!-- Logout (untuk Non-Admin dekat Arsip Program) -->
             <SidebarMenuItem v-if="!isAdmin">
               <SidebarMenuButton
-                tooltip="Logout"
                 class="cursor-pointer"
                 @click="handleLogout"
               >
@@ -136,7 +140,7 @@ function handleLogout() {
             <SidebarMenuItem>
               <SidebarMenuButton
                 tooltip="Manajemen User"
-                :is-active="route.path === '/users' && !isUsersSubmenuOpen"
+                :is-active="route.path === '/users'"
                 class="cursor-pointer justify-between"
                 @click="handleUsersMenuClick"
               >
@@ -151,23 +155,22 @@ function handleLogout() {
                   >
                     {{ pendingUsersCount }}
                   </span>
-                  <ChevronRight
-                    class="size-3.5 text-sidebar-foreground/60 transition-transform duration-200"
-                    :class="{ 'rotate-90': isUsersSubmenuOpen }"
-                  />
+                  <button
+                    type="button"
+                    class="p-0.5 rounded hover:bg-sidebar-accent cursor-pointer"
+                    :aria-expanded="isUsersSubmenuOpen"
+                    aria-label="Buka atau tutup submenu Manajemen User"
+                    @click.stop="toggleUsersSubmenu"
+                  >
+                    <ChevronRight
+                      class="size-3.5 text-sidebar-foreground/60 transition-transform duration-200"
+                      :class="{ 'rotate-90': isUsersSubmenuOpen }"
+                    />
+                  </button>
                 </div>
               </SidebarMenuButton>
 
-              <!-- Submenu Items -->
-              <transition
-                enter-active-class="transition-all duration-200 ease-out overflow-hidden"
-                enter-from-class="opacity-0 max-h-0"
-                enter-to-class="opacity-100 max-h-40"
-                leave-active-class="transition-all duration-150 ease-in overflow-hidden"
-                leave-from-class="opacity-100 max-h-40"
-                leave-to-class="opacity-0 max-h-0"
-              >
-                <SidebarMenuSub v-show="isUsersSubmenuOpen">
+              <SidebarMenuSub v-show="isUsersSubmenuOpen">
                   <!-- Semua User -->
                   <SidebarMenuSubItem>
                     <SidebarMenuSubButton
@@ -175,7 +178,7 @@ function handleLogout() {
                       size="sm"
                       :is-active="route.path === '/users' && (!route.query.tab || route.query.tab === 'all')"
                     >
-                      <router-link to="/users?tab=all" class="flex items-center justify-between w-full">
+                      <router-link :to="{ name: 'users', query: { tab: 'all' } }" class="flex items-center justify-between w-full">
                         <span class="truncate">Semua User</span>
                         <span class="shrink-0 text-[10px] font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
                           {{ allUsersCount }}
@@ -191,7 +194,7 @@ function handleLogout() {
                       size="sm"
                       :is-active="route.path === '/users' && route.query.tab === 'pending'"
                     >
-                      <router-link to="/users?tab=pending" class="flex items-center justify-between w-full">
+                      <router-link :to="{ name: 'users', query: { tab: 'pending' } }" class="flex items-center justify-between w-full">
                         <span class="truncate">Menunggu ACC</span>
                         <span
                           class="shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded transition-colors"
@@ -210,7 +213,7 @@ function handleLogout() {
                       size="sm"
                       :is-active="route.path === '/users' && route.query.tab === 'approved'"
                     >
-                      <router-link to="/users?tab=approved" class="flex items-center justify-between w-full">
+                      <router-link :to="{ name: 'users', query: { tab: 'approved' } }" class="flex items-center justify-between w-full">
                         <span class="truncate">User Aktif</span>
                         <span class="shrink-0 text-[10px] font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
                           {{ approvedUsersCount }}
@@ -219,7 +222,6 @@ function handleLogout() {
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
                 </SidebarMenuSub>
-              </transition>
             </SidebarMenuItem>
 
             <!-- Pengaturan -->
@@ -239,7 +241,6 @@ function handleLogout() {
             <!-- Logout (untuk Admin dekat Pengaturan) -->
             <SidebarMenuItem>
               <SidebarMenuButton
-                tooltip="Logout"
                 class="cursor-pointer"
                 @click="handleLogout"
               >

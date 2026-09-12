@@ -1,5 +1,6 @@
 import { reactive, computed, ref } from 'vue';
 import { saveDocumentBlob, getDocumentBlob, deleteDocumentBlob, clearAllDocumentBlobs } from '../utils/documentDb';
+import { USER_STORAGE_KEY, userFromStorage } from './authSession';
 
 // Storage key synced with backend
 const STORAGE_KEY = 'scm_taxvault_programs_v2';
@@ -70,7 +71,6 @@ export const defaultUsers = [
 export const demoUsers = defaultUsers.filter(u => u.status === 'approved');
 
 const USERS_LIST_STORAGE_KEY = 'scm_taxvault_users_list_v2';
-const USER_STORAGE_KEY = 'scm_taxvault_user_v2';
 const DEMO_ACCOUNTS_STORAGE_KEY = 'scm_show_demo_accounts';
 
 function loadStoredDemoAccounts() {
@@ -99,14 +99,11 @@ function loadStoredUsersList() {
 
 function loadStoredUser() {
     try {
-        const stored = localStorage.getItem(USER_STORAGE_KEY);
-        if (stored) {
-            return JSON.parse(stored);
-        }
+        return userFromStorage(localStorage.getItem(USER_STORAGE_KEY));
     } catch (e) {
         console.error("Failed to load user from storage", e);
+        return null;
     }
-    return defaultUsers[0]; // default logged in as Admin SCM
 }
 
 const state = reactive({
@@ -128,6 +125,7 @@ const state = reactive({
     isImportModalOpen: false,
     isApprovalModalOpen: false,
     selectedFiscalYear: localStorage.getItem('scm_fiscal_year') || String(new Date().getFullYear()),
+    isLoggingOut: false,
 });
 
 function saveUsersToStorage() {
@@ -1329,6 +1327,7 @@ export const useTaxStore = () => {
     function loginDirect(user) {
         state.currentUser = user;
         state.activeOtp = null;
+        state.isLoggingOut = false;
         try {
             localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
         } catch (e) {}
@@ -1544,12 +1543,30 @@ export const useTaxStore = () => {
         return { success: true, user: res.user };
     }
 
+    function beginLogout() {
+        state.isLoggingOut = true;
+        state.isImportModalOpen = false;
+        state.isApprovalModalOpen = false;
+        state.activeNotification = null;
+    }
+
     function logout() {
         state.currentUser = null;
         state.activeOtp = null;
+        state.isLoggingOut = false;
+        state.isImportModalOpen = false;
+        state.isApprovalModalOpen = false;
         try {
             localStorage.removeItem(USER_STORAGE_KEY);
         } catch (e) {}
+        fetch('/api/auth/logout', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).catch(() => {});
         notify('Anda telah berhasil keluar dari sistem.', 'info');
     }
 
@@ -1604,6 +1621,7 @@ export const useTaxStore = () => {
         filteredPrograms,
         currentUser,
         isLoggedIn,
+        isLoggingOut: computed(() => state.isLoggingOut),
         isAdmin,
         allUsers,
         pendingUsers,
@@ -1625,6 +1643,7 @@ export const useTaxStore = () => {
         validatePasswordCredentials,
         login,
         loginDirect,
+        beginLogout,
         logout,
         demoUsers: computed(() => state.users.filter(u => u.status === 'approved')),
         getProgramById,
