@@ -16,7 +16,11 @@ export function userFromStorage(raw) {
     }
 }
 
-export function resolveAuthRedirect({ name, isPublic }, { loggedIn, isAdmin }) {
+export function resolveAuthRedirect({ name, isPublic }, { loggedIn, isAdmin, isLoggingOut = false }) {
+    if (isLoggingOut && isPublic) {
+        return null;
+    }
+
     if (!isPublic && !loggedIn) {
         return { name: 'login' };
     }

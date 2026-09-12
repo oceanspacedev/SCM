@@ -125,6 +125,7 @@ const state = reactive({
     isImportModalOpen: false,
     isApprovalModalOpen: false,
     selectedFiscalYear: localStorage.getItem('scm_fiscal_year') || String(new Date().getFullYear()),
+    isLoggingOut: false,
 });
 
 function saveUsersToStorage() {
@@ -1326,6 +1327,7 @@ export const useTaxStore = () => {
     function loginDirect(user) {
         state.currentUser = user;
         state.activeOtp = null;
+        state.isLoggingOut = false;
         try {
             localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
         } catch (e) {}
@@ -1541,9 +1543,19 @@ export const useTaxStore = () => {
         return { success: true, user: res.user };
     }
 
+    function beginLogout() {
+        state.isLoggingOut = true;
+        state.isImportModalOpen = false;
+        state.isApprovalModalOpen = false;
+        state.activeNotification = null;
+    }
+
     function logout() {
         state.currentUser = null;
         state.activeOtp = null;
+        state.isLoggingOut = false;
+        state.isImportModalOpen = false;
+        state.isApprovalModalOpen = false;
         try {
             localStorage.removeItem(USER_STORAGE_KEY);
         } catch (e) {}
@@ -1609,6 +1621,7 @@ export const useTaxStore = () => {
         filteredPrograms,
         currentUser,
         isLoggedIn,
+        isLoggingOut: computed(() => state.isLoggingOut),
         isAdmin,
         allUsers,
         pendingUsers,
@@ -1630,6 +1643,7 @@ export const useTaxStore = () => {
         validatePasswordCredentials,
         login,
         loginDirect,
+        beginLogout,
         logout,
         demoUsers: computed(() => state.users.filter(u => u.status === 'approved')),
         getProgramById,

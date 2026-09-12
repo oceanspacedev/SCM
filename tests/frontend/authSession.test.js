@@ -42,6 +42,16 @@ describe('resolveAuthRedirect', () => {
         );
     });
 
+    it('allows navigating to login while a logout is in progress', () => {
+        assert.equal(
+            resolveAuthRedirect(
+                { name: 'login', isPublic: true },
+                { loggedIn: true, isAdmin: true, isLoggingOut: true }
+            ),
+            null
+        );
+    });
+
     it('sends logged-in users away from login and register', () => {
         assert.deepEqual(
             resolveAuthRedirect({ name: 'login', isPublic: true }, { loggedIn: true, isAdmin: true }),

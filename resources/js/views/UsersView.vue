@@ -662,7 +662,9 @@ onMounted(() => {
   const isAdmin = role === 'Admin SCM' || role.toLowerCase().includes('admin');
   if (!isAdmin) {
     router.replace('/dashboard');
+    return;
   }
+  store.fetchUsers();
 });
 
 const activeFilter = ref('all');
@@ -671,9 +673,10 @@ const activeFilter = ref('all');
 watch(
   () => route.query.tab,
   (tab) => {
-    if (tab === 'pending') {
+    const value = Array.isArray(tab) ? tab[0] : tab;
+    if (value === 'pending') {
       activeFilter.value = 'pending';
-    } else if (tab === 'approved') {
+    } else if (value === 'approved') {
       activeFilter.value = 'approved';
     } else {
       activeFilter.value = 'all';

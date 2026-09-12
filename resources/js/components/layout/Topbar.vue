@@ -175,8 +175,12 @@ const currentBreadcrumb = computed(() => {
 
 async function handleLogout() {
   showUserMenu.value = false;
-  store.logout();
-  await router.replace({ name: 'login' });
+  store.beginLogout();
+  try {
+    await router.replace({ name: 'login' });
+  } finally {
+    store.logout();
+  }
 }
 
 function handleClickOutside(e) {
