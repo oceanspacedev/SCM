@@ -173,10 +173,10 @@ const currentBreadcrumb = computed(() => {
   return 'Dashboard';
 });
 
-function handleLogout() {
+async function handleLogout() {
   showUserMenu.value = false;
   store.logout();
-  router.push('/login');
+  await router.replace({ name: 'login' });
 }
 
 function handleClickOutside(e) {

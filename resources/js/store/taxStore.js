@@ -1,5 +1,6 @@
 import { reactive, computed, ref } from 'vue';
 import { saveDocumentBlob, getDocumentBlob, deleteDocumentBlob, clearAllDocumentBlobs } from '../utils/documentDb';
+import { USER_STORAGE_KEY, userFromStorage } from './authSession';
 
 // Storage key synced with backend
 const STORAGE_KEY = 'scm_taxvault_programs_v2';
@@ -70,7 +71,6 @@ export const defaultUsers = [
 export const demoUsers = defaultUsers.filter(u => u.status === 'approved');
 
 const USERS_LIST_STORAGE_KEY = 'scm_taxvault_users_list_v2';
-const USER_STORAGE_KEY = 'scm_taxvault_user_v2';
 const DEMO_ACCOUNTS_STORAGE_KEY = 'scm_show_demo_accounts';
 
 function loadStoredDemoAccounts() {
@@ -99,14 +99,11 @@ function loadStoredUsersList() {
 
 function loadStoredUser() {
     try {
-        const stored = localStorage.getItem(USER_STORAGE_KEY);
-        if (stored) {
-            return JSON.parse(stored);
-        }
+        return userFromStorage(localStorage.getItem(USER_STORAGE_KEY));
     } catch (e) {
         console.error("Failed to load user from storage", e);
+        return null;
     }
-    return defaultUsers[0]; // default logged in as Admin SCM
 }
 
 const state = reactive({
@@ -1550,6 +1547,14 @@ export const useTaxStore = () => {
         try {
             localStorage.removeItem(USER_STORAGE_KEY);
         } catch (e) {}
+        fetch('/api/auth/logout', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).catch(() => {});
         notify('Anda telah berhasil keluar dari sistem.', 'info');
     }
 

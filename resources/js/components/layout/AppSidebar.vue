@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   SquareTerminal,
@@ -59,9 +59,10 @@ function handleUsersMenuClick() {
   }
 }
 
-function handleLogout() {
+async function handleLogout() {
   store.logout()
-  router.push('/login')
+  await nextTick()
+  router.replace({ name: 'login' })
 }
 </script>
 

@@ -3,6 +3,9 @@ import DashboardView from '../views/DashboardView.vue';
 import ProgramsView from '../views/ProgramsView.vue';
 import ProgramDetailView from '../views/ProgramDetailView.vue';
 import SettingsView from '../views/SettingsView.vue';
+import LoginView from '../views/LoginView.vue';
+import { useTaxStore } from '../store/taxStore';
+import { resolveAuthRedirect } from '../store/authSession';
 
 const routes = [
     {
@@ -12,14 +15,14 @@ const routes = [
     {
         path: '/login',
         name: 'login',
-        component: () => import('../views/LoginView.vue'),
-        meta: { title: 'Masuk - SCM TaxVault', layout: 'blank' }
+        component: LoginView,
+        meta: { title: 'Masuk - SCM TaxVault', layout: 'blank', public: true }
     },
     {
         path: '/register',
         name: 'register',
-        component: () => import('../views/LoginView.vue'),
-        meta: { title: 'Daftar Akun - SCM TaxVault', layout: 'blank' }
+        component: LoginView,
+        meta: { title: 'Daftar Akun - SCM TaxVault', layout: 'blank', public: true }
     },
     {
         path: '/dashboard',
@@ -70,23 +73,14 @@ router.beforeEach((to, from, next) => {
         document.title = to.meta.title;
     }
 
-    // Hanya role Admin SCM yang boleh membuka halaman Manajemen User & Pengaturan
-    if (to.name === 'users' || to.name === 'settings') {
-        let currentUser = null;
-        try {
-            const stored = localStorage.getItem('scm_taxvault_user_v2');
-            if (stored) {
-                currentUser = JSON.parse(stored);
-            }
-        } catch (e) {
-            console.error('Failed to read user for router guard', e);
-        }
+    const store = useTaxStore();
+    const redirect = resolveAuthRedirect(
+        { name: to.name, isPublic: to.meta.public === true },
+        { loggedIn: store.isLoggedIn.value, isAdmin: store.isAdmin.value }
+    );
 
-        const role = currentUser?.role || '';
-        const isAdmin = role === 'Admin SCM' || role.toLowerCase().includes('admin');
-        if (!isAdmin) {
-            return next({ path: '/dashboard' });
-        }
+    if (redirect) {
+        return next(redirect);
     }
 
     next();

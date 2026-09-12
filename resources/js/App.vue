@@ -5,8 +5,8 @@
     <ToastNotification />
   </div>
 
-  <!-- Standard Layout: shadcn-vue SidebarProvider + AppSidebar + SidebarInset -->
-  <SidebarProvider v-else>
+  <!-- Authenticated layout only; guests never keep the sidebar after logout -->
+  <SidebarProvider v-else-if="isLoggedIn">
     <AppSidebar />
     <SidebarInset class="bg-[#F8FAFC] dark:bg-[#090D16] min-w-0 w-full max-w-full overflow-x-hidden transition-colors">
       <!-- Clean Topbar Navbar matching shadcn screenshot -->
@@ -73,8 +73,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useDark, useToggle } from '@vueuse/core';
 import { ChevronRight, Sun, Moon } from 'lucide-vue-next';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
@@ -86,6 +86,7 @@ import UserApprovalModal from './components/auth/UserApprovalModal.vue';
 import { useTaxStore } from './store/taxStore';
 
 const route = useRoute();
+const router = useRouter();
 const store = useTaxStore();
 
 // VueUse dark mode with persistence
@@ -99,7 +100,17 @@ const isDark = useDark({
 const toggleDark = useToggle(isDark);
 
 const isFullPage = computed(() => route.meta.layout === 'blank');
-const userRole = computed(() => store.currentUser.value?.role || 'Admin SCM');
+const isLoggedIn = computed(() => store.isLoggedIn.value);
+const userRole = computed(() => store.currentUser.value?.role || 'Tamu');
+
+watch(
+  () => store.isLoggedIn.value,
+  (loggedIn) => {
+    if (!loggedIn && route.meta.layout !== 'blank') {
+      router.replace({ name: 'login' });
+    }
+  }
+);
 
 const currentRouteName = computed(() => {
   const path = route.path;
