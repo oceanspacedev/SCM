@@ -57,7 +57,8 @@ class WhatsAppService
         ];
 
         try {
-            $response = Http::timeout(8)
+            $response = Http::timeout(10)
+                ->withoutVerifying()
                 ->withToken($this->token)
                 ->withHeaders([
                     'Idempotency-Key' => $idempotencyKey,

@@ -162,7 +162,7 @@ const pendingCount = computed(() => store.pendingUsersCount.value);
 
 function openApprovalModal() {
   showUserMenu.value = false;
-  router.push('/users');
+  router.push('/users?tab=pending');
 }
 
 const currentBreadcrumb = computed(() => {

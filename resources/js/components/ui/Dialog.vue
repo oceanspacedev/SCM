@@ -10,7 +10,7 @@
     >
       <div
         v-if="open"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#17201E]/40 backdrop-blur-[2px]"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#17201E]/40 dark:bg-black/70 backdrop-blur-[2px]"
         @click.self="handleBackdropClick"
       >
         <Transition
@@ -23,23 +23,23 @@
         >
           <div
             :class="[
-              'w-full bg-white rounded-lg border border-[#DDE4E1] shadow-xl overflow-hidden flex flex-col max-h-[90vh]',
+              'w-full bg-white dark:bg-[#111827] rounded-lg border border-[#DDE4E1] dark:border-slate-800 shadow-xl overflow-hidden flex flex-col max-h-[90vh]',
               maxWidthClass
             ]"
           >
             <!-- Header -->
-            <div class="px-6 py-4 border-b border-[#DDE4E1] flex items-center justify-between bg-white shrink-0">
+            <div class="px-6 py-4 border-b border-[#DDE4E1] dark:border-slate-800 flex items-center justify-between bg-white dark:bg-[#111827] shrink-0">
               <div>
-                <h3 class="text-base font-semibold text-[#17201E]">
+                <h3 class="text-base font-semibold text-[#17201E] dark:text-slate-100">
                   {{ title }}
                 </h3>
-                <p v-if="description" class="text-xs text-[#66736F] mt-0.5">
+                <p v-if="description" class="text-xs text-[#66736F] dark:text-slate-400 mt-0.5">
                   {{ description }}
                 </p>
               </div>
               <button
                 type="button"
-                class="text-[#66736F] hover:text-[#17201E] p-1.5 rounded-md hover:bg-[#F4F6F5] transition-colors cursor-pointer"
+                class="text-[#66736F] dark:text-slate-400 hover:text-[#17201E] dark:hover:text-slate-100 p-1.5 rounded-md hover:bg-[#F4F6F5] dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 @click="close"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,14 +49,14 @@
             </div>
 
             <!-- Body -->
-            <div class="px-6 py-5 overflow-y-auto flex-1">
+            <div class="px-6 py-5 overflow-y-auto flex-1 text-slate-800 dark:text-slate-200">
               <slot />
             </div>
 
             <!-- Footer -->
             <div
               v-if="$slots.footer"
-              class="px-6 py-3.5 border-t border-[#DDE4E1] bg-[#FAFBFA] flex items-center justify-end gap-2.5 shrink-0"
+              class="px-6 py-3.5 border-t border-[#DDE4E1] dark:border-slate-800 bg-[#FAFBFA] dark:bg-slate-900/60 flex items-center justify-end gap-2.5 shrink-0"
             >
               <slot name="footer" />
             </div>

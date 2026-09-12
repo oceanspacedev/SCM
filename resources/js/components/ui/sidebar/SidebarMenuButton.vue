@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Component } from "vue"
-import type { SidebarMenuButtonProps } from "./SidebarMenuButtonChild.vue"
 import { reactiveOmit } from "@vueuse/core"
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import SidebarMenuButtonChild from "./SidebarMenuButtonChild.vue"
@@ -10,7 +9,13 @@ defineOptions({
   inheritAttrs: false,
 })
 
-const props = withDefaults(defineProps<SidebarMenuButtonProps & {
+const props = withDefaults(defineProps<{
+  as?: any
+  asChild?: boolean
+  variant?: "default" | "outline"
+  size?: "default" | "sm" | "lg"
+  isActive?: boolean
+  class?: any
   tooltip?: string | Component
 }>(), {
   as: "button",

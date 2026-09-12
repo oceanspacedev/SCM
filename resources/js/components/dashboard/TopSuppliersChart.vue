@@ -1,11 +1,11 @@
 <template>
-  <div class="bg-white rounded-xl border border-slate-200/90 p-5 shadow-2xs flex flex-col justify-between">
+  <div class="bg-white dark:bg-[#111827] rounded-xl border border-slate-200/90 dark:border-slate-800 p-5 shadow-2xs flex flex-col justify-between">
     <!-- Header -->
     <div class="mb-4">
-      <h3 class="text-sm font-bold text-slate-900 tracking-tight">
+      <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 tracking-tight">
         Supplier Teratas
       </h3>
-      <p class="text-xs text-slate-400 mt-0.5">
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
         Berdasarkan nilai invoice
       </p>
     </div>
@@ -20,12 +20,12 @@
         @mouseleave="hoveredSupplier = null"
       >
         <!-- Label Left (PT Unilever Ind...) -->
-        <div class="w-28 sm:w-32 shrink-0 text-right pr-3 truncate text-[11px] text-slate-600 group-hover:text-slate-900 transition-colors">
+        <div class="w-28 sm:w-32 shrink-0 text-right pr-3 truncate text-[11px] text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 transition-colors">
           {{ supplier.name }}
         </div>
 
         <!-- Bar Track & Fill -->
-        <div class="flex-1 bg-slate-50 rounded-r h-6 relative flex items-center overflow-hidden border-l border-slate-300">
+        <div class="flex-1 bg-slate-50 dark:bg-slate-800/80 rounded-r h-6 relative flex items-center overflow-hidden border-l border-slate-300 dark:border-slate-700">
           <div
             class="supplier-bar h-full rounded-r transition-all duration-300 group-hover:brightness-110 flex items-center justify-end pr-2"
             :style="{
@@ -47,7 +47,7 @@
     </div>
 
     <!-- Bottom X-axis Ticks -->
-    <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400 pl-24 sm:pl-32">
+    <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] font-mono text-slate-400 dark:text-slate-500 pl-24 sm:pl-32">
       <span>Rp 0</span>
       <span class="hidden sm:inline">{{ formatShort(maxVal * 0.25) }}</span>
       <span>{{ formatShort(maxVal * 0.5) }}</span>

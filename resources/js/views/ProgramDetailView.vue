@@ -3,10 +3,10 @@
     <!-- Header Section matching screenshot -->
     <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
       <div>
-        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 font-sans">
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
           {{ program.program_name }}
         </h1>
-        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
           {{ program.supplier }} · {{ program.category }}
         </p>
       </div>
@@ -16,30 +16,30 @@
         <!-- Kembali -->
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer"
           @click="goBack"
         >
-          <ArrowLeft class="w-3.5 h-3.5 text-slate-500" />
+          <ArrowLeft class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
           <span>Kembali</span>
         </button>
 
         <!-- Ubah -->
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer"
           @click="openEditModal"
         >
-          <Pencil class="w-3.5 h-3.5 text-slate-500" />
+          <Pencil class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
           <span>Ubah</span>
         </button>
 
         <!-- Hapus -->
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-medium text-slate-700 hover:text-red-600 hover:border-red-200 hover:bg-red-50/50 transition-colors cursor-pointer"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-rose-400 hover:border-red-200 dark:hover:border-rose-900/50 hover:bg-red-50/50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
           @click="confirmDeleteProgram"
         >
-          <Trash2 class="w-3.5 h-3.5 text-slate-400" />
+          <Trash2 class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
           <span>Hapus</span>
         </button>
       </div>
@@ -48,7 +48,7 @@
     <!-- Status & Meta Strip -->
     <div class="flex flex-wrap items-center gap-3 text-xs">
       <!-- Status Badge -->
-      <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 border border-slate-200 text-slate-700">
+      <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
         <span
           class="w-1.5 h-1.5 rounded-full"
           :class="{
@@ -61,229 +61,129 @@
       </div>
 
       <!-- Meta Info -->
-      <span class="text-slate-500 text-xs">
+      <span class="text-slate-500 dark:text-slate-400 text-xs">
         Diarsipkan oleh {{ uploaderName }} · diperbarui {{ formatDate(program.program_date) }}
       </span>
     </div>
 
-    <!-- Three Document Cards Grid -->
+    <!-- Three Document Categories Grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-      <!-- CARD 1: INVOICE -->
-      <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 flex flex-col justify-between min-h-[175px]">
-        <div>
-          <!-- Card Header -->
-          <div class="flex items-start gap-2.5">
-            <FileText class="w-4.5 h-4.5 text-slate-500 shrink-0 mt-0.5" />
-            <div class="min-w-0 flex-1">
-              <h4 class="font-semibold text-slate-900 text-sm leading-none">
-                Invoice
-              </h4>
-              <p class="text-[11px] font-mono text-slate-400 mt-1">
-                {{ getDoc('invoice') ? (getDoc('invoice').file_size || '404 B') : 'Belum diunggah' }}
-              </p>
+      <div
+        v-for="cat in documentCategories"
+        :key="cat.type"
+        class="bg-white dark:bg-[#111827] rounded-xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 flex flex-col justify-between shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-all min-h-[220px]"
+      >
+        <div class="flex-1 flex flex-col">
+          <!-- Card Header: Icon Badge, Title, Subtitle, and Add button -->
+          <div class="flex items-start justify-between gap-3 mb-4">
+            <div class="flex items-center gap-3 min-w-0">
+              <!-- Clean Neutral Icon Container (Monochrome shadcn style) -->
+              <div class="w-9 h-9 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
+                <component :is="cat.icon" class="w-4.5 h-4.5 stroke-[1.75]" />
+              </div>
+
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <h4 class="font-semibold text-slate-900 dark:text-slate-100 text-sm leading-tight truncate">
+                    {{ cat.label }}
+                  </h4>
+                  <span
+                    v-if="getDocs(cat.type).length > 0"
+                    class="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shrink-0"
+                  >
+                    {{ getDocs(cat.type).length }} Berkas
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+                  {{ cat.description }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Quick "+ Tambah" button when category has files -->
+            <button
+              v-if="getDocs(cat.type).length > 0"
+              type="button"
+              class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition-colors cursor-pointer shrink-0"
+              title="Unggah berkas tambahan"
+              @click="openUpload(cat.type, cat.label)"
+            >
+              <Plus class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+              <span>Tambah</span>
+            </button>
+          </div>
+
+          <!-- Card Body: Uploaded Files List -->
+          <div v-if="getDocs(cat.type).length > 0" class="space-y-2 max-h-[220px] overflow-y-auto pr-1 flex-1">
+            <div
+              v-for="doc in getDocs(cat.type)"
+              :key="doc.id"
+              class="p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors flex items-center justify-between gap-2 group"
+            >
+              <div class="min-w-0 flex-1">
+                <p class="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate" :title="doc.file_name">
+                  {{ doc.file_name }}
+                </p>
+                <div class="flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+                  <span v-if="doc.file_size">{{ doc.file_size }}</span>
+                  <span v-if="doc.file_size">·</span>
+                  <span>Diunggah {{ formatUploadDate(doc.uploaded_at || program.program_date) }}</span>
+                </div>
+              </div>
+
+              <!-- Action buttons per file -->
+              <div class="flex items-center gap-1 shrink-0">
+                <button
+                  type="button"
+                  class="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white dark:hover:bg-slate-800 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition-colors cursor-pointer"
+                  title="Pratinjau berkas"
+                  @click="openPreviewDoc(doc)"
+                >
+                  <Eye class="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  class="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white dark:hover:bg-slate-800 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition-colors cursor-pointer"
+                  title="Unduh berkas"
+                  @click="downloadDocItem(doc)"
+                >
+                  <Download class="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  class="p-1.5 rounded-md text-slate-400 hover:text-red-600 dark:hover:text-rose-400 hover:bg-red-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                  title="Hapus berkas ini"
+                  @click="deleteDocItem(doc, cat.label)"
+                >
+                  <Trash2 class="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
 
-          <!-- Card Body: Uploaded State -->
-          <div v-if="getDoc('invoice')" class="mt-4 space-y-0.5">
-            <p class="text-xs font-medium text-slate-800 truncate" :title="getDoc('invoice').file_name">
-              {{ getDoc('invoice').file_name }}
-            </p>
-            <p class="text-[11px] text-slate-400 truncate">
-              Diunggah {{ formatUploadDate(getDoc('invoice').uploaded_at || program.program_date) }} · oleh {{ getDoc('invoice').uploaded_by || uploaderName }}
-            </p>
-          </div>
-
-          <!-- Card Body: Empty State -->
-          <div v-else class="mt-4">
+          <!-- Card Body: Modern Interactive Dropzone (Replaces generic dashed button) -->
+          <div v-else class="flex-1 flex flex-col justify-center">
             <button
               type="button"
-              class="w-full py-2 px-3 rounded-lg border border-dashed border-slate-300 hover:border-slate-400 bg-slate-50/60 hover:bg-slate-100/80 text-slate-700 text-xs font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer"
-              @click="openUpload('invoice', 'Invoice')"
+              class="w-full py-4 px-3 rounded-lg border border-dashed border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 bg-slate-50/50 dark:bg-slate-900/40 hover:bg-slate-100/60 dark:hover:bg-slate-800/50 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer group"
+              @click="openUpload(cat.type, cat.label)"
             >
-              <UploadCloud class="w-4 h-4 text-slate-400" />
-              <span>Unggah Invoice</span>
-            </button>
-            <p class="text-[11px] text-slate-400 text-center mt-2">
-              PDF, JPG, PNG · maks 15 MB
-            </p>
-          </div>
-        </div>
+              <!-- Circular Upload Badge in center -->
+              <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-2xs flex items-center justify-center text-slate-400 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200 group-hover:border-slate-300 dark:group-hover:border-slate-600 group-hover:scale-105 transition-all">
+                <Upload class="w-4 h-4 stroke-[2]" />
+              </div>
 
-        <!-- Card Footer Actions (Only when uploaded) -->
-        <div v-if="getDoc('invoice')" class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <button
-              type="button"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors cursor-pointer"
-              @click="openPreview('invoice')"
-            >
-              <Eye class="w-3.5 h-3.5 text-slate-400" />
-              <span>Pratinjau</span>
-            </button>
-            <button
-              type="button"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors cursor-pointer"
-              @click="downloadDoc('invoice')"
-            >
-              <Download class="w-3.5 h-3.5 text-slate-400" />
-              <span>Unduh</span>
+              <!-- Main Action Text -->
+              <div class="text-center">
+                <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 block leading-tight">
+                  Unggah {{ cat.label }}
+                </span>
+                <span class="text-[11px] text-slate-400 dark:text-slate-500 font-normal mt-1 block">
+                  PDF, JPG, PNG hingga 15 MB
+                </span>
+              </div>
             </button>
           </div>
-          <button
-            type="button"
-            class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
-            title="Hapus Invoice"
-            @click="deleteDoc('invoice')"
-          >
-            <Trash2 class="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
-
-      <!-- CARD 2: FAKTUR PAJAK -->
-      <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 flex flex-col justify-between min-h-[175px]">
-        <div>
-          <!-- Card Header -->
-          <div class="flex items-start gap-2.5">
-            <FileText class="w-4.5 h-4.5 text-slate-500 shrink-0 mt-0.5" />
-            <div class="min-w-0 flex-1">
-              <h4 class="font-semibold text-slate-900 text-sm leading-none">
-                Faktur Pajak
-              </h4>
-              <p class="text-[11px] font-mono text-slate-400 mt-1">
-                {{ getDoc('faktur_pajak') ? (getDoc('faktur_pajak').file_size || '1.2 MB') : 'Belum diunggah' }}
-              </p>
-            </div>
-          </div>
-
-          <!-- Card Body: Uploaded State -->
-          <div v-if="getDoc('faktur_pajak')" class="mt-4 space-y-0.5">
-            <p class="text-xs font-medium text-slate-800 truncate" :title="getDoc('faktur_pajak').file_name">
-              {{ getDoc('faktur_pajak').file_name }}
-            </p>
-            <p class="text-[11px] text-slate-400 truncate">
-              Diunggah {{ formatUploadDate(getDoc('faktur_pajak').uploaded_at || program.program_date) }} · oleh {{ getDoc('faktur_pajak').uploaded_by || uploaderName }}
-            </p>
-          </div>
-
-          <!-- Card Body: Empty State -->
-          <div v-else class="mt-4">
-            <button
-              type="button"
-              class="w-full py-2 px-3 rounded-lg border border-dashed border-slate-300 hover:border-slate-400 bg-slate-50/60 hover:bg-slate-100/80 text-slate-700 text-xs font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer"
-              @click="openUpload('faktur_pajak', 'Faktur Pajak')"
-            >
-              <UploadCloud class="w-4 h-4 text-slate-400" />
-              <span>Unggah Faktur Pajak</span>
-            </button>
-            <p class="text-[11px] text-slate-400 text-center mt-2">
-              PDF, JPG, PNG · maks 15 MB
-            </p>
-          </div>
-        </div>
-
-        <!-- Card Footer Actions (Only when uploaded) -->
-        <div v-if="getDoc('faktur_pajak')" class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <button
-              type="button"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors cursor-pointer"
-              @click="openPreview('faktur_pajak')"
-            >
-              <Eye class="w-3.5 h-3.5 text-slate-400" />
-              <span>Pratinjau</span>
-            </button>
-            <button
-              type="button"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors cursor-pointer"
-              @click="downloadDoc('faktur_pajak')"
-            >
-              <Download class="w-3.5 h-3.5 text-slate-400" />
-              <span>Unduh</span>
-            </button>
-          </div>
-          <button
-            type="button"
-            class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
-            title="Hapus Faktur Pajak"
-            @click="deleteDoc('faktur_pajak')"
-          >
-            <Trash2 class="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
-
-      <!-- CARD 3: MEMO / MOU -->
-      <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 flex flex-col justify-between min-h-[175px]">
-        <div>
-          <!-- Card Header -->
-          <div class="flex items-start gap-2.5">
-            <FileText class="w-4.5 h-4.5 text-slate-500 shrink-0 mt-0.5" />
-            <div class="min-w-0 flex-1">
-              <h4 class="font-semibold text-slate-900 text-sm leading-none">
-                Memo / MOU
-              </h4>
-              <p class="text-[11px] font-mono text-slate-400 mt-1">
-                {{ getDoc('mou') ? (getDoc('mou').file_size || '404 B') : 'Belum diunggah' }}
-              </p>
-            </div>
-          </div>
-
-          <!-- Card Body: Uploaded State -->
-          <div v-if="getDoc('mou')" class="mt-4 space-y-0.5">
-            <p class="text-xs font-medium text-slate-800 truncate" :title="getDoc('mou').file_name">
-              {{ getDoc('mou').file_name }}
-            </p>
-            <p class="text-[11px] text-slate-400 truncate">
-              Diunggah {{ formatUploadDate(getDoc('mou').uploaded_at || program.program_date) }} · oleh {{ getDoc('mou').uploaded_by || uploaderName }}
-            </p>
-          </div>
-
-          <!-- Card Body: Empty State -->
-          <div v-else class="mt-4">
-            <button
-              type="button"
-              class="w-full py-2 px-3 rounded-lg border border-dashed border-slate-300 hover:border-slate-400 bg-slate-50/60 hover:bg-slate-100/80 text-slate-700 text-xs font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer"
-              @click="openUpload('mou', 'Memo / MOU')"
-            >
-              <UploadCloud class="w-4 h-4 text-slate-400" />
-              <span>Unggah Memo / MOU</span>
-            </button>
-            <p class="text-[11px] text-slate-400 text-center mt-2">
-              PDF, JPG, PNG · maks 15 MB
-            </p>
-          </div>
-        </div>
-
-        <!-- Card Footer Actions (Only when uploaded) -->
-        <div v-if="getDoc('mou')" class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <button
-              type="button"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors cursor-pointer"
-              @click="openPreview('mou')"
-            >
-              <Eye class="w-3.5 h-3.5 text-slate-400" />
-              <span>Pratinjau</span>
-            </button>
-            <button
-              type="button"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors cursor-pointer"
-              @click="downloadDoc('mou')"
-            >
-              <Download class="w-3.5 h-3.5 text-slate-400" />
-              <span>Unduh</span>
-            </button>
-          </div>
-          <button
-            type="button"
-            class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
-            title="Hapus Memo/MOU"
-            @click="deleteDoc('mou')"
-          >
-            <Trash2 class="w-3.5 h-3.5" />
-          </button>
         </div>
       </div>
     </div>
@@ -291,52 +191,52 @@
     <!-- Bottom Section: Two Columns Grid matching screenshot -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Left Card: Rekonsiliasi Nilai & Perpajakan -->
-      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col justify-between">
+      <div class="bg-white dark:bg-[#111827] rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col justify-between">
         <div>
           <!-- Title -->
           <div class="p-6 pb-4">
-            <h3 class="text-base font-bold text-slate-900 font-sans">
+            <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-sans">
               Rekonsiliasi Nilai & Perpajakan
             </h3>
           </div>
 
           <!-- Key-Value Rows matching screenshot -->
-          <div class="px-6 divide-y divide-slate-100 text-xs">
+          <div class="px-6 divide-y divide-slate-100 dark:divide-slate-800/70 text-xs">
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">NO. INVOICE</span>
-              <span class="font-mono text-slate-700 font-medium">{{ program.invoice_number }}</span>
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">NO. INVOICE</span>
+              <span class="font-mono text-slate-700 dark:text-slate-300 font-medium">{{ program.invoice_number }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">TANGGAL INVOICE</span>
-              <span class="text-slate-700">{{ formatDate(program.program_date) }}</span>
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">TANGGAL INVOICE</span>
+              <span class="text-slate-700 dark:text-slate-300">{{ formatDate(program.program_date) }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">JATUH TEMPO</span>
-              <span class="text-slate-700">{{ formatDueDate(program.program_date) }}</span>
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">JATUH TEMPO</span>
+              <span class="text-slate-700 dark:text-slate-300">{{ formatDueDate(program.program_date) }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">DPP</span>
-              <span class="font-mono text-slate-800 font-semibold">{{ formatRupiah(program.dpp) }}</span>
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">DPP</span>
+              <span class="font-mono text-slate-800 dark:text-slate-200 font-semibold">{{ formatRupiah(program.dpp) }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">PPN (11%)</span>
-              <span class="font-mono text-slate-800 font-semibold">{{ formatRupiah(program.ppn) }}</span>
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">PPN (11%)</span>
+              <span class="font-mono text-slate-800 dark:text-slate-200 font-semibold">{{ formatRupiah(program.ppn) }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">
                 {{ getPphLabel(program.pph_type) }}
               </span>
-              <span class="font-mono text-slate-700 font-semibold">{{ formatRupiah(program.pph || 0) }}</span>
+              <span class="font-mono text-slate-700 dark:text-slate-300 font-semibold">{{ formatRupiah(program.pph || 0) }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">NO. FAKTUR PAJAK</span>
-              <span class="font-mono text-slate-600 font-medium">
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">NO. FAKTUR PAJAK</span>
+              <span class="font-mono text-slate-600 dark:text-slate-400 font-medium">
                 {{ program.faktur_number || (getDoc('faktur_pajak') ? '010.002-25.88291024' : '-') }}
               </span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">TANGGAL FAKTUR PAJAK</span>
-              <span class="text-slate-600 font-medium">
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">TANGGAL FAKTUR PAJAK</span>
+              <span class="text-slate-600 dark:text-slate-400 font-medium">
                 {{ program.faktur_date ? formatDate(program.faktur_date) : (getDoc('faktur_pajak') ? formatDate(program.program_date) : '-') }}
               </span>
             </div>
@@ -345,7 +245,7 @@
 
         <!-- TOTAL INVOICE Dark Strip matching screenshot -->
         <div class="p-6 pt-4">
-          <div class="bg-[#0F172A] rounded-xl px-6 py-4 flex items-center justify-between text-white shadow-sm">
+          <div class="bg-[#0F172A] dark:bg-slate-950 dark:border dark:border-slate-800 rounded-xl px-6 py-4 flex items-center justify-between text-white shadow-sm">
             <span class="text-xs font-bold tracking-wider uppercase text-slate-300 font-sans">
               TOTAL INVOICE
             </span>
@@ -357,63 +257,63 @@
       </div>
 
       <!-- Right Card: Data Program & Supplier -->
-      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col justify-between">
+      <div class="bg-white dark:bg-[#111827] rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col justify-between">
         <div>
           <!-- Title -->
           <div class="p-6 pb-4">
-            <h3 class="text-base font-bold text-slate-900 font-sans">
+            <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-sans">
               Data Program & Supplier
             </h3>
           </div>
 
           <!-- Key-Value Rows matching screenshot -->
-          <div class="px-6 divide-y divide-slate-100 text-xs">
+          <div class="px-6 divide-y divide-slate-100 dark:divide-slate-800/70 text-xs">
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">COMPANY NAME</span>
-              <span class="text-slate-800 font-semibold max-w-[240px] truncate text-right">{{ getProgramCompanyName(program) }}</span>
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">COMPANY NAME</span>
+              <span class="text-slate-800 dark:text-slate-200 font-semibold max-w-[240px] truncate text-right">{{ getProgramCompanyName(program) }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">NO. PO / SJ</span>
-              <span class="font-mono text-slate-700 font-medium">{{ getProgramPoSjNumber(program) }}</span>
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">NO. PO / SJ</span>
+              <span class="font-mono text-slate-700 dark:text-slate-300 font-medium">{{ getProgramPoSjNumber(program) }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">BULAN / MASA PAJAK</span>
-              <span class="font-semibold text-slate-700">{{ getProgramMonth(program.program_date) }} {{ getProgramYear(program.program_date) }}</span>
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">BULAN / MASA PAJAK</span>
+              <span class="font-semibold text-slate-700 dark:text-slate-300">{{ getProgramMonth(program.program_date) }} {{ getProgramYear(program.program_date) }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">NAMA SUPPLIER</span>
-              <span class="text-slate-800 font-semibold max-w-[240px] truncate text-right">{{ program.supplier }}</span>
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">NAMA SUPPLIER</span>
+              <span class="text-slate-800 dark:text-slate-200 font-semibold max-w-[240px] truncate text-right">{{ program.supplier }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">NPWP SUPPLIER</span>
-              <span class="font-mono text-slate-700 font-medium">{{ program.npwp || '02.010.121.3-071.000' }}</span>
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">NPWP SUPPLIER</span>
+              <span class="font-mono text-slate-700 dark:text-slate-300 font-medium">{{ program.npwp || '02.010.121.3-071.000' }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">KATEGORI</span>
-              <span class="px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium text-[11px]">{{ program.category }}</span>
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">KATEGORI</span>
+              <span class="px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium text-[11px]">{{ program.category }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">NOMOR MEMO/MOU</span>
-              <span class="font-mono text-slate-700">{{ program.mou_number || `MOU/SCM/2025/${String(program.id).padStart(3, '0')}` }}</span>
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">NOMOR MEMO/MOU</span>
+              <span class="font-mono text-slate-700 dark:text-slate-300">{{ program.mou_number || `MOU/SCM/2025/${String(program.id).padStart(3, '0')}` }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">PERIODE MULAI</span>
-              <span class="text-slate-700">{{ formatDate(program.program_date) }}</span>
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">PERIODE MULAI</span>
+              <span class="text-slate-700 dark:text-slate-300">{{ formatDate(program.program_date) }}</span>
             </div>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-bold text-[10px] text-slate-400 tracking-wider uppercase font-sans">PERIODE SELESAI</span>
-              <span class="text-slate-700">{{ formatDueDate(program.program_date) }}</span>
+              <span class="font-bold text-[10px] text-slate-400 dark:text-slate-500 tracking-wider uppercase font-sans">PERIODE SELESAI</span>
+              <span class="text-slate-700 dark:text-slate-300">{{ formatDueDate(program.program_date) }}</span>
             </div>
           </div>
         </div>
 
         <!-- Catatan Pemeriksaan Box matching screenshot -->
         <div class="p-6 pt-4">
-          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
-            <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5 font-sans">
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800">
+            <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5 font-sans">
               CATATAN PEMERIKSAAN
             </h4>
-            <p class="text-xs text-slate-600 leading-relaxed">
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               {{ completeness.count === 3 ? 'Semua berkas invoice, faktur pajak, dan memo/MOU telah lengkap dan diverifikasi tim audit pajak.' : 'Menunggu kelengkapan dokumen perpajakan.' }}
             </p>
           </div>
@@ -426,61 +326,61 @@
       v-if="isEditModalOpen"
       class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
     >
-      <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" @click="isEditModalOpen = false"></div>
-      <div class="relative bg-white rounded-xl shadow-xl border border-slate-200 w-full max-w-xl overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-150">
-        <div class="px-6 py-4 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
-          <h3 class="text-sm font-bold text-slate-900">Ubah Data Program & Invoice</h3>
-          <button type="button" class="text-slate-400 hover:text-slate-600 cursor-pointer" @click="isEditModalOpen = false">
+      <div class="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs" @click="isEditModalOpen = false"></div>
+      <div class="relative bg-white dark:bg-[#111827] rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 w-full max-w-xl overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-150">
+        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100">Ubah Data Program & Invoice</h3>
+          <button type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer" @click="isEditModalOpen = false">
             <X class="w-5 h-5" />
           </button>
         </div>
 
         <form @submit.prevent="saveEditProgram" class="p-6 space-y-4 text-xs">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">Nama Program</label>
+            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Nama Program</label>
             <input
               v-model="editForm.program_name"
               type="text"
               required
-              class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
+              class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
             />
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">Nama Supplier</label>
+              <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Nama Supplier</label>
               <input
                 v-model="editForm.supplier"
                 type="text"
                 required
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
               />
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">NPWP Supplier</label>
+              <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">NPWP Supplier</label>
               <input
                 v-model="editForm.npwp"
                 type="text"
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-mono focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
               />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">No. Invoice</label>
+              <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">No. Invoice</label>
               <input
                 v-model="editForm.invoice_number"
                 type="text"
                 required
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-mono focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
               />
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">Kategori</label>
+              <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Kategori</label>
               <select
                 v-model="editForm.category"
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-hidden cursor-pointer"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-600 focus:outline-hidden cursor-pointer"
               >
                 <option v-for="cat in availableCategories" :key="cat" :value="cat">
                   {{ cat }}
@@ -491,30 +391,30 @@
 
           <div class="grid grid-cols-3 gap-3">
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">Nilai DPP (IDR)</label>
+              <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Nilai DPP (IDR)</label>
               <input
                 v-model.number="editForm.dpp"
                 type="number"
                 required
                 @input="calculateTaxes"
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-mono focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
               />
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">PPN 11% (IDR)</label>
+              <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">PPN 11% (IDR)</label>
               <input
                 v-model.number="editForm.ppn"
                 type="number"
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono bg-slate-50 focus:outline-hidden"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 font-mono bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-hidden"
               />
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">Total Invoice (IDR)</label>
+              <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Total Invoice (IDR)</label>
               <input
                 :value="editForm.dpp + editForm.ppn"
                 type="number"
                 readonly
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono bg-slate-50 font-bold text-slate-900"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 font-mono bg-slate-50 dark:bg-slate-800 font-bold text-slate-900 dark:text-slate-100"
               />
             </div>
           </div>
@@ -522,11 +422,11 @@
           <!-- Jenis PPh & Nilai PPh -->
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">Jenis PPh</label>
+              <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Jenis PPh</label>
               <select
                 v-model="editForm.pph_type"
                 @change="onPphTypeChange"
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-hidden cursor-pointer"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-600 focus:outline-hidden cursor-pointer"
               >
                 <option value="NON_PPH">Non PPh</option>
                 <option value="PPH_21">PPh 21 (2,5%)</option>
@@ -536,13 +436,13 @@
               </select>
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">Nilai PPh (IDR)</label>
+              <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Nilai PPh (IDR)</label>
               <input
                 v-model.number="editForm.pph"
                 type="number"
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono bg-slate-50 focus:outline-hidden"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 font-mono bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-hidden"
               />
-              <p class="text-[10px] text-slate-400 mt-0.5 font-mono">
+              <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 font-mono">
                 {{ formatRupiah(editForm.pph || 0) }}
               </p>
             </div>
@@ -551,36 +451,36 @@
           <!-- No. Faktur Pajak & Tanggal Faktur Pajak -->
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">No. Faktur Pajak (No. FP)</label>
+              <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">No. Faktur Pajak (No. FP)</label>
               <input
                 v-model="editForm.faktur_number"
                 type="text"
                 placeholder="010.000-25.00000001"
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-mono focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
               />
-              <p class="text-[10px] text-slate-400 mt-0.5">Format: XXX.XXX-XX.XXXXXXXX</p>
+              <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Format: XXX.XXX-XX.XXXXXXXX</p>
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">Tanggal Faktur Pajak (Tgl FP)</label>
+              <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Tanggal Faktur Pajak (Tgl FP)</label>
               <input
                 v-model="editForm.faktur_date"
                 type="date"
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
               />
             </div>
           </div>
 
-          <div class="pt-4 border-t border-slate-200 flex items-center justify-end gap-2.5">
+          <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2.5">
             <button
               type="button"
-              class="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 font-medium hover:bg-slate-50 cursor-pointer"
+              class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
               @click="isEditModalOpen = false"
             >
               Batal
             </button>
             <button
               type="submit"
-              class="px-5 py-2 rounded-lg bg-slate-900 text-white font-medium hover:bg-slate-800 transition-colors cursor-pointer"
+              class="px-5 py-2 rounded-lg bg-slate-900 dark:bg-blue-600 text-white font-medium hover:bg-slate-800 dark:hover:bg-blue-700 transition-colors cursor-pointer"
             >
               Simpan Perubahan
             </button>
@@ -608,35 +508,35 @@
     <Teleport to="body">
       <div
         v-if="docToDelete"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-xs"
       >
-        <div class="bg-white rounded-xl max-w-sm w-full p-5 shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
-          <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mx-auto mb-3 border border-slate-200">
-            <Trash2 class="w-5 h-5 text-red-600" />
+        <div class="bg-white dark:bg-[#111827] rounded-xl max-w-sm w-full p-5 shadow-xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-150">
+          <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center mx-auto mb-3 border border-slate-200 dark:border-slate-700">
+            <Trash2 class="w-5 h-5 text-red-600 dark:text-rose-400" />
           </div>
 
-          <h3 class="text-sm font-semibold text-slate-900 text-center mb-1">
+          <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100 text-center mb-1">
             Hapus Berkas Dokumen?
           </h3>
-          <p class="text-xs text-slate-500 text-center leading-relaxed mb-4">
-            Apakah Anda yakin ingin menghapus berkas <strong class="text-slate-800">{{ docToDelete.label }}</strong>? Tindakan ini tidak dapat dibatalkan.
+          <p class="text-xs text-slate-500 dark:text-slate-400 text-center leading-relaxed mb-4">
+            Apakah Anda yakin ingin menghapus berkas <strong class="text-slate-800 dark:text-slate-200">{{ docToDelete.label }}</strong>? Tindakan ini tidak dapat dibatalkan.
           </p>
 
-          <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 mb-4 text-xs">
+          <div class="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-lg border border-slate-200 dark:border-slate-800 mb-4 text-xs">
             <div class="flex items-center justify-between">
-              <span class="text-slate-500">Tipe Dokumen:</span>
-              <span class="font-medium text-slate-800">{{ docToDelete.label }}</span>
+              <span class="text-slate-500 dark:text-slate-400">Tipe Dokumen:</span>
+              <span class="font-medium text-slate-800 dark:text-slate-200">{{ docToDelete.label }}</span>
             </div>
-            <div v-if="docToDelete.fileName" class="flex items-center justify-between mt-1 pt-1 border-t border-slate-200">
-              <span class="text-slate-500">Nama File:</span>
-              <span class="font-mono text-slate-700 truncate max-w-[160px]">{{ docToDelete.fileName }}</span>
+            <div v-if="docToDelete.fileName" class="flex items-center justify-between mt-1 pt-1 border-t border-slate-200 dark:border-slate-800">
+              <span class="text-slate-500 dark:text-slate-400">Nama File:</span>
+              <span class="font-mono text-slate-700 dark:text-slate-300 truncate max-w-[160px]">{{ docToDelete.fileName }}</span>
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-2.5">
             <button
               type="button"
-              class="w-full py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs transition-colors cursor-pointer"
+              class="w-full py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs transition-colors cursor-pointer"
               @click="docToDelete = null"
             >
               Batal
@@ -658,24 +558,24 @@
     <Teleport to="body">
       <div
         v-if="isDeleteProgramModalOpen"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-xs"
       >
-        <div class="bg-white rounded-xl max-w-sm w-full p-5 shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
-          <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mx-auto mb-3 border border-slate-200">
-            <Trash2 class="w-5 h-5 text-red-600" />
+        <div class="bg-white dark:bg-[#111827] rounded-xl max-w-sm w-full p-5 shadow-xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-150">
+          <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center mx-auto mb-3 border border-slate-200 dark:border-slate-700">
+            <Trash2 class="w-5 h-5 text-red-600 dark:text-rose-400" />
           </div>
 
-          <h3 class="text-sm font-semibold text-slate-900 text-center mb-1">
+          <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100 text-center mb-1">
             Hapus Program Ini?
           </h3>
-          <p class="text-xs text-slate-500 text-center leading-relaxed mb-4">
-            Apakah Anda yakin ingin menghapus program <strong class="text-slate-800">{{ program?.program_name }}</strong>? Seluruh berkas perpajakan terkait akan dihapus.
+          <p class="text-xs text-slate-500 dark:text-slate-400 text-center leading-relaxed mb-4">
+            Apakah Anda yakin ingin menghapus program <strong class="text-slate-800 dark:text-slate-200">{{ program?.program_name }}</strong>? Seluruh berkas perpajakan terkait akan dihapus.
           </p>
 
           <div class="grid grid-cols-2 gap-2.5">
             <button
               type="button"
-              class="w-full py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs transition-colors cursor-pointer"
+              class="w-full py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs transition-colors cursor-pointer"
               @click="isDeleteProgramModalOpen = false"
             >
               Batal
@@ -695,10 +595,10 @@
   </div>
 
   <!-- Not Found State -->
-  <div v-else class="bg-white rounded-xl border border-slate-200 p-12 text-center space-y-3">
-    <FileText class="w-10 h-10 text-slate-300 mx-auto" />
-    <h3 class="text-base font-bold text-slate-800">Program Tidak Ditemukan</h3>
-    <p class="text-xs text-slate-500">Program mungkin telah dihapus atau URL tidak sesuai.</p>
+  <div v-else class="bg-white dark:bg-[#111827] rounded-xl border border-slate-200 dark:border-slate-800 p-12 text-center space-y-3">
+    <FileText class="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
+    <h3 class="text-base font-bold text-slate-800 dark:text-slate-200">Program Tidak Ditemukan</h3>
+    <p class="text-xs text-slate-500 dark:text-slate-400">Program mungkin telah dihapus atau URL tidak sesuai.</p>
     <router-link
       to="/programs"
       class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700"
@@ -717,9 +617,13 @@ import {
   Pencil,
   Trash2,
   FileText,
-  UploadCloud,
+  Upload,
+  Receipt,
+  FileCheck2,
+  FileSignature,
   Eye,
   Download,
+  Plus,
   X
 } from 'lucide-vue-next';
 import DocumentUploadModal from '../components/detail/DocumentUploadModal.vue';
@@ -749,24 +653,50 @@ const completeness = computed(() => getCompleteness(program.value));
 
 const uploaderName = computed(() => store.currentUser.value?.name || 'Bagas Nugroho');
 
-// Status Badge text matching screenshot
+const documentCategories = [
+  {
+    type: 'invoice',
+    label: 'Invoice',
+    description: 'Faktur tagihan & rincian biaya vendor',
+    icon: Receipt,
+  },
+  {
+    type: 'faktur_pajak',
+    label: 'Faktur Pajak',
+    description: 'Bukti pungutan PPN e-Faktur resmi',
+    icon: FileCheck2,
+  },
+  {
+    type: 'mou',
+    label: 'Memo / MOU',
+    description: 'Surat Perintah Kerja / Dokumen MOU',
+    icon: FileSignature,
+  }
+];
+
+function getDocs(docType) {
+  return (program.value?.documents || []).filter(d => d.document_type === docType);
+}
+
+function getDoc(docType) {
+  return (program.value?.documents || []).find(d => d.document_type === docType) || null;
+}
+
+// Status Badge text matching requirements
 const statusBadgeText = computed(() => {
   const docs = program.value?.documents || [];
   const hasInvoice = docs.some(d => d.document_type === 'invoice');
   const hasFaktur = docs.some(d => d.document_type === 'faktur_pajak');
   const hasMou = docs.some(d => d.document_type === 'mou');
 
-  if (docs.length === 3) return 'Dokumen Lengkap';
+  const count = (hasInvoice ? 1 : 0) + (hasFaktur ? 1 : 0) + (hasMou ? 1 : 0);
+  if (count === 3) return 'Dokumen Lengkap';
   if (!hasFaktur && hasInvoice && hasMou) return 'Kurang Faktur Pajak';
   if (!hasInvoice && hasFaktur && hasMou) return 'Kurang Invoice';
   if (!hasMou && hasInvoice && hasFaktur) return 'Kurang Memo / MOU';
-  if (docs.length === 0) return 'Belum Ada Dokumen';
-  return `Kurang ${3 - docs.length} Dokumen`;
+  if (count === 0) return 'Belum Ada Dokumen';
+  return `Kurang ${3 - count} Dokumen`;
 });
-
-function getDoc(docType) {
-  return (program.value?.documents || []).find(d => d.document_type === docType) || null;
-}
 
 function formatDueDate(dateStr) {
   if (!dateStr) return '-';
@@ -795,28 +725,38 @@ function openUpload(docType, label) {
 }
 
 async function handleDocumentUploaded(fileData) {
-  await store.uploadDocument(program.value.id, fileData.docType, fileData);
+  if (Array.isArray(fileData)) {
+    for (const f of fileData) {
+      await store.uploadDocument(program.value.id, f.docType, f);
+    }
+  } else {
+    await store.uploadDocument(program.value.id, fileData.docType, fileData);
+  }
 }
 
 // Preview Sheet State
 const isPreviewSheetOpen = ref(false);
 const selectedPreviewDoc = ref(null);
 
+function openPreviewDoc(doc) {
+  selectedPreviewDoc.value = doc;
+  isPreviewSheetOpen.value = true;
+}
+
 function openPreview(docType) {
   const existing = getDoc(docType);
   selectedPreviewDoc.value = existing || {
     document_type: docType,
-    file_name: `${docType.toUpperCase()}-${program.value.invoice_number.replace(/\//g, '-')}.pdf`,
-    uploaded_at: formatDate(program.value.program_date),
+    file_name: `${docType.toUpperCase()}-${program.value?.invoice_number?.replace(/\//g, '-') || program.value?.id}.pdf`,
+    uploaded_at: formatDate(program.value?.program_date),
     uploaded_by: uploaderName.value
   };
   isPreviewSheetOpen.value = true;
 }
 
-async function downloadDoc(docType) {
-  const doc = getDoc(docType);
+async function downloadDocItem(doc) {
   if (!doc) return;
-  const fileName = doc.file_name || `${docType}-${program.value.id}.pdf`;
+  const fileName = doc.file_name || `dokumen-${program.value?.id}.pdf`;
 
   let downloadUrl = doc.file_data || doc.file_url;
   if (!downloadUrl && doc.id) {
@@ -835,7 +775,7 @@ async function downloadDoc(docType) {
   }
 
   const blob = new Blob([
-    `SCM TaxVault Document Archive\nProgram: ${program.value.program_name}\nSupplier: ${program.value.supplier}\nNo Invoice: ${program.value.invoice_number}\nTotal: ${formatRupiah(program.value.total_invoice)}`
+    `SCM TaxVault Document Archive\nProgram: ${program.value?.program_name}\nSupplier: ${program.value?.supplier}\nBerkas: ${fileName}`
   ], { type: 'application/pdf' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -848,13 +788,30 @@ async function downloadDoc(docType) {
   store.notify(`Dokumen ${fileName} telah diunduh.`);
 }
 
+async function downloadDoc(docType) {
+  const doc = getDoc(docType);
+  if (doc) {
+    await downloadDocItem(doc);
+  }
+}
+
 const docToDelete = ref(null);
 const isDeleteProgramModalOpen = ref(false);
+
+function deleteDocItem(doc, typeLabel) {
+  docToDelete.value = {
+    id: doc.id,
+    type: doc.document_type,
+    label: typeLabel || store.getDocTypeLabel(doc.document_type),
+    fileName: doc.file_name || ''
+  };
+}
 
 function deleteDoc(docType) {
   const label = store.getDocTypeLabel(docType);
   const existing = getDoc(docType);
   docToDelete.value = {
+    id: existing?.id,
     type: docType,
     label: label,
     fileName: existing?.file_name || ''
@@ -863,7 +820,7 @@ function deleteDoc(docType) {
 
 async function confirmDeleteDoc() {
   if (!docToDelete.value) return;
-  await store.deleteDocument(program.value.id, docToDelete.value.type);
+  await store.deleteDocument(program.value.id, docToDelete.value.id || docToDelete.value.type);
   docToDelete.value = null;
 }
 

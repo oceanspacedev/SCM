@@ -10,25 +10,25 @@
     ></div>
 
     <!-- Modal Dialog -->
-    <div class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-4xl overflow-hidden z-10 flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-150">
+    <div class="relative bg-white dark:bg-[#111827] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-4xl overflow-hidden z-10 flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-150">
       <!-- Header -->
-      <div class="px-6 py-4.5 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
+      <div class="px-6 py-4.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200/80 flex items-center justify-center shrink-0">
+          <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center shrink-0">
             <ExcelIcon class="w-5 h-5" />
           </div>
           <div>
-            <h3 class="text-base font-bold text-slate-900 leading-tight">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white leading-tight">
               Import Data Program & Invoice
             </h3>
-            <p class="text-xs text-slate-500 mt-0.5">
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Unggah file Excel (.xlsx, .xls) atau CSV untuk memasukkan data program sekaligus
             </p>
           </div>
         </div>
         <button
           type="button"
-          class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+          class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
           @click="closeModal"
         >
           <X class="w-5 h-5" />
@@ -38,30 +38,30 @@
       <!-- Body -->
       <div class="p-6 overflow-y-auto space-y-5 flex-1 text-xs">
         <!-- Format Column Reference Note -->
-        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-3 text-slate-700">
-          <Info class="w-4 h-4 text-slate-500 mt-0.5 shrink-0" />
+        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex items-start gap-3 text-slate-700 dark:text-slate-300">
+          <Info class="w-4 h-4 text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
           <div class="flex-1 text-[11px] leading-relaxed">
-            <p class="font-bold text-slate-900">Format Kolom yang Didukung:</p>
+            <p class="font-bold text-slate-900 dark:text-white">Format Kolom yang Didukung:</p>
             <div class="mt-1.5 flex flex-wrap gap-1.5">
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">BULAN</span>
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">KATEGORI</span>
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">COMPANY NAME</span>
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">NO. PO/SJ</span>
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">PROGRAM</span>
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">SUPPLIER</span>
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">NO. INVOICE</span>
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">DPP</span>
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">PPN</span>
-              <span class="px-2 py-0.5 bg-white rounded border border-slate-200 font-mono font-semibold text-slate-700">TOTAL INVOICE</span>
+              <span class="px-2 py-0.5 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 font-mono font-semibold text-slate-700 dark:text-slate-300">BULAN</span>
+              <span class="px-2 py-0.5 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 font-mono font-semibold text-slate-700 dark:text-slate-300">KATEGORI</span>
+              <span class="px-2 py-0.5 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 font-mono font-semibold text-slate-700 dark:text-slate-300">COMPANY NAME</span>
+              <span class="px-2 py-0.5 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 font-mono font-semibold text-slate-700 dark:text-slate-300">NO. PO/SJ</span>
+              <span class="px-2 py-0.5 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 font-mono font-semibold text-slate-700 dark:text-slate-300">PROGRAM</span>
+              <span class="px-2 py-0.5 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 font-mono font-semibold text-slate-700 dark:text-slate-300">SUPPLIER</span>
+              <span class="px-2 py-0.5 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 font-mono font-semibold text-slate-700 dark:text-slate-300">NO. INVOICE</span>
+              <span class="px-2 py-0.5 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 font-mono font-semibold text-slate-700 dark:text-slate-300">DPP</span>
+              <span class="px-2 py-0.5 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 font-mono font-semibold text-slate-700 dark:text-slate-300">PPN</span>
+              <span class="px-2 py-0.5 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 font-mono font-semibold text-slate-700 dark:text-slate-300">TOTAL INVOICE</span>
             </div>
-            <p class="text-slate-500 mt-1.5 text-[10px]">
+            <p class="text-slate-500 dark:text-slate-400 mt-1.5 text-[10px]">
               * PPN (11%) dan Total Invoice akan dihitung otomatis jika nilainya dikosongkan.
             </p>
           </div>
           <div class="shrink-0 flex flex-col sm:flex-row gap-1.5">
             <button
               type="button"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition-colors shadow-2xs cursor-pointer"
               @click="downloadTemplate('xlsx')"
             >
               <ExcelIcon class="w-3.5 h-3.5" />
@@ -69,7 +69,7 @@
             </button>
             <button
               type="button"
-              class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-[11px] font-semibold text-slate-600 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+              class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition-colors shadow-2xs cursor-pointer"
               @click="downloadTemplate('csv')"
             >
               <span>Unduh CSV</span>
@@ -81,7 +81,7 @@
         <div
           v-if="parsedRows.length === 0"
           class="border-2 border-dashed rounded-xl p-7 text-center cursor-pointer transition-colors"
-          :class="isDragging ? 'border-emerald-500 bg-emerald-50/40' : 'border-slate-300 hover:border-emerald-400 bg-slate-50/40'"
+          :class="isDragging ? 'border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20' : 'border-slate-300 dark:border-slate-700 hover:border-emerald-400 bg-slate-50/40 dark:bg-slate-900/40'"
           @dragover.prevent="isDragging = true"
           @dragleave.prevent="isDragging = false"
           @drop.prevent="handleDrop"
@@ -96,20 +96,20 @@
           />
 
           <div class="flex flex-col items-center justify-center gap-2">
-            <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-1">
+            <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-1">
               <UploadCloud class="w-6 h-6" />
             </div>
-            <p class="font-bold text-slate-800 text-sm">
-              Tarik file Excel / CSV ke sini, atau <span class="text-blue-600 underline">pilih dari perangkat</span>
+            <p class="font-bold text-slate-800 dark:text-slate-200 text-sm">
+              Tarik file Excel / CSV ke sini, atau <span class="text-blue-600 dark:text-blue-400 underline">pilih dari perangkat</span>
             </p>
-            <p class="text-slate-400 text-[11px]">
+            <p class="text-slate-400 dark:text-slate-500 text-[11px]">
               Mendukung format .xlsx, .xls, atau .csv (Maksimal 10 MB)
             </p>
           </div>
         </div>
 
         <!-- Loading State -->
-        <div v-if="isLoading" class="py-8 text-center text-slate-500 flex flex-col items-center justify-center gap-2">
+        <div v-if="isLoading" class="py-8 text-center text-slate-500 dark:text-slate-400 flex flex-col items-center justify-center gap-2">
           <div class="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
           <p class="font-medium text-xs">Membaca dan memvalidasi file data...</p>
         </div>
@@ -117,16 +117,16 @@
         <!-- Error Banner -->
         <div
           v-if="errorMessage"
-          class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-3"
+          class="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-300 text-xs flex items-start gap-3"
         >
           <AlertCircle class="w-4 h-4 text-rose-600 mt-0.5 shrink-0" />
           <div class="flex-1">
             <p class="font-bold">Gagal Memproses File</p>
-            <p class="mt-0.5 text-rose-700 leading-relaxed">{{ errorMessage }}</p>
+            <p class="mt-0.5 text-rose-700 dark:text-rose-300 leading-relaxed">{{ errorMessage }}</p>
           </div>
           <button
             type="button"
-            class="text-rose-500 hover:text-rose-700 p-1 cursor-pointer"
+            class="text-rose-500 hover:text-rose-700 dark:hover:text-rose-300 p-1 cursor-pointer"
             @click="errorMessage = ''"
           >
             <X class="w-4 h-4" />
@@ -136,23 +136,23 @@
         <!-- Parsed Data Preview -->
         <div v-if="parsedRows.length > 0 && !isLoading" class="space-y-3 animate-in fade-in duration-150">
           <!-- File Selected Info Banner -->
-          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800">
             <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center">
+              <div class="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
                 <ExcelIcon class="w-4 h-4" />
               </div>
               <div>
-                <p class="font-bold text-slate-900 text-xs">
+                <p class="font-bold text-slate-900 dark:text-white text-xs">
                   {{ selectedRawFile?.name || 'File Excel Terpilih' }}
                 </p>
-                <p class="text-[11px] text-slate-500">
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">
                   {{ parsedRows.length }} baris data siap dimasukkan ke database Arsip Program
                 </p>
               </div>
             </div>
             <button
               type="button"
-              class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
               @click="resetFile"
             >
               Ganti File
@@ -160,10 +160,10 @@
           </div>
 
           <!-- Preview Table -->
-          <div class="border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+          <div class="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-2xs">
             <div class="overflow-x-auto max-h-72">
               <table class="w-full text-left text-xs border-collapse">
-                <thead class="sticky top-0 bg-slate-100 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px]">
+                <thead class="sticky top-0 bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold uppercase text-[10px]">
                   <tr>
                     <th class="py-2.5 px-3">NO</th>
                     <th class="py-2.5 px-2">BULAN</th>
@@ -178,48 +178,48 @@
                     <th class="py-2.5 px-3 text-right">TOTAL INVOICE</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 bg-white">
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 bg-white dark:bg-[#111827]">
                   <tr
                     v-for="(row, idx) in parsedRows.slice(0, 15)"
                     :key="idx"
-                    class="hover:bg-slate-50/70 transition-colors"
+                    class="hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors"
                   >
-                    <td class="py-2 px-3 text-slate-400 font-mono text-[10px]">{{ idx + 1 }}</td>
-                    <td class="py-2 px-2 text-slate-700 whitespace-nowrap text-[11px] font-medium">
+                    <td class="py-2 px-3 text-slate-400 dark:text-slate-500 font-mono text-[10px]">{{ idx + 1 }}</td>
+                    <td class="py-2 px-2 text-slate-700 dark:text-slate-300 whitespace-nowrap text-[11px] font-medium">
                       {{ getProgramMonth(row.program_date) }}
                     </td>
-                    <td class="py-2 px-2 text-slate-700 whitespace-nowrap">
-                      <span class="px-1.5 py-0.5 bg-slate-100 rounded text-[10px] font-medium">{{ row.category }}</span>
+                    <td class="py-2 px-2 text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                      <span class="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-[10px] font-medium text-slate-700 dark:text-slate-300">{{ row.category }}</span>
                     </td>
-                    <td class="py-2 px-2 text-slate-700 max-w-[120px] truncate" :title="row.company_name">
+                    <td class="py-2 px-2 text-slate-700 dark:text-slate-300 max-w-[120px] truncate" :title="row.company_name">
                       {{ row.company_name }}
                     </td>
-                    <td class="py-2 px-2 font-mono text-slate-600 whitespace-nowrap text-[10px]">
+                    <td class="py-2 px-2 font-mono text-slate-600 dark:text-slate-400 whitespace-nowrap text-[10px]">
                       {{ row.po_sj_number }}
                     </td>
-                    <td class="py-2 px-3 font-semibold text-slate-900 max-w-[140px] truncate" :title="row.program_name">
+                    <td class="py-2 px-3 font-semibold text-slate-900 dark:text-white max-w-[140px] truncate" :title="row.program_name">
                       {{ row.program_name }}
                     </td>
-                    <td class="py-2 px-3 text-slate-700 max-w-[120px] truncate" :title="row.supplier">
+                    <td class="py-2 px-3 text-slate-700 dark:text-slate-300 max-w-[120px] truncate" :title="row.supplier">
                       {{ row.supplier }}
                     </td>
-                    <td class="py-2 px-3 font-mono text-slate-600 whitespace-nowrap text-[10px]">
+                    <td class="py-2 px-3 font-mono text-slate-600 dark:text-slate-400 whitespace-nowrap text-[10px]">
                       {{ row.invoice_number }}
                     </td>
-                    <td class="py-2 px-3 font-mono text-right text-slate-700 whitespace-nowrap">
+                    <td class="py-2 px-3 font-mono text-right text-slate-700 dark:text-slate-300 whitespace-nowrap">
                       {{ formatRupiah(row.dpp) }}
                     </td>
-                    <td class="py-2 px-3 font-mono text-right text-amber-700 font-medium whitespace-nowrap">
+                    <td class="py-2 px-3 font-mono text-right text-amber-700 dark:text-amber-400 font-medium whitespace-nowrap">
                       {{ formatRupiah(row.ppn) }}
                     </td>
-                    <td class="py-2 px-3 font-mono text-right font-bold text-slate-900 whitespace-nowrap">
+                    <td class="py-2 px-3 font-mono text-right font-bold text-slate-900 dark:text-white whitespace-nowrap">
                       {{ formatRupiah(row.total_invoice) }}
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            <div v-if="parsedRows.length > 15" class="p-2 bg-slate-50 border-t border-slate-200 text-center text-[10px] text-slate-500">
+            <div v-if="parsedRows.length > 15" class="p-2 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-center text-[10px] text-slate-500 dark:text-slate-400">
               Menampilkan 15 dari {{ parsedRows.length }} baris data
             </div>
           </div>
@@ -227,14 +227,14 @@
       </div>
 
       <!-- Footer -->
-      <div class="px-6 py-3.5 border-t border-slate-200 bg-slate-50/80 flex items-center justify-between">
-        <span class="text-slate-500 text-xs">
+      <div class="px-6 py-3.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between">
+        <span class="text-slate-500 dark:text-slate-400 text-xs">
           {{ parsedRows.length > 0 ? `${parsedRows.length} data siap dimasukkan` : 'Pilih file terlebih dahulu' }}
         </span>
         <div class="flex items-center gap-2.5">
           <button
             type="button"
-            class="px-4 py-2 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+            class="px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
             @click="closeModal"
           >
             Batal

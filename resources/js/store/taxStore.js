@@ -203,7 +203,12 @@ export function getCompleteness(program) {
     if (!program || !program.documents) {
         return { count: 0, total: 3, status: 'Belum Lengkap', badgeType: 'danger' };
     }
-    const count = program.documents.length;
+    const docTypes = new Set((program.documents || []).map(d => d.document_type));
+    let count = 0;
+    if (docTypes.has('invoice')) count++;
+    if (docTypes.has('faktur_pajak')) count++;
+    if (docTypes.has('mou')) count++;
+
     if (count === 3) {
         return { count: 3, total: 3, status: 'Lengkap', badgeType: 'success' };
     }
@@ -697,12 +702,8 @@ export const useTaxStore = () => {
         if (!prog) return false;
         if (!prog.documents) prog.documents = [];
 
-        const docId = 'doc-' + Date.now();
+        let docId = 'doc-' + Date.now() + '-' + Math.floor(Math.random() * 100);
         const uploader = state.currentUser?.name || 'Staff';
-
-        // Check if docType already exists (replace if exists)
-        const existingIndex = prog.documents.findIndex(d => d.document_type === docType);
-        
         let serverFileUrl = fileInfo.file_url || null;
 
         // Upload to server if real file is present
@@ -722,6 +723,21 @@ export const useTaxStore = () => {
                     const data = await res.json();
                     if (data.document?.file_url) {
                         serverFileUrl = data.document.file_url;
+                    }
+                    if (data.document?.id) {
+                        docId = data.document.id;
+                    }
+                    if (data.program) {
+                        const idx = state.programs.findIndex(p => String(p.id) === String(programId));
+                        if (idx !== -1) {
+                            state.programs[idx] = mapBackendProgram(data.program);
+                            if (fileInfo.dataUrl) {
+                                saveDocumentBlob(docId, fileInfo.dataUrl, fileInfo.name, fileInfo.type);
+                            }
+                            saveToStorage();
+                            notify(`Dokumen ${getDocTypeLabel(docType)} berhasil diunggah.`);
+                            return true;
+                        }
                     }
                 }
             } catch (err) {
@@ -752,35 +768,41 @@ export const useTaxStore = () => {
             saveDocumentBlob(docId, fileInfo.dataUrl, newDoc.file_name, newDoc.mime_type);
         }
 
-        if (existingIndex !== -1) {
-            prog.documents[existingIndex] = newDoc;
-            notify(`Dokumen ${getDocTypeLabel(docType)} berhasil diperbarui.`);
-        } else {
-            prog.documents.push(newDoc);
-            notify(`Dokumen ${getDocTypeLabel(docType)} berhasil diunggah.`);
-        }
+        prog.documents.push(newDoc);
+        notify(`Dokumen ${getDocTypeLabel(docType)} berhasil diunggah.`);
         saveToStorage();
         return true;
     }
 
-    async function deleteDocument(programId, docType) {
+    async function deleteDocument(programId, docIdentifier) {
         const prog = getProgramById(programId);
         if (!prog || !prog.documents) return false;
-        const index = prog.documents.findIndex(d => d.document_type === docType);
+        const index = prog.documents.findIndex(d => d.id === docIdentifier || d.document_type === docIdentifier);
         if (index !== -1) {
             const removed = prog.documents[index];
             if (removed?.id) {
                 deleteDocumentBlob(removed.id);
             }
+            const deletedIdOrType = removed.id || docIdentifier;
             prog.documents.splice(index, 1);
             saveToStorage();
-            notify(`Dokumen ${getDocTypeLabel(docType)} berhasil dihapus.`, 'warning');
+            notify(`Dokumen ${removed.file_name || getDocTypeLabel(removed.document_type)} berhasil dihapus.`, 'warning');
 
             try {
-                await fetch(`/api/programs/${programId}/documents/${docType}`, {
+                const res = await fetch(`/api/programs/${programId}/documents/${deletedIdOrType}`, {
                     method: 'DELETE',
                     headers: { 'Accept': 'application/json' }
                 });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.program) {
+                        const idx = state.programs.findIndex(p => String(p.id) === String(programId));
+                        if (idx !== -1) {
+                            state.programs[idx] = mapBackendProgram(data.program);
+                            saveToStorage();
+                        }
+                    }
+                }
             } catch (e) {
                 console.warn('Backend deleteDocument failed:', e);
             }
@@ -1432,13 +1454,18 @@ export const useTaxStore = () => {
             return {
                 success: false,
                 isPending: !!data.isPending,
+                notRegistered: !!data.notRegistered || resp.status === 404,
                 message: data.message || 'Gagal mengirimkan OTP via WhatsApp.'
             };
         } catch (e) {
             // Local fallback
             const user = findUser(identifier);
             if (!user) {
-                return { success: false, message: 'Nomor WhatsApp atau Email belum terdaftar pada sistem.' };
+                return {
+                    success: false,
+                    notRegistered: true,
+                    message: 'Nomor WhatsApp belum terdaftar di database. Silakan lakukan registrasi akun terlebih dahulu.'
+                };
             }
             if (user.status === 'pending') {
                 return {

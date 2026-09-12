@@ -336,18 +336,17 @@ class ProgramController extends Controller
         ];
 
         if ($program) {
-            ProgramDocument::updateOrCreate(
-                ['program_id' => $program->id, 'type' => $backendType],
-                [
-                    'id' => $docId,
-                    'file_name' => $docData['file_name'],
-                    'file_size' => $docData['file_size'],
-                    'file_path' => $filePath,
-                    'uploaded_at' => Carbon::now()
-                ]
-            );
+            ProgramDocument::create([
+                'id' => $docId,
+                'program_id' => $program->id,
+                'type' => $backendType,
+                'file_name' => $docData['file_name'],
+                'file_size' => $docData['file_size'],
+                'file_path' => $filePath,
+                'uploaded_at' => Carbon::now()
+            ]);
 
-            // Check completeness
+            // Check completeness across distinct document types
             $types = $program->documents()->pluck('type')->toArray();
             if (count(array_unique($types)) >= 3) {
                 $program->update(['status' => 'Lengkap']);
@@ -357,7 +356,8 @@ class ProgramController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Dokumen berhasil diunggah.',
-            'document' => $docData
+            'document' => $docData,
+            'program' => $program ? $program->fresh()->load('documents') : null
         ]);
     }
 
@@ -374,6 +374,9 @@ class ProgramController extends Controller
             })->first();
 
         if ($doc) {
+            if ($doc->file_path && file_exists(public_path($doc->file_path))) {
+                @unlink(public_path($doc->file_path));
+            }
             $doc->delete();
         }
 

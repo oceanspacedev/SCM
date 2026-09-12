@@ -4,6 +4,8 @@ import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
 
+import fs from 'node:fs';
+
 export default defineConfig({
     plugins: [
         laravel({

@@ -2,15 +2,15 @@
   <Dialog
     :open="open"
     :title="modalTitle"
-    description="Unggah berkas resmi untuk verifikasi kepatuhan pajak SCM."
+    description="Pilih satu atau beberapa berkas untuk diunggah ke kategori ini."
     maxWidth="max-w-md"
     @update:open="$emit('update:open', $event)"
   >
-    <div class="space-y-4 text-sm">
+    <div class="space-y-4 text-xs font-sans">
       <!-- Drag & Drop Area -->
       <div
-        class="border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer"
-        :class="isDragging ? 'border-[#0F766E] bg-[#F0FDFA]' : 'border-[#DDE4E1] hover:border-[#CCD6D2] bg-[#FAFBFA]'"
+        class="border-2 border-dashed rounded-xl p-5 text-center transition-colors cursor-pointer"
+        :class="isDragging ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/40' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-slate-50/50 dark:bg-slate-900/40 hover:bg-slate-50 dark:hover:bg-slate-800/40'"
         @dragover.prevent="isDragging = true"
         @dragleave.prevent="isDragging = false"
         @drop.prevent="handleFileDrop"
@@ -19,50 +19,78 @@
         <input
           ref="fileInput"
           type="file"
+          multiple
           accept=".pdf, .jpg, .jpeg, .png"
           class="hidden"
           @change="handleFileChange"
         />
 
         <div class="flex flex-col items-center justify-center space-y-2">
-          <div class="w-10 h-10 rounded-full bg-[#E6F4F1] text-[#0F766E] flex items-center justify-center">
+          <div class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
             <Upload class="w-5 h-5" />
           </div>
           <div>
-            <p class="text-sm font-semibold text-[#17201E]">
-              Drop file here or browse
+            <p class="text-xs font-bold text-slate-800 dark:text-slate-200">
+              Tarik berkas ke sini atau <span class="text-blue-600 dark:text-blue-400 underline">pilih dari komputer</span>
             </p>
-            <p class="text-xs text-[#66736F] mt-0.5">
-              Support: <strong>PDF, JPG, PNG</strong> (Maksimum 10 MB)
+            <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+              Mendukung: <strong>PDF, JPG, PNG</strong> (bisa pilih banyak berkas, maks 15 MB)
             </p>
           </div>
         </div>
       </div>
 
-      <!-- File Selected State with Progress -->
-      <div
-        v-if="selectedFile"
-        class="p-3 bg-white rounded-md border border-[#DDE4E1] shadow-2xs space-y-2.5"
-      >
-        <div class="flex items-center justify-between text-xs">
-          <div class="flex items-center gap-2 truncate pr-2">
-            <FileText class="w-4 h-4 text-[#0F766E] shrink-0" />
-            <div class="truncate">
-              <p class="font-medium text-[#17201E] truncate">{{ selectedFile.name }}</p>
-              <p class="text-[11px] text-[#66736F]">{{ (selectedFile.size / 1024).toFixed(1) }} KB</p>
-            </div>
-          </div>
-          <span class="text-xs font-semibold text-[#0F766E] shrink-0">
-            {{ uploadProgress }}%
-          </span>
+      <!-- Selected Files List -->
+      <div v-if="selectedFiles.length > 0" class="space-y-2">
+        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-medium px-1">
+          <span>{{ selectedFiles.length }} berkas dipilih:</span>
+          <button
+            type="button"
+            class="text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
+            :disabled="isUploading"
+            @click="selectedFiles = []"
+          >
+            Hapus Semua
+          </button>
         </div>
 
-        <!-- Progress Bar -->
-        <div class="w-full bg-[#EBEFEF] rounded-full h-1.5 overflow-hidden">
+        <div class="max-h-40 overflow-y-auto space-y-1.5 pr-1">
           <div
-            class="bg-[#0F766E] h-1.5 rounded-full transition-all duration-300"
-            :style="{ width: uploadProgress + '%' }"
-          ></div>
+            v-for="(f, idx) in selectedFiles"
+            :key="idx"
+            class="p-2.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2 shadow-2xs"
+          >
+            <div class="flex items-center gap-2 min-w-0">
+              <FileText class="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" />
+              <div class="min-w-0">
+                <p class="font-semibold text-slate-800 dark:text-slate-200 truncate text-xs">{{ f.name }}</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 font-mono">{{ formatSize(f.size) }}</p>
+              </div>
+            </div>
+            <button
+              v-if="!isUploading"
+              type="button"
+              class="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded transition-colors cursor-pointer"
+              title="Batalkan berkas ini"
+              @click="removeFile(idx)"
+            >
+              <X class="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress Bar when Uploading -->
+        <div v-if="isUploading" class="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 space-y-1.5">
+          <div class="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-300">
+            <span>Mengunggah berkas...</span>
+            <span class="font-mono font-bold">{{ uploadProgress }}%</span>
+          </div>
+          <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+            <div
+              class="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
+              :style="{ width: uploadProgress + '%' }"
+            ></div>
+          </div>
         </div>
       </div>
     </div>
@@ -75,16 +103,16 @@
           :disabled="isUploading"
           @click="$emit('update:open', false)"
         >
-          Cancel
+          Batal
         </Button>
         <Button
           variant="default"
           size="sm"
-          :disabled="!selectedFile || isUploading"
+          :disabled="selectedFiles.length === 0 || isUploading"
           :loading="isUploading"
           @click="startUpload"
         >
-          Upload Document
+          Unggah {{ selectedFiles.length > 0 ? `(${selectedFiles.length}) Berkas` : 'Berkas' }}
         </Button>
       </div>
     </template>
@@ -93,7 +121,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
-import { Upload, FileText } from 'lucide-vue-next';
+import { Upload, FileText, X } from 'lucide-vue-next';
 import Dialog from '../ui/Dialog.vue';
 import Button from '../ui/Button.vue';
 import { useTaxStore } from '../../store/taxStore';
@@ -107,7 +135,7 @@ const props = defineProps({
   },
   docType: {
     type: String,
-    default: 'faktur_pajak' // invoice, faktur_pajak, mou
+    default: 'faktur_pajak'
   },
   docLabel: {
     type: String,
@@ -118,88 +146,110 @@ const props = defineProps({
 const emit = defineEmits(['update:open', 'uploaded']);
 
 const isDragging = ref(false);
-const selectedFile = ref(null);
+const selectedFiles = ref([]);
 const uploadProgress = ref(0);
 const isUploading = ref(false);
 
 const modalTitle = computed(() => {
-  return `Upload ${props.docLabel}`;
+  return `Unggah ${props.docLabel}`;
 });
 
 watch(() => props.open, (isOpen) => {
   if (isOpen) {
-    selectedFile.value = null;
+    selectedFiles.value = [];
     uploadProgress.value = 0;
     isUploading.value = false;
   }
 });
 
 function handleFileChange(e) {
-  const file = e.target.files?.[0];
-  if (file) {
-    processFile(file);
+  const files = Array.from(e.target.files || []);
+  if (files.length > 0) {
+    processFiles(files);
   }
+  // reset input so the same files can be reselected if needed
+  e.target.value = '';
 }
 
 function handleFileDrop(e) {
   isDragging.value = false;
-  const file = e.dataTransfer.files?.[0];
-  if (file) {
-    processFile(file);
+  const files = Array.from(e.dataTransfer.files || []);
+  if (files.length > 0) {
+    processFiles(files);
   }
 }
 
-function processFile(file) {
-  if (file.size > 10 * 1024 * 1024) {
-    store.notify("Ukuran file melebihi batas maksimum 10 MB.", 'warning');
-    return;
+function formatSize(bytes) {
+  if (!bytes) return '0 B';
+  if (bytes >= 1048576) {
+    return `${(bytes / 1048576).toFixed(1)} MB`;
   }
-  selectedFile.value = file;
-  uploadProgress.value = 25; // initial read progress
+  return `${(bytes / 1024).toFixed(1)} KB`;
 }
 
-function startUpload() {
-  if (!selectedFile.value) return;
+function processFiles(files) {
+  const maxBytes = 15 * 1024 * 1024; // 15 MB
+  const validFiles = [];
+
+  for (const file of files) {
+    if (file.size > maxBytes) {
+      store.notify(`Berkas "${file.name}" melebihi batas 15 MB.`, 'warning');
+      continue;
+    }
+    // Check if duplicate in current list
+    if (!selectedFiles.value.some(f => f.name === file.name && f.size === file.size)) {
+      validFiles.push(file);
+    }
+  }
+
+  selectedFiles.value.push(...validFiles);
+}
+
+function removeFile(index) {
+  selectedFiles.value.splice(index, 1);
+}
+
+async function readFileAsDataUrl(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = () => resolve(null);
+    reader.readAsDataURL(file);
+  });
+}
+
+async function startUpload() {
+  if (selectedFiles.value.length === 0) return;
 
   isUploading.value = true;
-  uploadProgress.value = 35;
+  uploadProgress.value = 20;
 
-  const file = selectedFile.value;
-  const reader = new FileReader();
+  const total = selectedFiles.value.length;
+  const uploadedResults = [];
 
-  reader.onprogress = (e) => {
-    if (e.lengthComputable) {
-      uploadProgress.value = Math.min(85, Math.round((e.loaded / e.total) * 80) + 10);
-    }
-  };
+  for (let i = 0; i < total; i++) {
+    const file = selectedFiles.value[i];
+    const dataUrl = await readFileAsDataUrl(file);
+    const sizeFormatted = formatSize(file.size);
 
-  reader.onload = (e) => {
-    uploadProgress.value = 100;
-    setTimeout(() => {
-      const dataUrl = e.target.result;
-      const sizeFormatted = file.size >= 1048576 
-        ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` 
-        : `${(file.size / 1024).toFixed(1)} KB`;
+    uploadedResults.push({
+      docType: props.docType,
+      file: file,
+      name: file.name,
+      sizeFormatted: sizeFormatted,
+      type: file.type || 'application/pdf',
+      dataUrl: dataUrl
+    });
 
-      emit('uploaded', {
-        docType: props.docType,
-        file: file,
-        name: file.name,
-        sizeFormatted: sizeFormatted,
-        type: file.type || 'application/pdf',
-        dataUrl: dataUrl
-      });
-      isUploading.value = false;
-      emit('update:open', false);
-    }, 250);
-  };
+    uploadProgress.value = Math.min(95, Math.round(((i + 1) / total) * 90));
+  }
 
-  reader.onerror = () => {
-    uploadProgress.value = 100;
+  uploadProgress.value = 100;
+
+  setTimeout(() => {
+    emit('uploaded', uploadedResults);
     isUploading.value = false;
-    store.notify('Gagal membaca berkas.', 'warning');
-  };
-
-  reader.readAsDataURL(file);
+    emit('update:open', false);
+  }, 200);
 }
 </script>

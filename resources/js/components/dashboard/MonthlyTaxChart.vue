@@ -1,11 +1,11 @@
 <template>
-  <div class="bg-white rounded-xl border border-slate-200/90 p-5 shadow-2xs">
+  <div class="bg-white dark:bg-[#111827] rounded-xl border border-slate-200/90 dark:border-slate-800 p-5 shadow-2xs">
     <!-- Header matching screenshot -->
     <div class="mb-4">
-      <h3 class="text-sm font-bold text-slate-900 tracking-tight">
+      <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 tracking-tight">
         Rekap DPP & PPN per Bulan
       </h3>
-      <p class="text-xs text-slate-400 mt-0.5">
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
         Berdasarkan tanggal invoice program
       </p>
     </div>
@@ -209,21 +209,21 @@
     </div>
 
     <!-- Chart Legend (Bottom) -->
-    <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-center gap-6 text-xs text-slate-600">
-      <div class="flex items-center gap-1.5 cursor-default hover:text-slate-900 transition-colors">
+    <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-6 text-xs text-slate-600 dark:text-slate-400">
+      <div class="flex items-center gap-1.5 cursor-default hover:text-slate-900 dark:hover:text-slate-200 transition-colors">
         <span class="w-2.5 h-2.5 rounded-full bg-[#2563EB] shadow-2xs"></span>
-        <span class="text-xs font-medium text-slate-700">DPP</span>
+        <span class="text-xs font-medium text-slate-700 dark:text-slate-300">DPP</span>
       </div>
-      <div class="flex items-center gap-1.5 cursor-default hover:text-slate-900 transition-colors">
+      <div class="flex items-center gap-1.5 cursor-default hover:text-slate-900 dark:hover:text-slate-200 transition-colors">
         <span class="w-2.5 h-2.5 rounded-full bg-[#F59E0B] shadow-2xs"></span>
-        <span class="text-xs font-medium text-slate-700">PPN (11%)</span>
+        <span class="text-xs font-medium text-slate-700 dark:text-slate-300">PPN (11%)</span>
       </div>
-      <div class="flex items-center gap-1.5 cursor-default hover:text-slate-900 transition-colors">
+      <div class="flex items-center gap-1.5 cursor-default hover:text-slate-900 dark:hover:text-slate-200 transition-colors">
         <div class="flex items-center">
-          <div class="w-3.5 h-0.5 bg-[#1E293B]"></div>
-          <div class="w-2 h-2 rounded-full bg-[#1E293B] -ml-1 border border-white"></div>
+          <div class="w-3.5 h-0.5 bg-[#1E293B] dark:bg-slate-300"></div>
+          <div class="w-2 h-2 rounded-full bg-[#1E293B] dark:bg-slate-300 -ml-1 border border-white dark:border-slate-900"></div>
         </div>
-        <span class="text-xs font-medium text-slate-700">Total Invoice</span>
+        <span class="text-xs font-medium text-slate-700 dark:text-slate-300">Total Invoice</span>
       </div>
     </div>
   </div>
